@@ -19,7 +19,13 @@ type ThemeMode = "light" | "dark" | "system";
  * - System طبق ترجیح سیستم‌عامل پیش می‌رود
  * - زبان از تم مستقل است؛ تغییر یکی به دیگری دست نمی‌زند
  */
-export function ThemeToggle({ className }: { className?: string }) {
+export function ThemeToggle({
+  className,
+  placement = "bottom",
+}: {
+  className?: string;
+  placement?: "bottom" | "top";
+}) {
   const { theme, resolvedTheme, setTheme } = useTheme();
   const mounted = useSyncExternalStore(subscribe, getClient, getServer);
   const [open, setOpen] = useState(false);
@@ -67,16 +73,19 @@ export function ThemeToggle({ className }: { className?: string }) {
         aria-expanded={open}
         title={t("toggle")}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface text-foreground transition-colors hover:bg-surface-secondary"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-surface-secondary text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-foreground"
       >
-        <ActiveIcon className="h-5 w-5" aria-hidden />
+        <ActiveIcon className="h-[18px] w-[18px] sm:h-5 sm:w-5" aria-hidden />
       </button>
 
       {open && (
         <div
           role="menu"
           aria-label={t("toggle")}
-          className="absolute end-0 z-50 mt-2 w-40 overflow-hidden rounded-2xl border border-border bg-surface p-1 shadow-xl"
+          className={cn(
+            "absolute end-0 z-50 w-40 overflow-hidden rounded-2xl border border-border bg-surface p-1 shadow-xl",
+            placement === "top" ? "bottom-full mb-2" : "top-full mt-2",
+          )}
         >
           {options.map(({ value, label, icon: Icon }) => {
             const selected = mounted && theme === value;

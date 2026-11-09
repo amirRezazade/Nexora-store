@@ -19,7 +19,7 @@ export default function GlobalNotFound() {
         <main style={{ textAlign: "center" }}>
           <p style={{ fontSize: "4rem", fontWeight: 800, margin: 0 }}>404</p>
           <p>صفحه پیدا نشد / Page not found</p>
-          <Link href="/fa">Nexora Store</Link>
+          <Link href="/fa">Nexora</Link>
         </main>
       </body>
     </html>

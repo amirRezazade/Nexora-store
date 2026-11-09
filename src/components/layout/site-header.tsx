@@ -13,79 +13,80 @@ import { LanguageSwitcher } from "./language-switcher";
 import { AnnouncementBar } from "./announcement-bar";
 
 /**
- * هدر Nexora — سه لایه طبق طراحی:
- *  لایه ۱: بنر نارنجی (قابل بستن، ذخیره در localStorage)   → <AnnouncementBar/>
- *  لایه ۲: لوگو | جستجو (بزرگ) | آیکون‌های کاربر              → این فایل
- *  لایه ۳: دراپ‌داون دسته‌بندی‌ها + لینک‌های اصلی + آفرهای ویژه → md به بالا؛ در موبایل دِر منوی همبرگری است
+ * هدر Nexora — مینیمال و واکنش‌گرا با «یک» SearchBox (بدون نسخه‌ی تکراری).
  *
- * شکست چیدمان:
- *  - موبایل (< md): ردیف A = همبرگر + لوگو | حساب/علاقه‌مندی/سبد · ردیف B (تمام‌عرض) = جستجو
- *  - تبلت (md تا lg): ردیف A = لوگو | آیکون‌ها (بدون همبرگر) · ردیف B (تمام‌عرض) = جستجو · ردیف C = لینک‌ها
- *  - دسکتاپ (lg+): ردیف A = لوگو | جستجوی بزرگ | آیکون‌ها · ردیف C = لینک‌ها
+ *  لایه ۱: بنر ارسال رایگان (قابل بستن)
+ *  لایه ۲ (ردیف اصلی):
+ *    - xl+:  لوگو | کتگوری + لینک‌ها | جستجو | تم + زبان + حساب + علاقه‌مندی + سبد
+ *    - md تا xl: لوگو | جستجو (فضای خالی را پر می‌کند) | آیکون‌ها
+ *    - < md: لوگو + آیکون‌ها | جستجو در خط دوم تمام‌عرض
+ *  لایه ۳ (md تا xl): کتگوری + لینک‌ها، چون در ردیف اصلی جا نمی‌شوند
  *
- * همه‌ی جهت‌گیری‌ها logical (ms/me/start/end) اند تا RTL/LTR قرینه بماند.
+ * چیدمان ریسپانسیو فقط با «order» و flex-wrap انجام می‌شود تا جستجو یک نمونه باشد.
+ * تم/زبان از xs به بالا در هدر و در موبایل داخل منوی همبرگری هستند.
+ * max-width: 90rem
  */
 export async function SiteHeader() {
   const common = await getTranslations("common");
   const tree = await getCategoryTree();
 
+  const iconBtn =
+    "inline-flex h-10 w-10 items-center justify-center rounded-xl bg-surface-secondary text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-foreground";
+
   return (
     <header className="sticky top-0 z-40">
       <AnnouncementBar />
 
-      {/* ── لایه ۲ ─────────────────────────────── */}
       <div className="border-b border-border bg-surface/90 backdrop-blur-md">
-        <div className="mx-auto max-w-7xl px-3 xs:px-4 sm:px-6">
-          <div className="flex h-16 items-center gap-2 xs:gap-3 sm:h-[4.5rem] lg:gap-6">
-            {/* موبایل: همبرگر اول از همه (در RTL سمت راست) */}
+        <div className="mx-auto max-w-[90rem] px-3 xs:px-4 sm:px-6">
+          {/* ── لایه ۲: ردیف اصلی ─────────────────────────── */}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-2 py-2 xs:gap-x-3 xl:flex-nowrap xl:gap-x-4">
+            {/* موبایل: همبرگر (order پیش‌فرض ۰) */}
             <MobileMenu tree={tree} />
 
-            <Logo className="shrink-0" />
+            <Logo className="order-1 shrink-0" />
 
-            {/* دسکتاپ: جستجو وسط ردیف */}
-            <div className="hidden min-w-0 flex-1 justify-center lg:flex">
-              <SearchBox className="max-w-2xl" />
+            {/* xl+: کتگوری + لینک‌ها بین لوگو و جستجو */}
+            <nav
+              aria-label="Sections"
+              className="order-2 hidden min-w-0 shrink-0 items-center gap-x-4 xl:flex 2xl:gap-x-5"
+            >
+              <CategoriesDropdown tree={tree} />
+              <NavLinks />
+            </nav>
+
+            {/* جستجو — تک‌نمونه؛ موبایل: خط دوم تمام‌عرض، md+: بین لوگو و آیکون‌ها */}
+            <div className="order-3 w-full min-w-0 basis-full md:order-2 md:w-auto md:max-w-[500px] md:flex-1 md:basis-0 xl:order-3">
+              <SearchBox />
             </div>
 
-            {/* آیکون‌های پایانی */}
-            <div className="ms-auto flex shrink-0 items-center gap-1.5 xs:gap-2">
-              <Link
-                href="/account"
-                aria-label={common("account")}
-                title={common("account")}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface transition-colors hover:bg-surface-secondary"
-              >
-                <User className="h-5 w-5" strokeWidth={1.8} aria-hidden />
+            {/* آیکون‌های پایانی — بعد از جستجو */}
+            <div className="order-2 ms-auto flex shrink-0 items-center gap-1.5 xs:gap-2 md:order-3 xl:order-4">
+              {/* تم و زبان: از xs به بالا؛ در موبایل داخل منوی همبرگری */}
+              <div className="hidden items-center gap-2 xs:flex">
+                <ThemeToggle />
+                <LanguageSwitcher />
+              </div>
+              <Link href="/account" aria-label={common("account")} title={common("account")} className={iconBtn}>
+                <User className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.8} aria-hidden />
               </Link>
-              <Link
-                href="/wishlist"
-                aria-label={common("wishlist")}
-                title={common("wishlist")}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface transition-colors hover:bg-surface-secondary"
-              >
-                <Heart className="h-5 w-5" strokeWidth={1.8} aria-hidden />
+              <Link href="/wishlist" aria-label={common("wishlist")} title={common("wishlist")} className={iconBtn}>
+                <Heart className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.8} aria-hidden />
               </Link>
               <CartButton />
-              {/* زبان و تم: تبلت و دسکتاپ (در موبایل داخل دِرِر هستند) */}
-              <div className="hidden items-center gap-2 md:flex">
-                <LanguageSwitcher />
-                <ThemeToggle />
-              </div>
             </div>
           </div>
 
-          {/* موبایل و تبلت: جستجو در ردیف تمام‌عرض */}
-          <div className="pb-3 lg:hidden">
-            <SearchBox />
+          {/* ── لایه ۳: لینک‌ها (md تا xl) ── */}
+          <div className="hidden pb-2 md:block xl:hidden">
+            <nav
+              aria-label="Sections"
+              className="flex items-center gap-4 overflow-x-auto [scrollbar-width:none] sm:gap-5 [&::-webkit-scrollbar]:hidden"
+            >
+              <CategoriesDropdown tree={tree} />
+              <NavLinks withSpecial />
+            </nav>
           </div>
-        </div>
-      </div>
-
-      {/* ── لایه ۳: لینک‌ها (موبایل ندارد؛ دِرِر جایش را می‌گیرد) ── */}
-      <div className="hidden border-b border-border bg-surface md:block">
-        <div className="mx-auto flex h-12 max-w-7xl items-stretch gap-5 px-4 sm:px-6">
-          <CategoriesDropdown tree={tree} />
-          <NavLinks />
         </div>
       </div>
     </header>

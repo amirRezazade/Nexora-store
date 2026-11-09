@@ -29,7 +29,7 @@ export default async function HomePage({
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-8 px-4 py-20 text-center sm:px-6 md:py-28">
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-primary-soft px-4 py-1.5 text-xs font-semibold text-primary">
             <Sparkles className="h-4 w-4" aria-hidden />
-            Nexora Store
+            Nexora
           </span>
           <h1 className="max-w-3xl text-4xl font-black leading-tight tracking-tight sm:text-5xl md:text-6xl">
             {t("heroTitle")}

@@ -72,9 +72,9 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
         onClick={() => setOpen(true)}
         aria-label={common("menu")}
         aria-expanded={open}
-        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface transition-colors hover:bg-surface-secondary md:hidden"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-surface-secondary text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-foreground md:hidden"
       >
-        <Menu className="h-5 w-5" aria-hidden />
+        <Menu className="h-[18px] w-[18px]" aria-hidden />
       </button>
 
       {/* Portal به body: چون هدر backdrop-blur دارد (containing block برای fixed)،
@@ -87,11 +87,11 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
             type="button"
             aria-label={common("close")}
             onClick={() => setOpen(false)}
-            className="absolute inset-0 h-full w-full cursor-default bg-black/60"
+            className="menu-backdrop absolute inset-0 h-full w-full cursor-default bg-black/60"
           />
 
           {/* پنل */}
-          <div className="absolute inset-y-0 start-0 flex h-full w-80 max-w-[85vw] flex-col bg-surface shadow-2xl">
+          <div className="menu-panel absolute inset-y-0 start-0 flex h-full w-80 max-w-[85vw] flex-col bg-surface shadow-2xl">
             <div className="flex h-16 items-center justify-between border-b border-border px-4">
               <Logo />
               <button
@@ -99,7 +99,7 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label={common("close")}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border hover:bg-surface-secondary"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-surface-secondary text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-foreground"
               >
                 <X className="h-5 w-5" aria-hidden />
               </button>
@@ -176,9 +176,9 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
                 <User className="h-5 w-5" aria-hidden />
                 {common("signIn")}
               </Link>
-              <div className="mt-3 flex items-center justify-between">
-                <LanguageSwitcher />
-                <ThemeToggle />
+              <div className="mt-3 flex items-center justify-between xs:hidden">
+                <LanguageSwitcher placement="top" />
+                <ThemeToggle placement="top" />
               </div>
             </div>
           </div>

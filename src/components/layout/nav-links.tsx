@@ -6,10 +6,11 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 /**
- * ردیف لینک‌های لایه‌ی سوم (فقط md و بالاتر — در موبایل دِرِرِ جایش را می‌گیرد).
- * لینک فعال: خط زیرین نارنجی + aria-current برای صفحه‌خوان‌ها.
+ * لینک‌های اصلی ناوبری — مینیمال (بدون پس‌زمینه/پیل).
+ * به‌صورت Fragment رندر می‌شود تا در flex والد به‌عنوان آیتم مستقل بشکند.
+ * withSpecial فقط در ردیف لینک‌های تبلت/دسکتاپ کوچک و از lg به بالا.
  */
-export function NavLinks() {
+export function NavLinks({ withSpecial = false }: { withSpecial?: boolean }) {
   const t = useTranslations("nav");
   const pathname = usePathname();
 
@@ -23,46 +24,39 @@ export function NavLinks() {
 
   const linkClass = (active: boolean) =>
     cn(
-      "relative border-b-2 border-transparent py-3 text-sm font-medium text-text-secondary transition-colors hover:text-primary",
-      active && "border-primary font-semibold text-primary",
+      "shrink-0 whitespace-nowrap py-1.5 text-[13px] font-medium text-text-secondary transition-colors hover:text-primary 2xl:text-sm",
+      active && "font-semibold text-primary",
     );
 
   return (
-    <nav
-      aria-label="Sections"
-      className="flex h-12 flex-1 items-center gap-5 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-    >
+    <>
       {links.map(({ href, label }) => {
         const active = pathname === href;
         return (
-          <Link
-            key={href}
-            href={href}
-            aria-current={active ? "page" : undefined}
-            className={linkClass(active)}
-          >
+          <Link key={href} href={href} aria-current={active ? "page" : undefined} className={linkClass(active)}>
             {label}
           </Link>
         );
       })}
 
-      {/* اکشن‌های ویژه — به انتهای ردیف (در RTL: سمت چپ) */}
-      <div className="ms-auto flex items-center gap-5 ps-6">
-        <Link
-          href="/deals"
-          className="flex items-center gap-1.5 border-b-2 border-transparent py-3 text-sm font-semibold text-primary hover:text-primary-hover"
-        >
-          <Flame className="h-4 w-4" aria-hidden />
-          {t("specialOffers")}
-        </Link>
-        <Link
-          href="/shop?sort=newest"
-          className="flex items-center gap-1.5 border-b-2 border-transparent py-3 text-sm font-medium text-foreground hover:text-primary"
-        >
-          <Sparkles className="h-4 w-4" aria-hidden />
-          {t("newArrivals")}
-        </Link>
-      </div>
-    </nav>
+      {withSpecial && (
+        <div className="ms-auto hidden shrink-0 items-center gap-4 ps-2 lg:flex">
+          <Link
+            href="/deals"
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap py-1.5 text-sm font-semibold text-primary transition-colors hover:text-primary-hover"
+          >
+            <Flame className="h-4 w-4" aria-hidden />
+            {t("specialOffers")}
+          </Link>
+          <Link
+            href="/shop?sort=newest"
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap py-1.5 text-sm font-medium text-foreground transition-colors hover:text-primary"
+          >
+            <Sparkles className="h-4 w-4" aria-hidden />
+            {t("newArrivals")}
+          </Link>
+        </div>
+      )}
+    </>
   );
 }

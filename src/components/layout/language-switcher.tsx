@@ -14,7 +14,11 @@ const LOCALE_LABELS: Record<Locale, string> = { fa: "فارسی", en: "English" 
  * pathname بدون locale را حفظ می‌کند و همان مسیر را با زبان جدید باز می‌کند.
  * (تغییر زبان هیچ اثری روی تم ندارد — دو سیستم مستقل‌اند.)
  */
-export function LanguageSwitcher() {
+export function LanguageSwitcher({
+  placement = "bottom",
+}: {
+  placement?: "bottom" | "top";
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
@@ -46,7 +50,7 @@ export function LanguageSwitcher() {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label="Select language / انتخاب زبان"
-        className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-surface px-3 text-sm font-semibold uppercase text-foreground transition-colors hover:bg-surface-secondary"
+        className="inline-flex h-10 items-center gap-2 rounded-xl bg-surface-secondary px-3 text-sm font-semibold uppercase text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-foreground"
       >
         <Globe className="h-4 w-4" aria-hidden />
         <span>{current}</span>
@@ -55,7 +59,10 @@ export function LanguageSwitcher() {
       {open && (
         <div
           role="menu"
-          className="absolute end-0 z-50 mt-2 w-40 overflow-hidden rounded-2xl border border-border bg-surface p-1 shadow-xl"
+          className={cn(
+            "absolute end-0 z-50 w-40 overflow-hidden rounded-2xl border border-border bg-surface p-1 shadow-xl",
+            placement === "top" ? "bottom-full mb-2" : "top-full mt-2",
+          )}
         >
           {routing.locales.map((locale) => {
             const selected = locale === current;

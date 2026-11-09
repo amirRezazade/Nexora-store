@@ -42,8 +42,8 @@ export function CategoriesDropdown({ tree }: { tree: CategoryNode[] }) {
         aria-haspopup="menu"
         aria-expanded={open}
         className={cn(
-          "flex h-12 items-center gap-1.5 border-b-2 border-transparent text-sm font-semibold transition-colors hover:text-primary",
-          open ? "border-primary text-primary" : "text-foreground",
+          "flex shrink-0 items-center gap-1.5 whitespace-nowrap py-1.5 text-sm font-semibold transition-colors hover:text-primary",
+          open ? "text-primary" : "text-foreground",
         )}
       >
         <LayoutGrid className="h-4 w-4" aria-hidden />

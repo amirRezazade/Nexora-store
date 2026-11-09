@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter, Vazirmatn } from "next/font/google";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
@@ -10,17 +9,19 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { env } from "@/lib/env";
 import "../globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const vazirmatn = Vazirmatn({
-  subsets: ["arabic"],
-  variable: "--font-vazirmatn",
-});
+/**
+ * فونت‌های لوکال در globals.css با @font-face تعریف شده‌اند:
+ *  - public/fonts/inter/Inter-Variable.woff2  → لاتین
+ *  - public/fonts/peyda/Peyda-Variable.woff2  → فارسی/عربی
+ * اگر فایلی موجود نباشد، برنامه با فونت fallback بالا می‌آید و بعد از افزودن فایل،
+ * بدون تغییر کد و بدون ری‌استارت، از همان مسیر لود می‌شود.
+ */
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
   title: {
-    default: "Nexora Store — تکنولوژی و لایف‌استایل",
-    template: "%s | Nexora Store",
+    default: "Nexora — تکنولوژی و لایف‌استایل",
+    template: "%s | Nexora",
   },
   description:
     "خرید آنلاین محصولات تکنولوژی و لایف‌استایل با ضمانت اصالت، بهترین قیمت و ارسال سریع.",
@@ -55,7 +56,7 @@ export default async function LocaleLayout({
       lang={locale}
       dir={isRtl ? "rtl" : "ltr"}
       suppressHydrationWarning
-      className={`${inter.variable} ${vazirmatn.variable} h-full antialiased`}
+      className="h-full antialiased"
     >
       <body
         className={`flex min-h-full flex-col bg-background text-foreground ${

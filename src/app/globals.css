@@ -1,5 +1,29 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────
+   ۰) فونت‌های لوکال (self-host از public/fonts)
+   - Inter  → متن لاتین
+   - Peyda  → متن فارسی/عربی (با unicode-range تا لاتین به Inter برود)
+   اگر فایل فونت موجود نباشد، مرورگر به فونت بعدی استک برمی‌گردد و برنامه خطا نمی‌دهد.
+   ───────────────────────────────────────────── */
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/inter/Inter-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Peyda";
+  src: url("/fonts/peyda/Peyda-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+200C-200E,
+    U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FEFF;
+}
+
 /* Tailwind v4: دارک‌مود با class «.dark» روی <html> فعال می‌شود (next-themes آن را مدیریت می‌کند) */
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -20,8 +44,9 @@
   --color-brand-800: #9a3412;
   --color-brand-900: #7c2d12;
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-fa: var(--font-vazirmatn), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* Inter برای لاتین، Peyda برای فارسی/عربی (فونت‌های لوکال — public/fonts) */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-fa: "Peyda", "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
 /* ─────────────────────────────────────────────
@@ -124,4 +149,47 @@ body {
 :focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
+}
+
+/* باکس جستجو: نه خودش و نه ورودی‌اش outline نمی‌گیرند (طبق درخواست طراحی) */
+.search-box:focus-visible,
+.search-box :focus-visible {
+  outline: none;
+}
+
+/* ─────────────────────────────────────────────
+   انیمیشن منوی موبایل (باز شدن)
+   ───────────────────────────────────────────── */
+@keyframes nexora-overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes nexora-drawer-in-ltr {
+  from { opacity: 0; transform: translateX(-100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes nexora-drawer-in-rtl {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.menu-backdrop {
+  animation: nexora-overlay-in 180ms ease-out both;
+}
+
+.menu-panel {
+  animation: nexora-drawer-in-ltr 260ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+[dir="rtl"] .menu-panel {
+  animation-name: nexora-drawer-in-rtl;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-backdrop,
+  .menu-panel {
+    animation: none;
+  }
 }
