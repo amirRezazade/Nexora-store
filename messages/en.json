@@ -1,0 +1,57 @@
+{
+  "common": {
+    "appName": "Nexora Store",
+    "tagline": "Tech & lifestyle, all in one place",
+    "search": "Search products...",
+    "cart": "Cart",
+    "account": "Account",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "signOut": "Sign out",
+    "language": "فارسی",
+    "freeShipping": "Free shipping on orders over $100",
+    "dismiss": "Dismiss announcement",
+    "wishlist": "Wishlist",
+    "menu": "Menu",
+    "close": "Close"
+  },
+  "nav": {
+    "home": "Home",
+    "shop": "Shop",
+    "deals": "Deals",
+    "brands": "Brands",
+    "compare": "Compare",
+    "about": "About us",
+    "contact": "Contact",
+    "help": "Help Center",
+    "categories": "Categories",
+    "allCategories": "All products",
+    "specialOffers": "Special Offers",
+    "newArrivals": "New Arrivals"
+  },
+  "home": {
+    "heroTitle": "Welcome to Nexora",
+    "heroSubtitle": "Tech and lifestyle products with guaranteed authenticity and fast shipping",
+    "ctaShop": "Start shopping",
+    "ctaDeals": "View deals",
+    "phaseNote": "This is the Phase 2 project skeleton; the full store ships incrementally."
+  },
+  "footer": {
+    "rights": "All rights reserved by Nexora.",
+    "about": "About us",
+    "contact": "Contact",
+    "privacy": "Privacy",
+    "terms": "Terms of use",
+    "help": "Help Center"
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "search": {
+    "resultsFor": "Results for",
+    "comingSoon": "Live search ships in Phase 4; this is the page scaffold only."
+  }
+}

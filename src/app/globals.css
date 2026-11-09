@@ -1,26 +1,127 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Tailwind v4: دارک‌مود با class «.dark» روی <html> فعال می‌شود (next-themes آن را مدیریت می‌کند) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─────────────────────────────────────────────
+   ۱) توکن‌های برند ثابت (Brand — همیشه نارنجی)
+   ───────────────────────────────────────────── */
+@theme {
+  --breakpoint-xs: 30rem; /* 480px — گوشی‌های کوچک؛ طبق درخواست سفارشی */
+
+  --color-brand-50:  #fff7ed;
+  --color-brand-100: #ffedd5;
+  --color-brand-200: #fed7aa;
+  --color-brand-300: #fdba74;
+  --color-brand-400: #fb923c;
+  --color-brand-500: #f97316;
+  --color-brand-600: #ea580c;
+  --color-brand-700: #c2410c;
+  --color-brand-800: #9a3412;
+  --color-brand-900: #7c2d12;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-fa: var(--font-vazirmatn), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
+/* ─────────────────────────────────────────────
+   ۲) لایت‌تم — توکن‌های معنایی (طبق سند Color System)
+   ───────────────────────────────────────────── */
+:root {
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --surface-secondary: #f1f5f9;
+  --surface-tertiary: #e2e8f0;
+  --foreground: #18181b;
+  --text-secondary: #52525b;
+  --text-muted: #71717a;
+  --border: #e4e4e7;
+  --border-strong: #d4d4d8;
+
+  --primary: #c2410c;           /* طبق سند: دکمه‌ی اصلی لایت‌تم */
+  --primary-hover: #9a3412;
+  --primary-foreground: #ffffff;
+  --primary-soft: #fff7ed;
+
+  --success: #15803d;  --success-bg: #f0fdf4;  --success-foreground: #ffffff;
+  --warning: #b45309;  --warning-bg: #fffbeb;  --warning-foreground: #ffffff;
+  --error:   #dc2626;  --error-bg:   #fef2f2;  --error-foreground:   #ffffff;
+  --info:    #2563eb;  --info-bg:    #eff6ff;  --info-foreground:    #ffffff;
+
+  color-scheme: light;
+}
+
+/* ─────────────────────────────────────────────
+   ۳) دارک‌تم — سرمه‌ای/ابرتی نرم (نه مشکی خالص) طبق سند
+   ───────────────────────────────────────────── */
+.dark {
+  --background: #191c20;
+  --surface: #22262b;
+  --surface-secondary: #292e34;
+  --surface-tertiary: #30363d;
+  --foreground: #f4f4f5;
+  --text-secondary: #b4bac2;
+  --text-muted: #929aa4;
+  --border: #363d45;
+  --border-strong: #48515c;
+
+  --primary: #f97316;           /* طبق سند: اکسنت اصلی دارک‌تم */
+  --primary-hover: #fb923c;
+  --primary-foreground: #191c20;
+  --primary-soft: #3a281d;
+
+  --success: #4ade80;  --success-bg: #183326;  --success-foreground: #191c20;
+  --warning: #fbbf24;  --warning-bg: #3a301b;  --warning-foreground: #191c20;
+  --error:   #f87171;  --error-bg:   #3b2023;  --error-foreground:   #191c20;
+  --info:    #60a5fa;  --info-bg:    #1d2d45;  --info-foreground:    #191c20;
+
+  color-scheme: dark;
+}
+
+/* ─────────────────────────────────────────────
+   ۴) اتصال توکن‌ها به Tailwind (کلاس‌هایی مثل bg-surface, text-text-secondary)
+   — قطعات هرگز HEX هاردکد نمی‌کنند؛ همه‌جا از این توکن‌ها
+   ───────────────────────────────────────────── */
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-surface-tertiary: var(--surface-tertiary);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
+
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-error: var(--error);
+  --color-error-bg: var(--error-bg);
+  --color-error-foreground: var(--error-foreground);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-info-foreground: var(--info-foreground);
+
+  /* نشانگر فوکوس طبق سند: Focus Indicator → Primary */
+  --color-ring: var(--primary);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* فوکوس قابل مشاهده برای دسترس‌پذیری (WCAG 2.2 AA) */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
