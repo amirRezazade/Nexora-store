@@ -16,8 +16,11 @@ const LOCALE_LABELS: Record<Locale, string> = { fa: "فارسی", en: "English" 
  */
 export function LanguageSwitcher({
   placement = "bottom",
+  align = "end",
 }: {
   placement?: "bottom" | "top";
+  /** جهت لنگر پاپ‌آپ — در دِرِرِ RTL که دکمه سمت start است، «start» باعث می‌شود داخل کادر بماند */
+  align?: "start" | "end";
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -60,7 +63,8 @@ export function LanguageSwitcher({
         <div
           role="menu"
           className={cn(
-            "absolute end-0 z-50 w-40 overflow-hidden rounded-2xl border border-border bg-surface p-1 shadow-xl",
+            "absolute z-50 w-40 overflow-hidden rounded-2xl border border-border bg-surface p-1 shadow-xl",
+            align === "start" ? "start-0" : "end-0",
             placement === "top" ? "bottom-full mb-2" : "top-full mt-2",
           )}
         >

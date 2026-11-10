@@ -177,7 +177,7 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
                 {common("signIn")}
               </Link>
               <div className="mt-3 flex items-center justify-between xs:hidden">
-                <LanguageSwitcher placement="top" />
+                <LanguageSwitcher placement="top" align="start" />
                 <ThemeToggle placement="top" />
               </div>
             </div>

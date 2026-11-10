@@ -40,7 +40,7 @@ export function NavLinks({ withSpecial = false }: { withSpecial?: boolean }) {
       })}
 
       {withSpecial && (
-        <div className="ms-auto hidden shrink-0 items-center gap-4 ps-2 lg:flex">
+        <div className="ms-auto hidden shrink-0 items-center gap-4 ps-2 md:flex xl:hidden">
           <Link
             href="/deals"
             className="flex shrink-0 items-center gap-1.5 whitespace-nowrap py-1.5 text-sm font-semibold text-primary transition-colors hover:text-primary-hover"
