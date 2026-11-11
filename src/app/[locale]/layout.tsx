@@ -6,6 +6,7 @@ import { routing } from "@/i18n/routing";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { env } from "@/lib/env";
 import "../globals.css";
 
@@ -59,7 +60,7 @@ export default async function LocaleLayout({
       className="h-full antialiased"
     >
       <body
-        className={`flex min-h-full flex-col bg-background text-foreground ${
+        className={`flex min-h-full flex-col bg-background text-foreground pb-[calc(4rem+env(safe-area-inset-bottom))] xs:pb-0 ${
           isRtl ? "font-fa" : "font-sans"
         }`}
       >
@@ -73,6 +74,7 @@ export default async function LocaleLayout({
             <SiteHeader />
             <main className="flex-1">{children}</main>
             <SiteFooter />
+            <MobileBottomNav />
           </NextIntlClientProvider>
         </ThemeProvider>
       </body>

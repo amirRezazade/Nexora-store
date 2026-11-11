@@ -73,7 +73,7 @@ export function ThemeToggle({
         aria-expanded={open}
         title={t("toggle")}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-surface-secondary text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-foreground"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-secondary transition-all duration-150 hover:bg-primary-soft hover:text-primary active:scale-95 sm:h-10 sm:w-10"
       >
         <ActiveIcon className="h-[18px] w-[18px] sm:h-5 sm:w-5" aria-hidden />
       </button>

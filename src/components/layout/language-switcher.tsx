@@ -53,7 +53,7 @@ export function LanguageSwitcher({
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label="Select language / انتخاب زبان"
-        className="inline-flex h-10 items-center gap-2 rounded-xl bg-surface-secondary px-3 text-sm font-semibold uppercase text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-foreground"
+        className="inline-flex h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold uppercase text-text-secondary transition-all duration-150 hover:bg-primary-soft hover:text-primary active:scale-95 sm:h-10"
       >
         <Globe className="h-4 w-4" aria-hidden />
         <span>{current}</span>

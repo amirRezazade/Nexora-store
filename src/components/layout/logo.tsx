@@ -10,10 +10,10 @@ export function Logo({ className }: { className?: string }) {
       className={cn("group inline-flex items-center gap-2", className)}
       aria-label="Nexora"
     >
-      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 transition-transform group-hover:scale-105">
-        <Zap className="h-5 w-5 text-white" fill="currentColor" aria-hidden />
+      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 transition-transform group-hover:scale-105">
+        <Zap className="h-4 w-4 text-white" fill="currentColor" aria-hidden />
       </span>
-      <span className="text-xl font-extrabold tracking-tight">Nexora</span>
+      <span className="text-[1.15rem] tracking-tight">Nexora</span>
     </Link>
   );
 }

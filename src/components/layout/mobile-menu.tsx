@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useLocale, useTranslations } from "next-intl";
 import {
@@ -20,8 +20,6 @@ import {
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { Logo } from "./logo";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { LanguageSwitcher } from "./language-switcher";
 import { categoryName, type CategoryNode } from "@/lib/category-tree";
 import { cn } from "@/lib/utils";
 
@@ -34,25 +32,55 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
   const t = useTranslations("nav");
   const common = useTranslations("common");
   const locale = useLocale();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // آیا پنل در DOM است
+  const [closing, setClosing] = useState(false); // در حال انیمیشن خروج
   const [catsOpen, setCatsOpen] = useState(true);
   const closeRef = useRef<HTMLButtonElement>(null);
+
+  const openMenu = () => {
+    setClosing(false);
+    setOpen(true);
+  };
+
+  /** شروع انیمیشن خروج؛ پایان آن در onAnimationEnd پنل به onClose می‌رسد.
+      با prefers-reduced-motion انیمیشنی نیست → بلافاصله بسته می‌شود. */
+  const close = () => {
+    if (!open) return;
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      setOpen(false);
+    } else {
+      setClosing(true);
+    }
+  };
 
   // قفل اسکرول بادی + فوکوس روی دکمه بستن هنگام باز شدن
   useEffect(() => {
     if (!open) return;
-    const original = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    closeRef.current?.focus();
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
+    if (!closing) {
+      const original = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      closeRef.current?.focus();
+      return () => {
+        document.body.style.overflow = original;
+      };
+    }
+  }, [open, closing]);
+
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape" && open) close();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [open],
+  );
+
+  useEffect(() => {
     window.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.body.style.overflow = original;
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [open]);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onKeyDown]);
 
   const mainLinks = [
     { href: "/", label: t("home"), icon: Home },
@@ -69,10 +97,10 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={openMenu}
         aria-label={common("menu")}
         aria-expanded={open}
-        className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-surface-secondary text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-foreground md:hidden"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-secondary transition-all duration-150 hover:bg-primary-soft hover:text-primary active:scale-95 md:hidden"
       >
         <Menu className="h-[18px] w-[18px]" aria-hidden />
       </button>
@@ -81,25 +109,44 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
           بدون portal مودال تمام‌صفحه نمی‌شود */}
       {open &&
         createPortal(
-        <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-label={common("menu")}>
+        <div
+          className="fixed inset-0 z-50 md:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label={common("menu")}
+          data-closing={closing}
+        >
           {/* بک‌دراپ */}
           <button
             type="button"
             aria-label={common("close")}
-            onClick={() => setOpen(false)}
+            onClick={close}
+            disabled={closing}
             className="menu-backdrop absolute inset-0 h-full w-full cursor-default bg-black/60"
           />
 
           {/* پنل */}
-          <div className="menu-panel absolute inset-y-0 start-0 flex h-full w-80 max-w-[85vw] flex-col bg-surface shadow-2xl">
+          <div
+            className="menu-panel absolute inset-y-0 start-0 flex h-full w-80 max-w-[85vw] flex-col bg-surface shadow-2xl"
+            onAnimationEnd={(e) => {
+              if (
+                closing &&
+                e.target === e.currentTarget &&
+                e.animationName.startsWith("nexora-drawer-out")
+              ) {
+                setOpen(false);
+              }
+            }}
+          >
             <div className="flex h-16 items-center justify-between border-b border-border px-4">
               <Logo />
               <button
                 ref={closeRef}
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={close}
+                disabled={closing}
                 aria-label={common("close")}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-surface-secondary text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-foreground"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-primary-soft hover:text-primary"
               >
                 <X className="h-5 w-5" aria-hidden />
               </button>
@@ -110,7 +157,7 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
                 <Link
                   key={href}
                   href={href}
-                  onClick={() => setOpen(false)}
+                  onClick={close}
                   className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-surface-secondary hover:text-primary"
                 >
                   <Icon className="h-5 w-5 text-text-secondary" aria-hidden />
@@ -136,7 +183,7 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
                 <div className="mb-1 ms-4 border-s border-border ps-3">
                   <Link
                     href="/shop"
-                    onClick={() => setOpen(false)}
+                    onClick={close}
                     className="block rounded-lg px-3 py-2 text-sm font-medium text-primary hover:bg-primary-soft"
                   >
                     {t("allCategories")}
@@ -145,7 +192,7 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
                     <div key={node.id}>
                       <Link
                         href={`/shop?category=${node.slug}`}
-                        onClick={() => setOpen(false)}
+                        onClick={close}
                         className="block rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-surface-secondary"
                       >
                         {categoryName(node, locale)}
@@ -154,7 +201,7 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
                         <Link
                           key={child.id}
                           href={`/shop?category=${child.slug}`}
-                          onClick={() => setOpen(false)}
+                          onClick={close}
                           className="block rounded-lg py-1.5 pe-3 ps-7 text-sm text-text-secondary hover:bg-surface-secondary"
                         >
                           {categoryName(child, locale)}
@@ -166,20 +213,16 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
               )}
             </nav>
 
-            {/* پاورقی دِرِرِ: ورود / زبان / تم */}
+            {/* پاورقی دِرِرِ: ورود */}
             <div className="border-t border-border p-4">
               <Link
                 href="/login"
-                onClick={() => setOpen(false)}
+                onClick={close}
                 className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-primary font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
               >
                 <User className="h-5 w-5" aria-hidden />
                 {common("signIn")}
               </Link>
-              <div className="mt-3 flex items-center justify-between xs:hidden">
-                <LanguageSwitcher placement="top" align="start" />
-                <ThemeToggle placement="top" />
-              </div>
             </div>
           </div>
         </div>,

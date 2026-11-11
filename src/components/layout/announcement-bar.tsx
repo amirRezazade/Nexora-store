@@ -40,9 +40,9 @@ export function AnnouncementBar() {
   return (
     <div
       role="status"
-      className="relative flex h-9 items-center justify-center gap-2 bg-brand-700 px-10 text-center text-[13px] font-semibold text-white dark:bg-brand-500 dark:text-[#1a1a1a]"
+      className="relative flex h-8 items-center justify-center gap-2 bg-primary-soft px-10 text-center text-xs font-semibold text-primary"
     >
-      <Truck className="h-4 w-4 shrink-0" aria-hidden />
+      <Truck className="h-3.5 w-3.5 shrink-0" aria-hidden />
       <span className="truncate">{t("freeShipping")}</span>
       <button
         type="button"
@@ -51,9 +51,9 @@ export function AnnouncementBar() {
           setSessionDismissed(true);
         }}
         aria-label={t("dismiss")}
-        className="absolute end-2 inline-flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-white/20 dark:hover:bg-black/10"
+        className="absolute end-1 inline-flex h-6 w-6 items-center justify-center rounded-lg transition-colors hover:text-primary-hover"
       >
-        <X className="h-4 w-4" aria-hidden />
+        <X className="h-3.5 w-3.5" aria-hidden />
       </button>
     </div>
   );

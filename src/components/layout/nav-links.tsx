@@ -24,7 +24,7 @@ export function NavLinks({ withSpecial = false }: { withSpecial?: boolean }) {
 
   const linkClass = (active: boolean) =>
     cn(
-      "shrink-0 whitespace-nowrap py-1.5 text-[13px] font-medium text-text-secondary transition-colors hover:text-primary 2xl:text-sm",
+      "nav-link shrink-0 whitespace-nowrap py-2 text-sm font-medium text-text-secondary transition-colors hover:text-primary",
       active && "font-semibold text-primary",
     );
 

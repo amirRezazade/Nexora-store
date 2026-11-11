@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Heart, User } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { getCategoryTree } from "@/server/dal/categories";
+import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
 import { SearchBox } from "./search-box";
 import { MobileMenu } from "./mobile-menu";
@@ -23,13 +24,16 @@ import { AnnouncementBar } from "./announcement-bar";
  *
  * چیدمان فقط با «order» و flex-wrap انجام می‌شود — بدون markup تکراری.
  * تم/زبان از xs به بالا در هدر و در موبایل داخل منوی همبرگری هستند.
+ * حساب کاربری زیر md فقط در منو است.
+ * آیکون‌ها ghost هستند: بدون پرشدگی، هاور با تینت گرم برند (primary-soft).
  * max-width: 90rem
  */
 export async function SiteHeader() {
   const common = await getTranslations("common");
   const tree = await getCategoryTree();
 
-  const iconBtn = "inline-flex h-10 w-10 items-center justify-center rounded-xl bg-surface-secondary text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-foreground";
+  const iconBtn =
+    "inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-secondary transition-all duration-150 hover:bg-primary-soft hover:text-primary active:scale-95 sm:h-10 sm:w-10";
 
   return (
     <header className="sticky top-0 z-40">
@@ -50,23 +54,33 @@ export async function SiteHeader() {
             </div>
 
             {/* آیکون‌های پایانی — ms-auto فقط زیر md؛ از md به بعد جستجو می‌کشد */}
-            <div className="order-2 ms-auto flex shrink-0 items-center gap-1.5 md:order-3 md:ms-0 xs:gap-2 xl:order-4">
-              {/* تم و زبان: از xs به بالا؛ در موبایل داخل منوی همبرگری */}
-              <div className="hidden items-center gap-2 xs:flex">
-                <ThemeToggle />
-                <LanguageSwitcher />
-              </div>
-              <Link href="/account" aria-label={common("account")} title={common("account")} className={iconBtn}>
+            <div className="order-2 ms-auto flex shrink-0 items-center gap-2 md:order-3 md:ms-0 xl:order-4">
+              {/* تم و زبان: در همهٔ اندازه‌ها در نوار بالا (در موبایل جای سبد/علاقه‌مندی) */}
+              <ThemeToggle />
+              <LanguageSwitcher />
+              {/* حساب کاربری: زیر xs در ناوبری پایین؛ از xs به بالا در نوار */}
+              <Link
+                href="/account"
+                aria-label={common("account")}
+                title={common("account")}
+                className={cn(iconBtn, "hidden xs:inline-flex")}
+              >
                 <User className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.8} aria-hidden />
               </Link>
-              <Link href="/wishlist" aria-label={common("wishlist")} title={common("wishlist")} className={iconBtn}>
-                <Heart className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.8} aria-hidden />
-              </Link>
-              <CartButton />
+              {/* سبد و علاقه‌مندی: زیر xs در ناوبری پایین؛ از xs به بالا در نوار */}
+              <div className="hidden items-center gap-2 xs:flex">
+                <Link href="/wishlist" aria-label={common("wishlist")} title={common("wishlist")} className={iconBtn}>
+                  <Heart className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.8} aria-hidden />
+                </Link>
+                <CartButton />
+              </div>
             </div>
 
             {/* ناوبری — تک‌نمونه: زیر md مخفی (در منو)؛ md–xl ردیف دوم تمام‌عرض؛ xl+ در ردیف اصلی */}
-            <nav aria-label="Sections" className="order-4 hidden min-w-0 md:flex md:w-full gap-3 ms-auto md:basis-full md:overflow-x-auto [scrollbar-width:none] xl:order-2 xl:w-auto xl:basis-auto [&::-webkit-scrollbar]:hidden">
+            <nav
+              aria-label="Sections"
+              className="order-4 ms-auto hidden min-w-0 gap-3 md:flex md:w-full md:basis-full md:overflow-x-auto [scrollbar-width:none] xl:order-2 xl:w-auto xl:basis-auto [&::-webkit-scrollbar]:hidden"
+            >
               <CategoriesDropdown tree={tree} />
               <NavLinks withSpecial />
             </nav>
