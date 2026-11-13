@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { getPublicSupabaseClient } from "@/lib/supabase/public";
+import { normalizeProductIds } from "@/lib/catalog/ids";
 import { normalizeSearchTerm } from "@/lib/search/normalize";
 import { SEARCH_PAGE_SIZE, type SortKey } from "@/lib/search/search-params";
 import { SUGGESTION_LIMIT } from "@/lib/search/suggestions";
@@ -55,6 +56,8 @@ export interface ProductSummary {
   nameFa: string | null;
   price: number;
   image: ProductImage | null;
+  /** موجودی عددی — سبد تعداد را با همین سقف محدود می‌کند */
+  stock: number;
   inStock: boolean;
 }
 
@@ -111,6 +114,7 @@ function mapRow(row: z.infer<typeof productRowSchema>): ProductSummary {
     nameFa: row.name_fa ?? null,
     price: row.price,
     image: pickPrimaryImage(row.images),
+    stock: row.stock ?? 0,
     inStock: (row.stock ?? 0) > 0,
   };
 }
@@ -210,6 +214,8 @@ export interface ProductDetail {
   price: number;
   /** تصویر اصلی اول برگردانده می‌شود */
   images: ProductImage[];
+  /** موجودی عددی — سقف تعداد قابل افزودن به سبد */
+  stock: number;
   inStock: boolean;
 }
 
@@ -261,6 +267,7 @@ export async function getProductBySlug(slugInput: string): Promise<{
       descriptionFa: row.description_fa ?? null,
       price: row.price,
       images,
+      stock: row.stock ?? 0,
       inStock: (row.stock ?? 0) > 0,
     },
     status: "ok",
@@ -354,6 +361,47 @@ export async function searchProducts(input: {
   pageSize?: number;
 }): Promise<ProductListResult> {
   return queryProducts(input);
+}
+
+/**
+ * خواندن محصولات بر اساس شناسه — برای پنل/صفحه‌ی سبد و علاقه‌مندی.
+ *
+ * - شناسه‌ها از همان اعتبارسنجی مشترک رد می‌شوند (regex + سقف تعداد + حذف تکراری)
+ * - فقط محصولات active برگردانده می‌شوند؛ محصول حذف/غیرفعال در نتیجه نیست تا
+ *   کلاینت بتواند آن را «ناموجود» علامت بزند
+ * - ترتیب خروجی همان ترتیب ورودی است تا ترتیب سبد/علاقه‌مندی حفظ شود
+ */
+export async function getProductsByIds(idsInput: unknown): Promise<{
+  products: ProductSummary[];
+  status: "ok" | "error";
+}> {
+  const ids = normalizeProductIds(idsInput);
+  if (ids.length === 0) return { products: [], status: "ok" };
+
+  const { data, error } = await getPublicSupabaseClient()
+    .from(PRODUCTS_TABLE)
+    .select(PRODUCT_COLUMNS)
+    .eq("status", ACTIVE_STATUS)
+    .in("id", ids);
+
+  if (error) {
+    console.error("[dal/products] Failed to query products by ids:", error.message);
+    return { products: [], status: "error" };
+  }
+
+  const parsed = z.array(productRowSchema).safeParse(data ?? []);
+  if (!parsed.success) {
+    console.error("[dal/products] Unexpected product shape:", parsed.error.message);
+    return { products: [], status: "error" };
+  }
+
+  const byId = new Map(parsed.data.map((row) => [row.id, mapRow(row)]));
+  const products = ids.flatMap((id) => {
+    const product = byId.get(id);
+    return product ? [product] : [];
+  });
+
+  return { products, status: "ok" };
 }
 
 /**

@@ -4,13 +4,14 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowLeft, ImageOff, TriangleAlert } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { formatPrice } from "@/lib/money";
+import { ProductActions } from "@/components/products/product-actions";
 import { getProductBySlug } from "@/server/dal/products";
 import { cn } from "@/lib/utils";
 
 /**
  * صفحه‌ی جزئیات محصول (Server Component) — حداقلی و بر پایه‌ی داده‌ی واقعی.
  * - فقط محصول فعال با اسلاگ معتبر نمایش داده می‌شود؛ نبودِ محصول → 404 محلی
- * - هیچ اکشن ساختگی (افزودن به سبد/خرید) اینجا پیاده نشده است
+ * - اکشن‌های سبد/علاقه‌مندی از store مرورگر استفاده می‌کنند؛ قیمت و موجودی از سرور می‌آید
  * - متن‌ها از فایل‌های ترجمه می‌آیند و نام/توضیح از ستون‌های fa/en دیتابیس
  * - تصاویر با unoptimized رندر می‌شوند (بدون نیاز به remotePatterns)
  * - عمداً generateMetadata ندارد تا کوئری دیتابیس دوبار اجرا نشود
@@ -140,6 +141,8 @@ export default async function ProductPage({
               <bdi dir="ltr">{formatPrice(product.price)}</bdi>
             </p>
           </div>
+
+          <ProductActions productId={product.id} stock={product.stock} variant="detail" />
 
           {description && (
             <div className="border-t border-border pt-5">

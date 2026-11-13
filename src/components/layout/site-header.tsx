@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
-import { Heart, User } from "lucide-react";
+import { User } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { getCategoryTree } from "@/server/dal/categories";
 import { cn } from "@/lib/utils";
@@ -9,7 +9,8 @@ import { SearchBox, SearchBoxFallback } from "./search-box";
 import { MobileMenu } from "./mobile-menu";
 import { NavLinks } from "./nav-links";
 import { CategoriesDropdown } from "./categories-dropdown";
-import { CartButton } from "./cart-button";
+import { CartTrigger } from "@/components/cart/cart-trigger";
+import { WishlistTrigger } from "@/components/wishlist/wishlist-trigger";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { LanguageSwitcher } from "./language-switcher";
 import { AnnouncementBar } from "./announcement-bar";
@@ -68,10 +69,8 @@ export async function SiteHeader() {
               </Link>
               {/* سبد و علاقه‌مندی: زیر xs در ناوبری پایین؛ از xs به بالا در نوار */}
               <div className="hidden items-center gap-2 xs:gap-1 sm:gap-2  xs:flex">
-                <Link href="/wishlist" aria-label={common("wishlist")} title={common("wishlist")} className={iconBtn}>
-                  <Heart className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.8} aria-hidden />
-                </Link>
-                <CartButton />
+                <WishlistTrigger />
+                <CartTrigger />
               </div>
             </div>
 
