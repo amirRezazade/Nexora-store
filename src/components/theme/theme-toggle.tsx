@@ -30,16 +30,20 @@ export function ThemeToggle({
   const mounted = useSyncExternalStore(subscribe, getClient, getServer);
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const t = useTranslations("theme");
 
-  // بستن منو با کلیک بیرون یا Escape
+  // بستن منو با کلیک بیرون یا Escape (با بازگشت فوکوس به دکمه)
   useEffect(() => {
     if (!open) return;
     const onPointerDown = (e: MouseEvent) => {
       if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
     };
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
     };
     window.addEventListener("mousedown", onPointerDown);
     window.addEventListener("keydown", onKeyDown);
@@ -48,6 +52,12 @@ export function ThemeToggle({
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [open]);
+
+  /** با Tab از منو خارج شدن → بستن (کلیک بیرون را هندلر pointerdown می‌گیرد) */
+  const onRootBlur = (event: React.FocusEvent<HTMLDivElement>) => {
+    const next = event.relatedTarget as Node | null;
+    if (next && !rootRef.current?.contains(next)) setOpen(false);
+  };
 
   const options: { value: ThemeMode; label: string; icon: typeof Sun }[] = [
     { value: "light", label: t("light"), icon: Sun },
@@ -65,8 +75,9 @@ export function ThemeToggle({
   const ActiveIcon = activeIcon;
 
   return (
-    <div ref={rootRef} className={cn("relative", className)}>
+    <div ref={rootRef} onBlur={onRootBlur} className={cn("relative", className)}>
       <button
+        ref={triggerRef}
         type="button"
         aria-label={t("toggle")}
         aria-haspopup="menu"

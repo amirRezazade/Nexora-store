@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Check, Globe } from "lucide-react";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
@@ -12,6 +13,8 @@ const LOCALE_LABELS: Record<Locale, string> = { fa: "فارسی", en: "English" 
 /**
  * انتخاب زبان — دراپ‌داون با هر دو زبان و تیک زبان فعال.
  * pathname بدون locale را حفظ می‌کند و همان مسیر را با زبان جدید باز می‌کند.
+ * همه‌ی query paramهای فعلی (q، page، sort و هر پارامتر دیگر) هم دست‌نخورده
+ * منتقل می‌شوند؛ مثلاً /fa/search?q=کیف با تغییر زبان به /en/search?q=کیف می‌رود.
  * (تغییر زبان هیچ اثری روی تم ندارد — دو سیستم مستقل‌اند.)
  */
 export function LanguageSwitcher({
@@ -25,9 +28,11 @@ export function LanguageSwitcher({
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
+  const t = useTranslations("common");
   const current = (params.locale as Locale) ?? routing.defaultLocale;
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -35,7 +40,10 @@ export function LanguageSwitcher({
       if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
     };
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
     };
     window.addEventListener("mousedown", onPointerDown);
     window.addEventListener("keydown", onKeyDown);
@@ -45,14 +53,41 @@ export function LanguageSwitcher({
     };
   }, [open]);
 
+  /** با Tab از منو خارج شدن → بستن (کلیک بیرون را هندلر pointerdown می‌گیرد) */
+  const onRootBlur = (event: React.FocusEvent<HTMLDivElement>) => {
+    const next = event.relatedTarget as Node | null;
+    if (next && !rootRef.current?.contains(next)) setOpen(false);
+  };
+
+  /**
+   * تغییر زبان با حفظ pathname و همه‌ی query paramهای فعلی.
+   * پارامترها از URL زنده خوانده می‌شوند تا نیاز به useSearchParams
+   * (و Suspense اضافی در layout) نباشد؛ کاراکترهای فارسی نرمال‌سازی نمی‌شوند.
+   * router.replace شیء { pathname, query } را می‌پذیرد، پس URL با
+   * رشته‌چسبانی دستی ساخته نمی‌شود.
+   */
+  const switchLocale = (locale: Locale) => {
+    setOpen(false);
+    const currentParams = new URLSearchParams(window.location.search);
+    const query: Record<string, string | string[]> = {};
+
+    for (const key of new Set(currentParams.keys())) {
+      const values = currentParams.getAll(key);
+      query[key] = values.length > 1 ? values : values[0];
+    }
+
+    router.replace({ pathname, query }, { locale });
+  };
+
   return (
-    <div ref={rootRef} className="relative">
+    <div ref={rootRef} onBlur={onRootBlur} className="relative">
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label="Select language / انتخاب زبان"
+        aria-label={t("selectLanguage")}
         className="inline-flex h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold uppercase text-text-secondary transition-all duration-150 hover:bg-primary-soft hover:text-primary active:scale-95 sm:h-10"
       >
         <Globe className="h-4 w-4" aria-hidden />
@@ -75,10 +110,7 @@ export function LanguageSwitcher({
                 key={locale}
                 role="menuitemradio"
                 aria-checked={selected}
-                onClick={() => {
-                  setOpen(false);
-                  router.replace(pathname, { locale });
-                }}
+                onClick={() => switchLocale(locale)}
                 className={cn(
                   "flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors",
                   selected

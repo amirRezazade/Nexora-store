@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Flame, Sparkles } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
+import { isNavLinkActive } from "@/lib/nav-active";
 import { cn } from "@/lib/utils";
 
 /**
@@ -31,7 +32,7 @@ export function NavLinks({ withSpecial = false }: { withSpecial?: boolean }) {
   return (
     <>
       {links.map(({ href, label }) => {
-        const active = pathname === href;
+        const active = isNavLinkActive(href, pathname);
         return (
           <Link key={href} href={href} aria-current={active ? "page" : undefined} className={linkClass(active)}>
             {label}

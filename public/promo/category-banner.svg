@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="90" y1="0" x2="470" y2="900" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff7ed"/>
+      <stop offset="0.42" stop-color="#fed7aa"/>
+      <stop offset="1" stop-color="#ea580c"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="140" y1="220" x2="470" y2="450" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fb923c"/>
+      <stop offset="0.55" stop-color="#c2410c"/>
+      <stop offset="1" stop-color="#7c2d12"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fff7ed" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#fff7ed" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="base" x1="60" y1="458" x2="540" y2="534" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#292524"/>
+      <stop offset="1" stop-color="#0c0a09"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="600" height="900" fill="url(#bg)"/>
+  <circle cx="300" cy="350" r="300" fill="url(#glow)"/>
+  <circle cx="545" cy="700" r="150" stroke="#fff7ed" stroke-opacity="0.28" stroke-width="2"/>
+  <circle cx="545" cy="700" r="110" stroke="#fff7ed" stroke-opacity="0.16" stroke-width="2"/>
+  <circle cx="55" cy="120" r="170" fill="#fff7ed" fill-opacity="0.3"/>
+
+  <g transform="rotate(-6 300 370)">
+    <rect x="112" y="196" width="376" height="256" rx="22" fill="#1c1917"/>
+    <rect x="130" y="214" width="340" height="220" rx="12" fill="url(#screen)"/>
+
+    <rect x="154" y="240" width="120" height="12" rx="6" fill="#ffedd5" fill-opacity="0.92"/>
+    <rect x="154" y="266" width="196" height="8" rx="4" fill="#fff7ed" fill-opacity="0.42"/>
+    <rect x="154" y="284" width="150" height="8" rx="4" fill="#fff7ed" fill-opacity="0.28"/>
+
+    <rect x="154" y="318" width="86" height="64" rx="10" fill="#fff7ed" fill-opacity="0.16"/>
+    <rect x="252" y="318" width="86" height="64" rx="10" fill="#fff7ed" fill-opacity="0.16"/>
+    <rect x="350" y="318" width="86" height="64" rx="10" fill="#fff7ed" fill-opacity="0.16"/>
+
+    <rect x="166" y="334" width="34" height="6" rx="3" fill="#ffedd5" fill-opacity="0.7"/>
+    <rect x="166" y="348" width="56" height="5" rx="2.5" fill="#ffedd5" fill-opacity="0.35"/>
+    <rect x="264" y="334" width="34" height="6" rx="3" fill="#ffedd5" fill-opacity="0.7"/>
+    <rect x="264" y="348" width="48" height="5" rx="2.5" fill="#ffedd5" fill-opacity="0.35"/>
+    <rect x="362" y="334" width="34" height="6" rx="3" fill="#ffedd5" fill-opacity="0.7"/>
+    <rect x="362" y="348" width="40" height="5" rx="2.5" fill="#ffedd5" fill-opacity="0.35"/>
+
+    <circle cx="430" cy="248" r="14" fill="#fdba74"/>
+    <circle cx="430" cy="248" r="6" fill="#fff7ed"/>
+
+    <path d="M62 452h476l44 52c10 12 2 30-14 30H32c-16 0-24-18-14-30l44-52Z" fill="url(#base)"/>
+    <rect x="244" y="458" width="112" height="10" rx="5" fill="#57534e"/>
+  </g>
+
+  <g>
+    <rect x="392" y="128" width="138" height="58" rx="16" fill="#fff7ed" fill-opacity="0.94"/>
+    <circle cx="420" cy="157" r="13" fill="#fb923c"/>
+    <rect x="442" y="146" width="70" height="8" rx="4" fill="#9a3412" fill-opacity="0.55"/>
+    <rect x="442" y="162" width="46" height="7" rx="3.5" fill="#9a3412" fill-opacity="0.28"/>
+  </g>
+
+  <g>
+    <rect x="82" y="552" width="150" height="64" rx="16" fill="#1c1917" fill-opacity="0.88"/>
+    <rect x="100" y="570" width="40" height="28" rx="8" fill="#fb923c"/>
+    <rect x="150" y="570" width="64" height="8" rx="4" fill="#fed7aa" fill-opacity="0.8"/>
+    <rect x="150" y="586" width="44" height="7" rx="3.5" fill="#fed7aa" fill-opacity="0.4"/>
+  </g>
+
+  <path d="M496 236l6 14 14 6-14 6-6 14-6-14-14-6 14-6 6-14Z" fill="#fff7ed" fill-opacity="0.85"/>
+  <path d="M96 372l4 10 10 4-10 4-4 10-4-10-10-4 10-4 4-10Z" fill="#fff7ed" fill-opacity="0.7"/>
+  <path d="M540 476l3 8 8 3-8 3-3 8-3-8-8-3 8-3 3-8Z" fill="#ffedd5" fill-opacity="0.8"/>
+
+  <rect x="0" y="760" width="600" height="140" fill="#7c2d12" fill-opacity="0.08"/>
+</svg>

@@ -1,10 +1,11 @@
+import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { Heart, User } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { getCategoryTree } from "@/server/dal/categories";
 import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
-import { SearchBox } from "./search-box";
+import { SearchBox, SearchBoxFallback } from "./search-box";
 import { MobileMenu } from "./mobile-menu";
 import { NavLinks } from "./nav-links";
 import { CategoriesDropdown } from "./categories-dropdown";
@@ -30,10 +31,10 @@ import { AnnouncementBar } from "./announcement-bar";
  */
 export async function SiteHeader() {
   const common = await getTranslations("common");
+  const nav = await getTranslations("nav");
   const tree = await getCategoryTree();
 
-  const iconBtn =
-    "inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-secondary transition-all duration-150 hover:bg-primary-soft hover:text-primary active:scale-95 sm:h-10 sm:w-10";
+  const iconBtn = "inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-secondary transition-all duration-150 hover:bg-primary-soft hover:text-primary active:scale-95 sm:h-10 sm:w-10";
 
   return (
     <header className="sticky top-0 z-40">
@@ -48,27 +49,25 @@ export async function SiteHeader() {
 
             <Logo className="order-1 shrink-0" />
 
-            {/* جستجو — تک‌نمونه */}
+            {/* جستجو — تک‌نمونه. SearchBox از useSearchParams می‌خواند، پس
+                باید داخل Suspense باشد؛ fallback هم‌اندازه از جهش چیدمان جلوگیری می‌کند. */}
             <div className="order-3 w-full min-w-0 basis-full md:order-2 md:ms-auto md:w-auto md:max-w-[500px] md:flex-1 md:basis-0 xl:order-3">
-              <SearchBox />
+              <Suspense fallback={<SearchBoxFallback placeholder={common("search")} />}>
+                <SearchBox />
+              </Suspense>
             </div>
 
             {/* آیکون‌های پایانی — ms-auto فقط زیر md؛ از md به بعد جستجو می‌کشد */}
-            <div className="order-2 ms-auto flex shrink-0 items-center gap-2 md:order-3 md:ms-0 xl:order-4">
+            <div className="order-2 ms-auto flex shrink-0 items-center gap-1.5 xs:gap-1 sm:gap-2  md:order-3 md:ms-0 xl:order-4">
               {/* تم و زبان: در همهٔ اندازه‌ها در نوار بالا (در موبایل جای سبد/علاقه‌مندی) */}
               <ThemeToggle />
               <LanguageSwitcher />
               {/* حساب کاربری: زیر xs در ناوبری پایین؛ از xs به بالا در نوار */}
-              <Link
-                href="/account"
-                aria-label={common("account")}
-                title={common("account")}
-                className={cn(iconBtn, "hidden xs:inline-flex")}
-              >
+              <Link href="/account" aria-label={common("account")} title={common("account")} className={cn(iconBtn, "hidden xs:inline-flex")}>
                 <User className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.8} aria-hidden />
               </Link>
               {/* سبد و علاقه‌مندی: زیر xs در ناوبری پایین؛ از xs به بالا در نوار */}
-              <div className="hidden items-center gap-2 xs:flex">
+              <div className="hidden items-center gap-2 xs:gap-1 sm:gap-2  xs:flex">
                 <Link href="/wishlist" aria-label={common("wishlist")} title={common("wishlist")} className={iconBtn}>
                   <Heart className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.8} aria-hidden />
                 </Link>
@@ -76,13 +75,13 @@ export async function SiteHeader() {
               </div>
             </div>
 
-            {/* ناوبری — تک‌نمونه: زیر md مخفی (در منو)؛ md–xl ردیف دوم تمام‌عرض؛ xl+ در ردیف اصلی */}
-            <nav
-              aria-label="Sections"
-              className="order-4 ms-auto hidden min-w-0 gap-3 md:flex md:w-full md:basis-full md:overflow-x-auto [scrollbar-width:none] xl:order-2 xl:w-auto xl:basis-auto [&::-webkit-scrollbar]:hidden"
-            >
+            {/* ناوبری — تک‌نمونه: زیر md مخفی (در منو)؛ md–xl ردیف دوم تمام‌عرض؛ xl+ در ردیف اصلی.
+                فقط لینک‌ها در ظرف اسکرول افقی هستند تا مگا‌منوی دسته‌بندی‌ها بریده نشود. */}
+            <nav aria-label={nav("sectionsNavigation")} className="order-4 ms-auto hidden min-w-0 items-center gap-3 md:flex md:w-full md:basis-full xl:order-2 xl:w-auto xl:basis-auto">
               <CategoriesDropdown tree={tree} />
-              <NavLinks withSpecial />
+              <div className="flex min-w-0 flex-1 items-center gap-3 overflow-x-auto [scrollbar-width:none] xl:flex-none [&::-webkit-scrollbar]:hidden">
+                <NavLinks withSpecial />
+              </div>
             </nav>
           </div>
         </div>

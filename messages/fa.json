@@ -13,7 +13,8 @@
     "dismiss": "بستن اعلان",
     "wishlist": "علاقه‌مندی‌ها",
     "menu": "منو",
-    "close": "بستن"
+    "close": "بستن",
+    "selectLanguage": "انتخاب زبان"
   },
   "nav": {
     "home": "خانه",
@@ -25,9 +26,21 @@
     "contact": "تماس با ما",
     "help": "مرکز راهنما",
     "categories": "دسته‌بندی‌ها",
+    "categoriesMenuLabel": "منوی دسته‌بندی محصولات",
+    "categoriesHeading": "همه دسته‌بندی‌ها",
+    "categoriesUnavailable": "دسته‌بندی‌ها در دسترس نیستند.",
     "allCategories": "همه محصولات",
+    "viewAllShort": "همه",
+    "viewCategoryProducts": "مشاهده محصولات {category}",
+    "noSubcategories": "برای این دسته هنوز زیرمجموعه‌ای ثبت نشده است.",
+    "promoTitle": "تا ۳۰٪ تخفیف",
+    "promoSubtitle": "روی گجت‌های منتخب و لوازم دیجیتال",
+    "promoCta": "مشاهده پیشنهادها",
     "specialOffers": "آفرهای ویژه",
-    "newArrivals": "جدیدترین‌ها"
+    "newArrivals": "جدیدترین‌ها",
+    "primaryNavigation": "ناوبری اصلی",
+    "sectionsNavigation": "بخش‌های سایت",
+    "bottomNavigation": "ناوبری پایین صفحه"
   },
   "home": {
     "heroTitle": "به نکسورا خوش آمدی",
@@ -51,7 +64,60 @@
     "system": "سیستم"
   },
   "search": {
+    "shortcut": "Ctrl K",
+    "loading": "در حال جستجو…",
     "resultsFor": "نتایج جستجو برای",
-    "comingSoon": "جستجوی زنده در فاز ۴ اضافه می‌شود؛ این فقط معماری صفحه است."
+    "resultCount": "{count, plural, one {# محصول} other {# محصول}}",
+    "emptyQueryTitle": "عبارتی برای جستجو وارد نشده",
+    "emptyQueryHint": "نام محصول یا برند مورد نظرتان را در کادر جستجوی بالای صفحه بنویسید.",
+    "noResultsTitle": "نتیجه‌ای پیدا نشد",
+    "noResultsHint": "برای «{query}» چیزی پیدا نکردیم. املای عبارت را بررسی کنید یا از دسته‌بندی‌ها محصول مورد نظرتان را پیدا کنید.",
+    "errorTitle": "جستجو موقتاً در دسترس نیست",
+    "errorHint": "دریافت نتایج با خطا مواجه شد. لطفاً کمی بعد دوباره تلاش کنید.",
+    "retry": "تلاش دوباره",
+    "browseShop": "مشاهده همه محصولات",
+    "sortLabel": "ترتیب:",
+    "sortRelevance": "مرتبط‌ترین",
+    "sortNewest": "جدیدترین",
+    "sortPriceAsc": "ارزان‌ترین",
+    "sortPriceDesc": "گران‌ترین",
+    "previous": "قبلی",
+    "next": "بعدی",
+    "pageOf": "صفحه {page} از {total}",
+    "pagination": "صفحه‌بندی نتایج",
+    "suggestionsLabel": "پیشنهادهای جستجو",
+    "suggestionsLoading": "در حال دریافت پیشنهادها…",
+    "suggestionsIdle": "برای دیدن پیشنهادها دست‌کم دو حرف بنویسید.",
+    "noSuggestions": "پیشنهادی پیدا نشد",
+    "suggestionsError": "دریافت پیشنهادها ممکن نشد. دوباره تلاش کنید.",
+    "viewAllResults": "مشاهده همه نتایج",
+    "viewAllResultsFor": "مشاهده همه نتایج برای «{term}»",
+    "keyboardHintMove": "جابه‌جایی",
+    "keyboardHintSelect": "انتخاب",
+    "keyboardHintClose": "بستن"
+  },
+  "product": {
+    "backToShop": "بازگشت به فروشگاه",
+    "inStock": "موجود در انبار",
+    "outOfStock": "ناموجود",
+    "priceLabel": "قیمت",
+    "descriptionTitle": "توضیحات محصول",
+    "galleryLabel": "تصاویر محصول",
+    "noImage": "تصویری برای این محصول ثبت نشده",
+    "errorTitle": "اطلاعات محصول در دسترس نیست",
+    "errorHint": "دریافت اطلاعات این محصول با خطا مواجه شد. لطفاً کمی بعد دوباره تلاش کنید.",
+    "retry": "تلاش دوباره"
+  },
+  "category": {
+    "breadcrumb": "مسیر صفحه",
+    "home": "خانه",
+    "categories": "دسته‌بندی‌ها",
+    "subcategoriesTitle": "زیردسته‌ها",
+    "productsPlaceholderTitle": "فهرست محصولات این دسته به‌زودی",
+    "productsPlaceholderHint": "محصولات و فیلترهای این دسته در مرحله‌ی بعد همین‌جا نمایش داده می‌شوند.",
+    "backToShop": "بازگشت به فروشگاه",
+    "errorTitle": "اطلاعات این دسته در دسترس نیست",
+    "errorHint": "دریافت اطلاعات دسته با خطا مواجه شد. لطفاً کمی بعد دوباره تلاش کنید.",
+    "retry": "تلاش دوباره"
   }
 }

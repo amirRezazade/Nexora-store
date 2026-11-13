@@ -1,6 +1,6 @@
 /**
  * ساخت درخت دسته‌بندی از ردیف‌های تخت دیتابیس — تابع خالص و تست‌پذیر.
- * ردیف‌ها از PostgREST می‌آیند: { id, slug, name, name_fa, parent_id }
+ * ردیف‌ها از PostgREST می‌آیند: { id, slug, name, name_fa, parent_id, description, description_fa }
  */
 
 export interface CategoryRow {
@@ -9,6 +9,8 @@ export interface CategoryRow {
   name: string;
   name_fa: string | null;
   parent_id: string | null;
+  description: string | null;
+  description_fa: string | null;
 }
 
 export interface CategoryNode extends CategoryRow {
@@ -42,4 +44,12 @@ export function buildCategoryTree(rows: CategoryRow[]): CategoryNode[] {
 /** نام نمایشی بر اساس locale */
 export function categoryName(row: CategoryRow, locale: string): string {
   return locale === "fa" ? (row.name_fa ?? row.name) : row.name;
+}
+
+/**
+ * مسیر نسبی صفحه‌ی دسته‌بندی.
+ * locale را Link/Router خودِ next-intl اضافه می‌کند؛ اسلاگ هم برای امنیت encode می‌شود.
+ */
+export function categoryHref(slug: string): string {
+  return `/category/${encodeURIComponent(slug)}`;
 }

@@ -3,6 +3,7 @@
 import { Home, Store, ShoppingCart, Heart, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
+import { isNavLinkActive } from "@/lib/nav-active";
 import { cn } from "@/lib/utils";
 
 /**
@@ -26,12 +27,12 @@ export function MobileBottomNav() {
 
   return (
     <nav
-      aria-label="Mobile bottom navigation"
+      aria-label={t("bottomNavigation")}
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md xs:hidden"
     >
       <ul className="mx-auto flex max-w-md items-stretch justify-around px-1">
         {items.map(({ href, label, icon: Icon }) => {
-          const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
+          const active = isNavLinkActive(href, pathname);
           return (
             <li key={href} className="flex-1">
               <Link

@@ -13,7 +13,8 @@
     "dismiss": "Dismiss announcement",
     "wishlist": "Wishlist",
     "menu": "Menu",
-    "close": "Close"
+    "close": "Close",
+    "selectLanguage": "Select language"
   },
   "nav": {
     "home": "Home",
@@ -25,9 +26,21 @@
     "contact": "Contact",
     "help": "Help Center",
     "categories": "Categories",
+    "categoriesMenuLabel": "Product categories menu",
+    "categoriesHeading": "All categories",
+    "categoriesUnavailable": "Categories are unavailable right now.",
     "allCategories": "All products",
+    "viewAllShort": "All",
+    "viewCategoryProducts": "Shop {category}",
+    "noSubcategories": "No subcategories have been added yet.",
+    "promoTitle": "Up to 30% off",
+    "promoSubtitle": "On selected gadgets and digital gear",
+    "promoCta": "Shop the offers",
     "specialOffers": "Special Offers",
-    "newArrivals": "New Arrivals"
+    "newArrivals": "New Arrivals",
+    "primaryNavigation": "Main navigation",
+    "sectionsNavigation": "Sections",
+    "bottomNavigation": "Mobile bottom navigation"
   },
   "home": {
     "heroTitle": "Welcome to Nexora",
@@ -51,7 +64,60 @@
     "system": "System"
   },
   "search": {
+    "shortcut": "Ctrl K",
+    "loading": "Searching…",
     "resultsFor": "Results for",
-    "comingSoon": "Live search ships in Phase 4; this is the page scaffold only."
+    "resultCount": "{count, plural, one {# product} other {# products}}",
+    "emptyQueryTitle": "No search term yet",
+    "emptyQueryHint": "Type a product or brand name in the search box above.",
+    "noResultsTitle": "No results found",
+    "noResultsHint": "We couldn't find anything for \"{query}\". Check the spelling or browse the categories.",
+    "errorTitle": "Search is temporarily unavailable",
+    "errorHint": "Something went wrong while loading results. Please try again in a moment.",
+    "retry": "Try again",
+    "browseShop": "Browse all products",
+    "sortLabel": "Sort by:",
+    "sortRelevance": "Most relevant",
+    "sortNewest": "Newest",
+    "sortPriceAsc": "Price: low to high",
+    "sortPriceDesc": "Price: high to low",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {page} of {total}",
+    "pagination": "Search results pagination",
+    "suggestionsLabel": "Search suggestions",
+    "suggestionsLoading": "Loading suggestions…",
+    "suggestionsIdle": "Type at least two characters to see suggestions.",
+    "noSuggestions": "No suggestions found",
+    "suggestionsError": "Couldn't load suggestions. Please try again.",
+    "viewAllResults": "View all results",
+    "viewAllResultsFor": "View all results for \"{term}\"",
+    "keyboardHintMove": "Navigate",
+    "keyboardHintSelect": "Select",
+    "keyboardHintClose": "Close"
+  },
+  "product": {
+    "backToShop": "Back to shop",
+    "inStock": "In stock",
+    "outOfStock": "Out of stock",
+    "priceLabel": "Price",
+    "descriptionTitle": "Product description",
+    "galleryLabel": "Product images",
+    "noImage": "No image has been added for this product",
+    "errorTitle": "Product information is unavailable",
+    "errorHint": "Something went wrong while loading this product. Please try again in a moment.",
+    "retry": "Try again"
+  },
+  "category": {
+    "breadcrumb": "Breadcrumb",
+    "home": "Home",
+    "categories": "Categories",
+    "subcategoriesTitle": "Subcategories",
+    "productsPlaceholderTitle": "Products for this category are coming soon",
+    "productsPlaceholderHint": "Products and filters for this category will appear here in the next step.",
+    "backToShop": "Back to shop",
+    "errorTitle": "Category information is unavailable",
+    "errorHint": "Something went wrong while loading this category. Please try again in a moment.",
+    "retry": "Try again"
   }
 }
