@@ -11,6 +11,13 @@ import type { ProductSummary } from "@/server/dal/products";
  *
  * تصاویر با unoptimized رندر می‌شوند (بدون نیاز به remotePatterns در next.config).
  * دکمه‌های سبد/علاقه‌مندی کامپوننت کلاینت جدا هستند و فقط شناسه/موجودی می‌گیرند.
+ *
+ * چرا prefetch={false}؟
+ *  - مسیر /product/[slug] به‌دلیل usePathname در هدر، instant=false دارد و
+ *    هنگام درخواست رندر می‌شود؛ prefetch زودهنگام فقط یک کوئری دیتابیس اجرا
+ *    می‌کند که با پایان prerender لغو می‌شود (هزینه‌ی بی‌فایده برای هر کارت).
+ *  - ناوبری به این مسیر در هر حال روی سرور رندر می‌شود؛ پس پیش‌واکشی چیزی
+ *    از زمان انتظار کم نمی‌کند.
  */
 export function ProductGrid({
   products,
@@ -35,7 +42,12 @@ export function ProductGrid({
             <div className="relative aspect-square overflow-hidden rounded-xl bg-surface-secondary">
               {product.image &&
                 (href ? (
-                  <Link href={href} aria-label={name} className="absolute inset-0">
+                  <Link
+                    href={href}
+                    prefetch={false}
+                    aria-label={name}
+                    className="absolute inset-0"
+                  >
                     <Image
                       src={product.image.url}
                       alt={product.image.alt ?? name}
@@ -59,7 +71,11 @@ export function ProductGrid({
             <div className="flex flex-1 flex-col gap-1">
               <h2 className="line-clamp-2 text-sm font-semibold leading-6 text-foreground">
                 {href ? (
-                  <Link href={href} className="transition-colors hover:text-primary">
+                  <Link
+                    href={href}
+                    prefetch={false}
+                    className="transition-colors hover:text-primary"
+                  >
                     {name}
                   </Link>
                 ) : (

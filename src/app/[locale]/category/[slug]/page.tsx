@@ -10,7 +10,7 @@ import { getCategoryBySlug } from "@/server/dal/categories";
  * usePathname استفاده می‌کند؛ پس pathname در زمان prerender معلوم نیست و
  * بدون این opt-out، ساختِ استاتیک شِل شکست می‌خورد.
  * با instant=false این مسیر اجازه دارد هنگام درخواست رندر شود.
- * (صفحه‌ی /product/[slug] هم همین وضعیت را دارد — خارج از محدوده‌ی این تغییر.)
+ * (صفحه‌ی /product/[slug] هم به همین دلیل instant=false دارد.)
  */
 export const instant = false;
 
