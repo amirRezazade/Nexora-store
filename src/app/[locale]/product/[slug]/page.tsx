@@ -23,7 +23,7 @@ export const instant = false;
  * - فقط محصول فعال با اسلاگ معتبر نمایش داده می‌شود؛ نبودِ محصول → 404 محلی
  * - اکشن‌های سبد/علاقه‌مندی از store مرورگر استفاده می‌کنند؛ قیمت و موجودی از سرور می‌آید
  * - متن‌ها از فایل‌های ترجمه می‌آیند و نام/توضیح از ستون‌های fa/en دیتابیس
- * - تصاویر با unoptimized رندر می‌شوند (بدون نیاز به remotePatterns)
+ * - تصاویر از /_next/image (remotePatterns) بهینه می‌شوند؛ هر fill نیاز به sizes دارد
  * - عمداً generateMetadata ندارد تا کوئری دیتابیس دوبار اجرا نشود
  */
 export default async function ProductPage({
@@ -86,9 +86,9 @@ export default async function ProductPage({
                   src={primaryImage.url}
                   alt={primaryImage.alt ?? name}
                   fill
-                  unoptimized
-                  priority
                   sizes="(max-width: 1024px) 100vw, 50vw"
+                  loading="eager"
+                  fetchPriority="high"
                   className="object-cover"
                 />
               ) : (
@@ -110,7 +110,6 @@ export default async function ProductPage({
                       src={image.url}
                       alt={image.alt ?? name}
                       fill
-                      unoptimized
                       sizes="(max-width: 640px) 25vw, 160px"
                       className="object-cover"
                     />

@@ -145,7 +145,6 @@ export function WishlistMenu({ close }: { close: () => void }) {
                             src={product.image.url}
                             alt={product.image.alt ?? name}
                             fill
-                            unoptimized
                             sizes="56px"
                             className="object-cover"
                           />

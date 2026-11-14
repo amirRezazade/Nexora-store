@@ -140,7 +140,6 @@ export function CartMenu({ close }: { close: () => void }) {
                               src={product.image.url}
                               alt={unavailableName ?? ""}
                               fill
-                              unoptimized
                               sizes="56px"
                               className="object-cover opacity-60"
                             />
@@ -183,7 +182,6 @@ export function CartMenu({ close }: { close: () => void }) {
                             src={product.image.url}
                             alt={product.image.alt ?? name}
                             fill
-                            unoptimized
                             sizes="56px"
                             className="object-cover"
                           />

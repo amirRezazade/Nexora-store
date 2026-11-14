@@ -9,7 +9,8 @@ import type { ProductSummary } from "@/server/dal/products";
  * صفحه‌ی جستجو و (در آینده) فروشگاه/دسته‌بندی از همین استفاده می‌کنند تا
  * منطق نمایش محصول تکرار نشود. داده همیشه از DAL سرور می‌آید.
  *
- * تصاویر با unoptimized رندر می‌شوند (بدون نیاز به remotePatterns در next.config).
+ * تصاویر از مسیر /_next/image و با remotePatterns تعریف‌شده در next.config بهینه
+ * می‌شوند؛ به همین دلیل هر Image با fill باید sizes درست داشته باشد.
  * دکمه‌های سبد/علاقه‌مندی کامپوننت کلاینت جدا هستند و فقط شناسه/موجودی می‌گیرند.
  *
  * چرا prefetch={false}؟
@@ -52,7 +53,6 @@ export function ProductGrid({
                       src={product.image.url}
                       alt={product.image.alt ?? name}
                       fill
-                      unoptimized
                       sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw"
                       className="object-cover transition-transform duration-300 hover:scale-[1.03]"
                     />
@@ -62,7 +62,6 @@ export function ProductGrid({
                     src={product.image.url}
                     alt={product.image.alt ?? name}
                     fill
-                    unoptimized
                     sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw"
                     className="object-cover"
                   />

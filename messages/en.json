@@ -43,11 +43,37 @@
     "bottomNavigation": "Mobile bottom navigation"
   },
   "home": {
-    "heroTitle": "Welcome to Nexora",
-    "heroSubtitle": "Tech and lifestyle products with guaranteed authenticity and fast shipping",
-    "ctaShop": "Start shopping",
-    "ctaDeals": "View deals",
-    "phaseNote": "This is the Phase 2 project skeleton; the full store ships incrementally."
+    "hero": {
+      "hiddenTitle": "Nexora — tech and lifestyle, all in one place",
+      "carouselLabel": "Featured at Nexora",
+      "slideLabel": "Slide {index} of {total}",
+      "goToSlide": "Go to slide {index}",
+      "previous": "Previous slide",
+      "next": "Next slide",
+      "slides": {
+        "smartEcosystem": {
+          "eyebrow": "The Nexora smart ecosystem",
+          "title": "Devices that speak the same language",
+          "subtitle": "Headphones, speakers and accessories chosen to work together as one complete setup.",
+          "imageAlt": "A set of Nexora smart devices",
+          "primaryCta": "Shop the ecosystem",
+          "secondaryCta": "View offers"
+        },
+        "gaming": {
+          "eyebrow": "Gaming & entertainment",
+          "title": "Take play seriously",
+          "subtitle": "Consoles, headsets and gaming accessories — genuine, with warranty and fast shipping.",
+          "imageAlt": "A game console with controller and headset",
+          "primaryCta": "Enter the game",
+          "secondaryCta": "All deals"
+        }
+      }
+    },
+    "perks": {
+      "authenticity": "Authenticity guaranteed",
+      "shipping": "Fast nationwide shipping",
+      "pricing": "Best prices & deals"
+    }
   },
   "footer": {
     "rights": "All rights reserved by Nexora.",
