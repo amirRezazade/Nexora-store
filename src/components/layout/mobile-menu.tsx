@@ -238,6 +238,7 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
                 type="button"
                 onClick={() => setCatsOpen((v) => !v)}
                 aria-expanded={catsOpen}
+                aria-controls="mobile-menu-categories"
                 className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground hover:bg-surface-secondary"
               >
                 <LayoutGrid className="h-5 w-5 text-text-secondary" aria-hidden />
@@ -247,56 +248,67 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
                   aria-hidden
                 />
               </button>
-              {catsOpen && (
-                <div className="mb-1 ms-4 border-s border-border ps-3">
-                  <Link
-                    href="/shop"
-                    onClick={() => close(false)}
-                    className="block rounded-lg px-3 py-2 text-sm font-medium text-primary hover:bg-primary-soft"
-                  >
-                    {t("allCategories")}
-                  </Link>
-                  {tree.map((node) => {
-                    const nodeActive = pathname === categoryHref(node.slug);
-                    return (
-                      <div key={node.id}>
-                        <Link
-                          href={categoryHref(node.slug)}
-                          onClick={() => close(false)}
-                          aria-current={nodeActive ? "page" : undefined}
-                          className={cn(
-                            "block rounded-lg px-3 py-2 text-sm font-medium hover:bg-surface-secondary",
-                            nodeActive
-                              ? "bg-primary-soft text-primary"
-                              : "text-foreground",
-                          )}
-                        >
-                          {categoryName(node, locale)}
-                        </Link>
-                        {node.children.map((child) => {
-                          const childActive = pathname === categoryHref(child.slug);
-                          return (
-                            <Link
-                              key={child.id}
-                              href={categoryHref(child.slug)}
-                              onClick={() => close(false)}
-                              aria-current={childActive ? "page" : undefined}
-                              className={cn(
-                                "block rounded-lg py-1.5 pe-3 ps-7 text-sm hover:bg-surface-secondary",
-                                childActive
-                                  ? "bg-primary-soft font-semibold text-primary"
-                                  : "text-text-secondary",
-                              )}
-                            >
-                              {categoryName(child, locale)}
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    );
-                  })}
+              {/* آکاردئون دسته‌بندی‌ها: باز/بسته شدن نرم با grid-rows.
+                  inert لینک‌های بسته را از Tab و screen reader خارج می‌کند. */}
+              <div
+                id="mobile-menu-categories"
+                className={cn(
+                  "grid transition-[grid-template-rows,opacity] duration-200 ease-out motion-reduce:transition-none",
+                  catsOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+                )}
+                inert={!catsOpen}
+              >
+                <div className="min-h-0 overflow-hidden">
+                  <div className="mb-1 ms-4 border-s border-border ps-3">
+                    <Link
+                      href="/shop"
+                      onClick={() => close(false)}
+                      className="block rounded-lg px-3 py-2 text-sm font-medium text-primary hover:bg-primary-soft"
+                    >
+                      {t("allCategories")}
+                    </Link>
+                    {tree.map((node) => {
+                      const nodeActive = pathname === categoryHref(node.slug);
+                      return (
+                        <div key={node.id}>
+                          <Link
+                            href={categoryHref(node.slug)}
+                            onClick={() => close(false)}
+                            aria-current={nodeActive ? "page" : undefined}
+                            className={cn(
+                              "block rounded-lg px-3 py-2 text-sm font-medium hover:bg-surface-secondary",
+                              nodeActive
+                                ? "bg-primary-soft text-primary"
+                                : "text-foreground",
+                            )}
+                          >
+                            {categoryName(node, locale)}
+                          </Link>
+                          {node.children.map((child) => {
+                            const childActive = pathname === categoryHref(child.slug);
+                            return (
+                              <Link
+                                key={child.id}
+                                href={categoryHref(child.slug)}
+                                onClick={() => close(false)}
+                                aria-current={childActive ? "page" : undefined}
+                                className={cn(
+                                  "block rounded-lg py-1.5 pe-3 ps-7 text-sm hover:bg-surface-secondary",
+                                  childActive
+                                    ? "bg-primary-soft font-semibold text-primary"
+                                    : "text-text-secondary",
+                                )}
+                              >
+                                {categoryName(child, locale)}
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              )}
+              </div>
             </nav>
 
             {/* پاورقی دِرِرِ: ورود */}

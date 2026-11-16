@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { useTheme } from "next-themes";
 import { Check, Monitor, Moon, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useTheme, type Theme } from "@/components/theme/theme-provider";
 import { cn } from "@/lib/utils";
 
 // mounted واقعی بدون setState در effect
@@ -11,11 +11,9 @@ const subscribe = () => () => {};
 const getClient = () => true;
 const getServer = () => false;
 
-type ThemeMode = "light" | "dark" | "system";
-
 /**
  * سوییچ سه‌حالته‌ی تم: Light / Dark / System.
- * - انتخاب کاربر در localStorage توسط next-themes ذخیره می‌شود
+ * - انتخاب کاربر با ThemeProvider در localStorage (کلید `theme`) ذخیره می‌شود
  * - System طبق ترجیح سیستم‌عامل پیش می‌رود
  * - زبان از تم مستقل است؛ تغییر یکی به دیگری دست نمی‌زند
  */
@@ -59,7 +57,7 @@ export function ThemeToggle({
     if (next && !rootRef.current?.contains(next)) setOpen(false);
   };
 
-  const options: { value: ThemeMode; label: string; icon: typeof Sun }[] = [
+  const options: { value: Theme; label: string; icon: typeof Sun }[] = [
     { value: "light", label: t("light"), icon: Sun },
     { value: "dark", label: t("dark"), icon: Moon },
     { value: "system", label: t("system"), icon: Monitor },
@@ -95,6 +93,7 @@ export function ThemeToggle({
           aria-label={t("toggle")}
           className={cn(
             "absolute end-0 z-50 w-40 overflow-hidden rounded-2xl border border-border bg-surface p-1 shadow-xl",
+            placement === "top" ? "menu-pop-up" : "menu-pop",
             placement === "top" ? "bottom-full mb-2" : "top-full mt-2",
           )}
         >

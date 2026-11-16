@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import Fade from "embla-carousel-fade";
@@ -10,7 +9,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import type { HeroTone } from "@/lib/hero/slides";
 
 /**
  * اسلایدر هیرو — تک‌ستونه و تمام‌عرض: عکس کل بخش را می‌گیرد و متن/دکمه‌ها روی
@@ -33,9 +31,10 @@ import type { HeroTone } from "@/lib/hero/slides";
  * می‌چینیم تا چیدمان با محاسبهٔ پلاگین هم‌خوان شود و جهت متن را روی خود اسلاید
  * برمی‌گردانیم. Embla همچنان جهت صفحه را RTL می‌بیند و کشیدن درست کار می‌کند.
  *
- * ارتفاع: عمداً تمام‌صفحه نیست. ارتفاع ثابت و متناسب با هر بریک‌پوینت است تا
- * نسبت تصویر (حدود ۲.۵:۱) کم‌تر برش بخورد؛ اگر ارتفاع را به قد صفحه گره بزنیم،
- * object-cover ناحیهٔ سوژه را می‌بُرد و اسلاید شبیه یک کادر خالی می‌شود.
+ * ارتفاع: عمداً تمام‌صفحه نیست و در هر بریک‌پوینت ثابت است. تصویر بنر ۱۶:۹ است
+ * و در این نوار کوتاه‌تر با object-cover بخشی از بالا/پایین تصویر برش می‌خورد؛
+ * ارتفاع ثابت باعث می‌شود اسلاید در صفحه‌های کوتاه بی‌رویه بزرگ نشود و چیدمان
+ * صفحه نپرد.
  *
  * دسترس‌پذیری:
  *  - هر اسلاید aria-roledescription="slide" دارد و اسلایدهای غیرفعال inert هستند
@@ -44,68 +43,56 @@ import type { HeroTone } from "@/lib/hero/slides";
  *    می‌شود؛ نقطه‌ها و دکمه‌های قبلی/بعدی هم کنترل دستی می‌دهند.
  */
 
+/**
+ * تصویر بنر به‌صورت دو srcSet جدا (موبایل/دسکتاپ).
+ *
+ * srcSetها در سرور با getImageProps ساخته می‌شوند؛ کلاینت فقط آن‌ها را در
+ * <picture> می‌گذارد. اگر هر دو <Image> را هم‌زمان رندر کنیم، تصویر پنهان هم
+ * دانلود می‌شود و هشدار sizes می‌دهد؛ <picture> فقط تصویر منطبق با عرض صفحه را
+ * می‌گیرد.
+ */
+export interface HeroSlideMedia {
+  /** srcSet تصویر افقی برای <source media="(min-width: 768px)"> */
+  desktopSrcSet: string;
+  /** تصویر عمودی که به‌عنوان منبع پایهٔ <img> می‌نشیند */
+  mobileSrc: string;
+  mobileSrcSet: string;
+  alt: string;
+}
+
 export interface HeroSlide {
   id: string;
-  imageUrl: string;
-  imageAlt: string;
-  tone: HeroTone;
-  mirrorInRtl: boolean;
-  eyebrow: string;
+  media: HeroSlideMedia;
   title: string;
-  subtitle: string;
-  primary: { label: string; href: string };
-  secondary: { label: string; href: string };
+  subtitle: string | null;
+  /** دکمهٔ اصلی؛ اگر برچسب یا مقصد نداشته باشد ساخته نمی‌شود */
+  primary: { label: string; href: string } | null;
 }
 
 const AUTOPLAY_DELAY = 7000;
 
 /**
- * پردهٔ گرادیان افقی: از سمت شروع متن (چپ در LTR، راست در RTL پس از آینه‌شدن گروه
- * تصویر) پررنگ است و تا حدود ۷۸٪ محو می‌شود؛ باقی کادر تصویر بدون پرده می‌ماند.
+ * پردهٔ گرادیان افقی: از سمت شروع متن (چپ در LTR، راست در RTL پس از آینه‌شدن
+ * گروه تصویر) پررنگ است و تا حدود ۷۸٪ محو می‌شود.
+ *
+ * عمداً فقط یک نسخه (تیره) وجود دارد: رنگ روشن/تیرهٔ متن باید با روشنایی خود
+ * تصویر هم‌خوان باشد و جدول بنرها چنین ستونی ندارد؛ گرادیان تیره روی تصویر
+ * روشن و تیره هر دو خوانا است، پس متن همیشه سفید می‌ماند.
  */
-const horizontalScrim: Record<HeroTone, string> = {
-  light:
-    "bg-[linear-gradient(to_right,rgba(255,247,237,0.96)_0%,rgba(255,247,237,0.9)_26%,rgba(255,247,237,0.58)_46%,rgba(255,247,237,0.18)_64%,rgba(255,247,237,0)_78%)]",
-  dark: "bg-[linear-gradient(to_right,rgba(10,9,8,0.9)_0%,rgba(10,9,8,0.8)_26%,rgba(10,9,8,0.5)_46%,rgba(10,9,8,0.16)_64%,rgba(10,9,8,0)_78%)]",
-};
+const horizontalScrim =
+  "bg-[linear-gradient(to_right,rgba(10,9,8,0.9)_0%,rgba(10,9,8,0.8)_26%,rgba(10,9,8,0.5)_46%,rgba(10,9,8,0.16)_64%,rgba(10,9,8,0)_78%)]";
 
 /** در موبایل متن تقریباً تمام عرض را می‌گیرد و به پردهٔ عمودی هم نیاز دارد. */
-const verticalScrim: Record<HeroTone, string> = {
-  light:
-    "bg-[linear-gradient(to_top,rgba(255,247,237,0.97)_0%,rgba(255,247,237,0.9)_38%,rgba(255,247,237,0.6)_66%,rgba(255,247,237,0.16)_86%,rgba(255,247,237,0)_100%)]",
-  dark: "bg-[linear-gradient(to_top,rgba(10,9,8,0.95)_0%,rgba(10,9,8,0.85)_38%,rgba(10,9,8,0.55)_66%,rgba(10,9,8,0.14)_86%,rgba(10,9,8,0)_100%)]",
-};
+const verticalScrim =
+  "bg-[linear-gradient(to_top,rgba(10,9,8,0.95)_0%,rgba(10,9,8,0.85)_38%,rgba(10,9,8,0.55)_66%,rgba(10,9,8,0.14)_86%,rgba(10,9,8,0)_100%)]";
 
-const toneStyles: Record<
-  HeroTone,
-  {
-    title: string;
-    body: string;
-    eyebrow: string;
-    secondary: string;
-    dot: string;
-    dotActive: string;
-    control: string;
-  }
-> = {
-  light: {
-    title: "text-stone-950",
-    body: "text-stone-800",
-    eyebrow: "border-stone-900/15 bg-white/70 text-stone-900",
-    secondary: "border-stone-900/25 bg-white/70 text-stone-900 hover:bg-white",
-    dot: "bg-stone-900/25 hover:bg-stone-900/50",
-    dotActive: "bg-stone-900",
-    control: "border-stone-900/15 bg-white/70 text-stone-900 hover:bg-white",
-  },
-  dark: {
-    title: "text-white",
-    body: "text-white/85",
-    eyebrow: "border-white/25 bg-white/10 text-white",
-    secondary: "border-white/35 bg-white/10 text-white hover:bg-white/20",
-    dot: "bg-white/35 hover:bg-white/60",
-    dotActive: "bg-white",
-    control: "border-white/25 bg-white/10 text-white hover:bg-white/20",
-  },
+/** استایل متن و کنترل‌ها روی پردهٔ تیره — مستقل از روشنایی تصویر بنر */
+const overlay = {
+  title: "text-white",
+  body: "text-white/85",
+  dot: "bg-white/35 hover:bg-white/60",
+  dotActive: "bg-white",
+  control: "border-white/25 bg-white/10 text-white hover:bg-white/20",
 };
 
 const focusRing =
@@ -157,8 +144,6 @@ export function HeroSlider({ slides, dir }: { slides: HeroSlide[]; dir: "rtl" | 
   }, [emblaApi]);
 
   const total = slides.length;
-  const active = slides[selected] ?? slides[0];
-  const tone = toneStyles[active.tone];
 
   return (
     <section
@@ -187,7 +172,6 @@ export function HeroSlider({ slides, dir }: { slides: HeroSlide[]; dir: "rtl" | 
         <div dir="ltr" className="flex h-full touch-pan-y">
           {slides.map((slide, index) => {
             const isActive = index === selected;
-            const slideTone = toneStyles[slide.tone];
 
             return (
               <div
@@ -199,28 +183,26 @@ export function HeroSlider({ slides, dir }: { slides: HeroSlide[]; dir: "rtl" | 
                 dir={dir}
                 className="relative h-full w-full shrink-0 grow-0 basis-full"
               >
-                {/* گروه تصویر: در RTL آینه می‌شود تا فضای خالی زیر متن بیفتد */}
-                <div className={cn("absolute inset-0", slide.mirrorInRtl && "rtl:scale-x-[-1]")}>
-                  <Image
-                    src={slide.imageUrl}
-                    alt={slide.imageAlt}
-                    fill
-                    sizes="100vw"
-                    loading={index === 0 ? "eager" : "lazy"}
-                    fetchPriority={index === 0 ? "high" : "auto"}
-                    draggable={false}
-                    className="object-cover object-[85%_center] md:object-center"
-                  />
-                  <div
-                    aria-hidden
-                    className={cn("absolute inset-0", horizontalScrim[slide.tone])}
-                  />
+                {/* گروه تصویر: در RTL آینه می‌شود تا سوژهٔ عکس زیر متن نیفتد */}
+                <div className="absolute inset-0 rtl:scale-x-[-1]">
+                  {/* موبایل تصویر عمودی، از md به بالا تصویر افقی — فقط یکی دانلود می‌شود */}
+                  <picture className="absolute inset-0 block">
+                    <source media="(min-width: 768px)" srcSet={slide.media.desktopSrcSet} />
+                    <img
+                      src={slide.media.mobileSrc}
+                      srcSet={slide.media.mobileSrcSet}
+                      sizes="100vw"
+                      alt={slide.media.alt}
+                      loading={index === 0 ? "eager" : "lazy"}
+                      fetchPriority={index === 0 ? "high" : "auto"}
+                      draggable={false}
+                      className="h-full w-full object-cover object-center"
+                    />
+                  </picture>
+                  <div aria-hidden className={cn("absolute inset-0", horizontalScrim)} />
                 </div>
 
-                <div
-                  aria-hidden
-                  className={cn("absolute inset-0 md:hidden", verticalScrim[slide.tone])}
-                />
+                <div aria-hidden className={cn("absolute inset-0 md:hidden", verticalScrim)} />
 
                 {/* متن روی فضای خالی عکس */}
                 <div className="absolute inset-0 flex items-center">
@@ -229,54 +211,39 @@ export function HeroSlider({ slides, dir }: { slides: HeroSlide[]; dir: "rtl" | 
                       inert={!isActive}
                       className="flex max-w-[30rem] flex-col items-start gap-3 pb-16 sm:gap-4 md:max-w-[34rem] md:pb-8 lg:max-w-[36rem]"
                     >
-                      <span
-                        className={cn(
-                          "inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-semibold backdrop-blur-sm sm:text-xs",
-                          slideTone.eyebrow,
-                        )}
-                      >
-                        {slide.eyebrow}
-                      </span>
-
                       <h2
                         className={cn(
                           "text-balance text-[1.75rem] font-black leading-[1.15] tracking-tight xs:text-[2rem] sm:text-4xl lg:text-[2.75rem]",
-                          slideTone.title,
+                          overlay.title,
                         )}
                       >
                         {slide.title}
                       </h2>
 
-                      <p
-                        className={cn(
-                          "max-w-[28rem] text-sm leading-6 sm:text-base sm:leading-7",
-                          slideTone.body,
-                        )}
-                      >
-                        {slide.subtitle}
-                      </p>
+                      {slide.subtitle && (
+                        <p
+                          className={cn(
+                            "max-w-[28rem] text-sm leading-6 sm:text-base sm:leading-7",
+                            overlay.body,
+                          )}
+                        >
+                          {slide.subtitle}
+                        </p>
+                      )}
 
-                      <div className="mt-1 flex flex-wrap items-center gap-2.5 sm:gap-3">
-                        <Link
-                          href={slide.primary.href}
-                          className={cn(
-                            "inline-flex h-11 items-center rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover sm:h-12 sm:px-7 sm:text-base",
-                            focusRing,
-                          )}
-                        >
-                          {slide.primary.label}
-                        </Link>
-                        <Link
-                          href={slide.secondary.href}
-                          className={cn(
-                            "inline-flex h-11 items-center rounded-full border px-5 text-sm font-bold backdrop-blur-sm transition-colors sm:h-12 sm:px-7 sm:text-base",
-                            slideTone.secondary,
-                            focusRing,
-                          )}
-                        >
-                          {slide.secondary.label}
-                        </Link>
-                      </div>
+                      {slide.primary && (
+                        <div className="mt-1 flex flex-wrap items-center gap-2.5 sm:gap-3">
+                          <Link
+                            href={slide.primary.href}
+                            className={cn(
+                              "inline-flex h-11 items-center rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover sm:h-12 sm:px-7 sm:text-base",
+                              focusRing,
+                            )}
+                          >
+                            {slide.primary.label}
+                          </Link>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -301,7 +268,7 @@ export function HeroSlider({ slides, dir }: { slides: HeroSlide[]; dir: "rtl" | 
                   // ناحیهٔ لمس بزرگ‌تر از خود نقطهٔ ۱۰ پیکسلی
                   className={cn(
                     "relative h-2.5 rounded-full transition-all duration-300 before:absolute before:-inset-2.5 before:content-['']",
-                    index === selected ? cn("w-7", tone.dotActive) : cn("w-2.5", tone.dot),
+                    index === selected ? cn("w-7", overlay.dotActive) : cn("w-2.5", overlay.dot),
                     focusRing,
                   )}
                 />
@@ -315,7 +282,7 @@ export function HeroSlider({ slides, dir }: { slides: HeroSlide[]; dir: "rtl" | 
                 aria-label={t("hero.previous")}
                 className={cn(
                   "inline-flex h-9 w-9 items-center justify-center rounded-full border backdrop-blur-sm transition-colors",
-                  tone.control,
+                  overlay.control,
                   focusRing,
                 )}
               >
@@ -327,7 +294,7 @@ export function HeroSlider({ slides, dir }: { slides: HeroSlide[]; dir: "rtl" | 
                 aria-label={t("hero.next")}
                 className={cn(
                   "inline-flex h-9 w-9 items-center justify-center rounded-full border backdrop-blur-sm transition-colors",
-                  tone.control,
+                  overlay.control,
                   focusRing,
                 )}
               >

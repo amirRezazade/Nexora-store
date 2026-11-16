@@ -3,8 +3,7 @@
 import { Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { HeaderMenu } from "@/components/layout/header-menu";
-import { wishlistCount } from "@/lib/wishlist/model";
-import { useWishlist } from "@/lib/wishlist/store";
+import { useWishlistCount } from "@/lib/wishlist/store";
 import { WishlistMenu } from "./wishlist-menu";
 
 /**
@@ -14,14 +13,14 @@ import { WishlistMenu } from "./wishlist-menu";
 export function WishlistTrigger() {
   const t = useTranslations("common");
   const wishlistT = useTranslations("wishlist");
-  const wishlist = useWishlist();
+  const count = useWishlistCount();
 
   return (
     <HeaderMenu
       icon={Heart}
       label={t("wishlist")}
       panelLabel={wishlistT("panelLabel")}
-      count={wishlistCount(wishlist)}
+      count={count}
     >
       {(close) => <WishlistMenu close={close} />}
     </HeaderMenu>

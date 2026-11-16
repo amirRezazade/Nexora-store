@@ -1,13 +1,15 @@
 import { BadgePercent, ShieldCheck, Truck } from "lucide-react";
+import { getImageProps } from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { HeroSlider, type HeroSlide } from "@/components/home/hero-slider";
-import { HERO_SLIDES } from "@/lib/hero/slides";
+import { getHeroBanners } from "@/server/dal/banners";
 
 /**
  * صفحهٔ اصلی.
  *
- * متن هر اسلاید از messages می‌آید (home.hero.slides.<id>) و تصویر/لینک‌ها از
- * HERO_SLIDES؛ با آماده شدن جدول hero_slides در دیتابیس فقط منبع داده عوض می‌شود.
+ * اسلایدهای هیرو از جدول بنرها می‌آیند (عنوان/زیرعنوان/دکمه از ترجمهٔ همان زبان
+ * و تصویر موبایل/دسکتاپ از خود بنر). اگر بنر فعالی نباشد یا خواندن دیتابیس
+ * شکست بخورد، هیرو اصلاً رندر نمی‌شود و صفحه با یک هدر خالی تحریف نمی‌شود.
  * h1 صفحه پنهان است تا عنوان هر اسلاید h2 بماند و ساختار heading معتبر بماند.
  */
 export default async function HomePage({
@@ -19,24 +21,41 @@ export default async function HomePage({
   setRequestLocale(locale);
   const t = await getTranslations("home");
 
-  const slides: HeroSlide[] = HERO_SLIDES.map((slide) => ({
-    id: slide.id,
-    imageUrl: slide.imageUrl,
-    imageAlt: t(`hero.slides.${slide.id}.imageAlt`),
-    tone: slide.tone,
-    mirrorInRtl: slide.mirrorInRtl,
-    eyebrow: t(`hero.slides.${slide.id}.eyebrow`),
-    title: t(`hero.slides.${slide.id}.title`),
-    subtitle: t(`hero.slides.${slide.id}.subtitle`),
-    primary: {
-      label: t(`hero.slides.${slide.id}.primaryCta`),
-      href: slide.primaryHref,
-    },
-    secondary: {
-      label: t(`hero.slides.${slide.id}.secondaryCta`),
-      href: slide.secondaryHref,
-    },
-  }));
+  const { banners } = await getHeroBanners(locale);
+
+  /**
+   * دو تصویر هر بنر (عمودی موبایل / افقی دسکتاپ) با getImageProps به srcSet
+   * تبدیل می‌شوند تا داخل <picture> فقط یکی دانلود شود. این کار در سرور انجام
+   * می‌شود تا کلاینت به تنظیمات تصویر Next دسترسی نداشته باشد.
+   */
+  const slides: HeroSlide[] = banners.map((banner) => {
+    const mobileImageUrl = banner.imageMobileUrl ?? banner.imageDesktopUrl;
+    const common = { alt: banner.imageAlt, fill: true, sizes: "100vw" } as const;
+    const { props: desktopProps } = getImageProps({
+      ...common,
+      src: banner.imageDesktopUrl,
+    });
+    const { props: mobileProps } = getImageProps({
+      ...common,
+      src: mobileImageUrl,
+    });
+
+    return {
+      id: banner.id,
+      media: {
+        desktopSrcSet: desktopProps.srcSet ?? "",
+        mobileSrc: mobileProps.src ?? mobileImageUrl,
+        mobileSrcSet: mobileProps.srcSet ?? "",
+        alt: banner.imageAlt,
+      },
+      title: banner.title,
+      subtitle: banner.subtitle,
+      primary:
+        banner.ctaLabel && banner.ctaHref
+          ? { label: banner.ctaLabel, href: banner.ctaHref }
+          : null,
+    };
+  });
 
   const perks = [
     { icon: ShieldCheck, label: t("perks.authenticity") },
@@ -48,7 +67,9 @@ export default async function HomePage({
     <div>
       <h1 className="sr-only">{t("hero.hiddenTitle")}</h1>
 
-      <HeroSlider slides={slides} dir={locale === "fa" ? "rtl" : "ltr"} />
+      {slides.length > 0 && (
+        <HeroSlider slides={slides} dir={locale === "fa" ? "rtl" : "ltr"} />
+      )}
 
       {/* مزیت‌ها */}
       <section className="border-b border-border">

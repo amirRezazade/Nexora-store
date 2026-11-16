@@ -49,25 +49,7 @@
       "slideLabel": "Slide {index} of {total}",
       "goToSlide": "Go to slide {index}",
       "previous": "Previous slide",
-      "next": "Next slide",
-      "slides": {
-        "smartEcosystem": {
-          "eyebrow": "The Nexora smart ecosystem",
-          "title": "Devices that speak the same language",
-          "subtitle": "Headphones, speakers and accessories chosen to work together as one complete setup.",
-          "imageAlt": "A set of Nexora smart devices",
-          "primaryCta": "Shop the ecosystem",
-          "secondaryCta": "View offers"
-        },
-        "gaming": {
-          "eyebrow": "Gaming & entertainment",
-          "title": "Take play seriously",
-          "subtitle": "Consoles, headsets and gaming accessories — genuine, with warranty and fast shipping.",
-          "imageAlt": "A game console with controller and headset",
-          "primaryCta": "Enter the game",
-          "secondaryCta": "All deals"
-        }
-      }
+      "next": "Next slide"
     },
     "perks": {
       "authenticity": "Authenticity guaranteed",

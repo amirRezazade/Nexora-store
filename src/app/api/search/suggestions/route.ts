@@ -39,6 +39,7 @@ export async function GET(request: Request) {
         name: suggestion.name,
         nameFa: suggestion.nameFa,
         brand: suggestion.brand,
+        brandFa: suggestion.brandFa,
         price: suggestion.price,
         image: suggestion.image
           ? { url: suggestion.image.url, alt: suggestion.image.alt }

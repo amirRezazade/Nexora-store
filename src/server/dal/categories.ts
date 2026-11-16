@@ -6,24 +6,71 @@ import { buildCategoryTree, type CategoryNode, type CategoryRow } from "@/lib/ca
 /**
  * لایه‌ی دسترسی به داده‌های دسته‌بندی (DAL).
  * داده عمومی است ⇒ با «use cache» کش می‌شود و هر درخواست به دیتابیس نمی‌رود.
- * انتخاب ستون‌ها دقیقاً همان‌هایی است که anon اجازه خواندنشان را دارد.
- * اگر Supabase خطا داد، در درخت آرایه‌ی خالی و در صفحه‌ی دسته status=error
- * برمی‌گردانیم تا کل صفحه نخوابد (دسته‌بندی فقط یک بخش از هدر است).
+ *
+ * ساختار دیتابیس (پروژهٔ جدید):
+ *   categories              → id, parent_id, slug, image_path, sort_order, is_active, ...
+ *   category_translations   → category_id, locale, name, description, seo_title, ...
+ * یعنی نام/توضیح بین دو زبان ترجمه‌محور ذخیره می‌شود، نه در دو ستون name/name_fa.
+ *
+ * برای اینکه بقیهٔ پروژه (درخت منو و صفحهٔ /category/[slug]) به ساختار قبلی
+ * وابسته بمانند، همان CategoryRow حفظ می‌شود و این فایل ردیف‌های ترجمه‌شده را
+ * به آن نگاشت می‌کند:
+ *   locale=en → name, description
+ *   locale=fa → name_fa, description_fa
+ * اگر ترجمه‌ای نبود، از اسلاگ به‌عنوان نام پشتیبان استفاده می‌شود تا آیتم از
+ * منو نیفتد. اگر Supabase خطا داد: درخت آرایهٔ خالی و در صفحهٔ دسته
+ * status=error برمی‌گردانیم تا کل صفحه نخوابد.
  */
+
+/** یک ردیف ترجمه از جدول category_translations */
+const translationSchema = z.object({
+  locale: z.string(),
+  name: z.string().nullable(),
+  description: z.string().nullable(),
+});
+
+/** ردیف خام PostgREST با ترجمه‌های تو‌در‌تو */
 const categoryRowSchema = z.object({
   id: z.string(),
   slug: z.string(),
-  name: z.string(),
-  name_fa: z.string().nullable(),
   parent_id: z.string().nullable(),
-  description: z.string().nullable(),
-  description_fa: z.string().nullable(),
-  status: z.string(),
+  sort_order: z.number().nullable(),
+  category_translations: z.array(translationSchema).nullable(),
 });
 
+type RawCategoryRow = z.infer<typeof categoryRowSchema>;
+
+/**
+ * انتخاب ستون‌ها فقط همان‌هایی است که برای نمایش لازم داریم (بدون data اضافی).
+ * ترتیب از دیتابیس می‌آید: sort_order سپس slug (نام داخل ترجمه‌هاست و
+ * مرتب‌سازی روی آن در PostgREST ناسالم/تکراری می‌شود).
+ */
 const CATEGORY_COLUMNS =
-  "id,slug,name,name_fa,parent_id,description,description_fa,status";
-const ACTIVE_STATUS = "active";
+  "id,slug,parent_id,sort_order,category_translations(locale,name,description)";
+
+/**
+ * ردیف خام را به قرارداد CategoryRow پروژه تبدیل می‌کند.
+ * - انگلیسی → ستون‌های اصلی، فارسی → ستون‌های _fa
+ * - اگر هر دو ترجمه خالی بودند، نام = اسلاگ (تا آیتم بی‌نام در UI نماند)
+ */
+function mapRow(row: RawCategoryRow): CategoryRow {
+  const translations = row.category_translations ?? [];
+  const en = translations.find((item) => item.locale === "en");
+  const fa = translations.find((item) => item.locale === "fa");
+
+  const name = en?.name ?? fa?.name ?? row.slug;
+  const nameFa = fa?.name ?? en?.name ?? row.slug;
+
+  return {
+    id: row.id,
+    slug: row.slug,
+    name,
+    name_fa: nameFa,
+    parent_id: row.parent_id,
+    description: en?.description ?? null,
+    description_fa: fa?.description ?? null,
+  };
+}
 
 /**
  * ردیف‌های فعال دسته‌بندی را از PostgREST می‌خواند.
@@ -35,8 +82,8 @@ async function fetchActiveCategoryRows(
 ): Promise<CategoryRow[] | null> {
   const url = new URL("/rest/v1/categories", env.NEXT_PUBLIC_SUPABASE_URL);
   url.searchParams.set("select", CATEGORY_COLUMNS);
-  url.searchParams.set("status", `eq.${ACTIVE_STATUS}`);
-  url.searchParams.set("order", "name.asc");
+  url.searchParams.set("is_active", "eq.true");
+  url.searchParams.set("order", "sort_order.asc,slug.asc");
   for (const [key, value] of Object.entries(filters)) {
     url.searchParams.set(key, value);
   }
@@ -52,7 +99,8 @@ async function fetchActiveCategoryRows(
       console.error(`[dal/categories] Supabase responded ${res.status}`);
       return null;
     }
-    return z.array(categoryRowSchema).parse(await res.json());
+    const rows = z.array(categoryRowSchema).parse(await res.json());
+    return rows.map(mapRow);
   } catch (error) {
     console.error("[dal/categories] Failed to load categories:", error);
     return null;
@@ -70,7 +118,7 @@ export async function getCategoryTree(): Promise<CategoryNode[]> {
 
 export interface CategoryDetailResult {
   category: CategoryRow | null;
-  /** زیردسته‌های فعال همان دسته — مرتب‌شده بر اساس نام */
+  /** زیردسته‌های فعال همان دسته */
   children: CategoryRow[];
   /** "error" یعنی خواندن دیتابیس شکست خورد؛ «پیدا نشد» status=ok و category=null است */
   status: "ok" | "error";

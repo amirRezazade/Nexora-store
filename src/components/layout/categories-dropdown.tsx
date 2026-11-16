@@ -108,7 +108,7 @@ export function CategoriesDropdown({ tree }: { tree: CategoryNode[] }) {
       {open && (
         <div
           id={panelId}
-          className="absolute start-0 top-full z-50 mt-4 w-[min(54rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-border bg-surface shadow-xl 2xl:w-[min(60rem,calc(100vw-2rem))]"
+          className="menu-pop absolute start-0 top-full z-50 mt-4 w-[min(54rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-border bg-surface shadow-xl 2xl:w-[min(60rem,calc(100vw-2rem))]"
         >
           <div className="grid md:grid-cols-[15rem_minmax(0,1fr)] lg:grid-cols-[15rem_minmax(0,1fr)_15rem]">
             {/* ── ستون ۱: دسته‌های ریشه ───────────────────────── */}

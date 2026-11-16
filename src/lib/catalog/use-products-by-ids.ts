@@ -2,13 +2,20 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ProductSummary } from "@/server/dal/products";
+import {
+  forgetProducts,
+  getCachedProducts,
+  loadProducts,
+} from "./products-cache";
 
 /**
  * خواندن محصولات بر اساس شناسه از API عمومی کاتالوگ.
  *
  * چرا هوک جدا؟
  *  - store سبد/علاقه‌مندی فقط شناسه نگه می‌دارد؛ نام، قیمت و موجودی همیشه از سرور می‌آید
- *  - درخواست با AbortController لغو می‌شود تا تغییر سریع سبد پاسخ کهنه را جایگزین نکند
+ *  - نتیجه در کش درون‌حافظه‌ای نگه داشته می‌شود: اولین باز شدن پنل درخواست می‌زند،
+ *    باز شدن‌های بعدی (تا reload کامل صفحه) فوری و بدون درخواست و بدون لودینگ‌اند
+ *  - درخواست‌های هم‌زمان با همان شناسه‌ها یکی می‌شوند (سبد + علاقه‌مندی)
  *  - وضعیت «loading» از تفاوت کلید فعلی با کلید پاسخ قبلی مشتق می‌شود؛ بنابراین
  *    effect هیچ setState همگام لازم ندارد و رندر آبشاری ایجاد نمی‌کند
  */
@@ -34,40 +41,41 @@ export function useProductsByIds(ids: string[]): {
 
   useEffect(() => {
     if (!key) return;
+    // داخل این بازه قبلاً گرفته شده — هیچ درخواستی لازم نیست
+    if (getCachedProducts(key)) return;
 
-    const controller = new AbortController();
+    let cancelled = false;
 
-    fetch(`/api/catalog/products?ids=${encodeURIComponent(key)}`, {
-      signal: controller.signal,
-      cache: "no-store",
-    })
-      .then(async (response) => {
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return (await response.json()) as { status: string; products: ProductSummary[] };
-      })
-      .then((body) => {
-        if (controller.signal.aborted) return;
-        if (body.status !== "ok") throw new Error("catalog error");
-        setState({ key, products: body.products, status: "ready" });
+    loadProducts(key)
+      .then((products) => {
+        if (cancelled) return;
+        setState({ key, products, status: "ready" });
       })
       .catch(() => {
-        if (controller.signal.aborted) return;
+        if (cancelled) return;
         setState({ key, products: [], status: "error" });
       });
 
-    return () => controller.abort();
+    return () => {
+      cancelled = true;
+    };
   }, [key, attempt]);
 
-  const current = state.key === key;
+  const cached = key ? getCachedProducts(key) : null;
+  const products = cached ?? (state.key === key ? state.products : []);
+  const status: ProductsByIdsStatus = !key
+    ? "ready"
+    : cached
+      ? "ready"
+      : state.key === key
+        ? state.status
+        : "loading";
 
   const retry = useCallback(() => {
+    if (key) forgetProducts(key);
     setState(initial);
     setAttempt((value) => value + 1);
-  }, []);
+  }, [key]);
 
-  return {
-    products: current ? state.products : [],
-    status: !key ? "ready" : current ? state.status : "loading",
-    retry,
-  };
+  return { products, status, retry };
 }

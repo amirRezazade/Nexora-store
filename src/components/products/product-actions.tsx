@@ -2,10 +2,9 @@
 
 import { Heart, Minus, Plus, ShoppingCart } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { MAX_ITEM_QUANTITY, cartItemQuantity } from "@/lib/cart/model";
-import { cartActions, useCart } from "@/lib/cart/store";
-import { isWishlisted } from "@/lib/wishlist/model";
-import { useWishlist, wishlistActions } from "@/lib/wishlist/store";
+import { MAX_ITEM_QUANTITY } from "@/lib/cart/model";
+import { cartActions, useCartQuantity } from "@/lib/cart/store";
+import { useIsWishlisted, wishlistActions } from "@/lib/wishlist/store";
 import { cn } from "@/lib/utils";
 
 /**
@@ -30,11 +29,8 @@ export function ProductActions({
 }) {
   const cartT = useTranslations("cart");
   const wishlistT = useTranslations("wishlist");
-  const cart = useCart();
-  const wishlist = useWishlist();
-
-  const quantity = cartItemQuantity(cart, productId);
-  const wishlisted = isWishlisted(wishlist, productId);
+  const quantity = useCartQuantity(productId);
+  const wishlisted = useIsWishlisted(productId);
   const max = Math.min(Math.max(stock, 0), MAX_ITEM_QUANTITY);
   const inStock = max > 0;
   const atMax = quantity >= max;

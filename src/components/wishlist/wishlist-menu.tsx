@@ -8,7 +8,9 @@ import { Link } from "@/i18n/navigation";
 import { formatPrice } from "@/lib/money";
 import { cartActions } from "@/lib/cart/store";
 import { useProductsByIds } from "@/lib/catalog/use-products-by-ids";
+import { useExitRemoval } from "@/lib/ui/use-exit-removal";
 import { wishlistActions, useWishlist } from "@/lib/wishlist/store";
+import { cn } from "@/lib/utils";
 
 /** حداکثر ردیف در پیش‌نمایش پنل؛ بقیه در صفحه‌ی علاقه‌مندی */
 const PREVIEW_LIMIT = 4;
@@ -24,6 +26,7 @@ export function WishlistMenu({ close }: { close: () => void }) {
   const wishlist = useWishlist();
 
   const { products, status, retry } = useProductsByIds(wishlist.ids);
+  const { isExiting, removeWithExit } = useExitRemoval(wishlistActions.remove);
   const byId = useMemo(
     () => new Map(products.map((product) => [product.id, product])),
     [products],
@@ -106,10 +109,17 @@ export function WishlistMenu({ close }: { close: () => void }) {
               <ul className="divide-y divide-border">
                 {preview.map((id) => {
                   const product = byId.get(id);
+                  const exiting = isExiting(id);
 
                   if (!product) {
                     return (
-                      <li key={id} className="flex items-center gap-3 px-4 py-3">
+                      <li
+                        key={id}
+                        className={cn(
+                          "flex items-center gap-3 px-4 py-3",
+                          exiting && "menu-item-exit",
+                        )}
+                      >
                         <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-error-bg text-error">
                           <TriangleAlert className="h-5 w-5" strokeWidth={1.7} aria-hidden />
                         </span>
@@ -123,7 +133,7 @@ export function WishlistMenu({ close }: { close: () => void }) {
                         </div>
                         <button
                           type="button"
-                          onClick={() => wishlistActions.remove(id)}
+                          onClick={() => removeWithExit(id)}
                           aria-label={t("removeUnavailable")}
                           title={t("removeUnavailable")}
                           className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-error-bg hover:text-error"
@@ -138,7 +148,7 @@ export function WishlistMenu({ close }: { close: () => void }) {
                   const inStock = product.stock > 0;
 
                   return (
-                    <li key={id} className="flex gap-3 px-4 py-3">
+                    <li key={id} className={cn("flex gap-3 px-4 py-3", exiting && "menu-item-exit")}>
                       <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-surface-secondary">
                         {product.image && (
                           <Image
@@ -178,7 +188,7 @@ export function WishlistMenu({ close }: { close: () => void }) {
 
                           <button
                             type="button"
-                            onClick={() => wishlistActions.remove(id)}
+                            onClick={() => removeWithExit(id)}
                             aria-label={t("remove", { name })}
                             title={t("remove", { name })}
                             className="ms-auto inline-flex h-7 w-7 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-error-bg hover:text-error"

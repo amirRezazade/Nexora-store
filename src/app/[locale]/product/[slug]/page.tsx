@@ -65,6 +65,7 @@ export default async function ProductPage({
     locale === "fa"
       ? (product.descriptionFa ?? product.description)
       : product.description;
+  const brand = locale === "fa" ? (product.brandFa ?? product.brand) : product.brand;
   const [primaryImage, ...otherImages] = product.images;
 
   return (
@@ -121,9 +122,9 @@ export default async function ProductPage({
         </section>
 
         <section className="flex min-w-0 flex-col gap-5">
-          {product.brand && (
+          {brand && (
             <p className="text-sm font-semibold uppercase tracking-wide text-text-muted">
-              {product.brand}
+              {brand}
             </p>
           )}
 

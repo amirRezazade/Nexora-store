@@ -98,7 +98,7 @@ export function HeaderMenu({
           ref={panelRef}
           role="dialog"
           aria-label={panelLabel ?? label}
-          className="absolute end-0 top-full z-50 mt-2 w-[min(22rem,calc(100vw-1rem))] overflow-hidden rounded-2xl border border-border bg-surface shadow-xl"
+          className="menu-pop absolute end-0 top-full z-50 mt-2 w-[min(22rem,calc(100vw-1rem))] overflow-hidden rounded-2xl border border-border bg-surface shadow-xl"
         >
           {children(() => setOpen(false))}
         </div>

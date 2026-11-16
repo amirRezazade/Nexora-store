@@ -4,6 +4,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { ThemeScript } from "@/components/theme/theme-script";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
@@ -59,17 +60,16 @@ export default async function LocaleLayout({
       suppressHydrationWarning
       className="h-full antialiased"
     >
+      <head>
+        {/* پیش از اولین paint تم ذخیره‌شده را روی <html> اعمال می‌کند */}
+        <ThemeScript />
+      </head>
       <body
         className={`flex min-h-full flex-col bg-background text-foreground pb-[calc(4rem+env(safe-area-inset-bottom))] xs:pb-0 ${
           isRtl ? "font-fa" : "font-sans"
         }`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <ThemeProvider>
           <NextIntlClientProvider>
             <SiteHeader />
             <main className="flex-1">{children}</main>

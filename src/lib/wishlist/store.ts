@@ -1,13 +1,15 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useStore } from "zustand";
 import { createPersistedStore } from "@/lib/store/persisted-store";
 import {
   WISHLIST_STORAGE_KEY,
   addToWishlist,
   emptyWishlist,
+  isWishlisted,
   removeFromWishlist,
   toggleWishlist,
+  wishlistCount,
   wishlistSchema,
   type WishlistState,
 } from "./model";
@@ -40,10 +42,17 @@ export const wishlistActions = {
   },
 };
 
+/** کل state علاقه‌مندی — برای پنل و صفحه‌ی علاقه‌مندی */
 export function useWishlist(): WishlistState {
-  return useSyncExternalStore(
-    wishlistStore.subscribe,
-    wishlistStore.getSnapshot,
-    wishlistStore.getServerSnapshot,
-  );
+  return useStore(wishlistStore.api);
+}
+
+/** فقط تعداد — بج هدر با تغییر آیتم‌های دیگر رندر نمی‌شود */
+export function useWishlistCount(): number {
+  return useStore(wishlistStore.api, wishlistCount);
+}
+
+/** آیا این محصول در لیست هست — برای قلب کارت/صفحه‌ی محصول */
+export function useIsWishlisted(productId: string): boolean {
+  return useStore(wishlistStore.api, (state) => isWishlisted(state, productId));
 }

@@ -36,6 +36,18 @@ describe("createPersistedStore", () => {
     expect(makeStore("test.valid").getSnapshot()).toEqual({ values: [1, 2] });
   });
 
+  it("snapshot سرور بعد از خواندن localStorage همچنان خالی می‌ماند (بدون hydration mismatch)", () => {
+    localStorage.setItem("test.hydration", JSON.stringify({ values: [5] }));
+
+    const store = makeStore("test.hydration");
+
+    // کلاینت مقدار ذخیره‌شده را دارد...
+    expect(store.getSnapshot()).toEqual({ values: [5] });
+    // ...ولی snapshot سرور (که برای hydration استفاده می‌شود) همان مقدار اولیه است.
+    expect(store.getServerSnapshot()).toBe(initial);
+    expect(store.api.getInitialState()).toBe(initial);
+  });
+
   it("update را ذخیره می‌کند، snapshot را پایدار نگه می‌دارد و شنونده‌ها را صدا می‌زند", () => {
     const store = makeStore("test.update");
     const listener = vi.fn();

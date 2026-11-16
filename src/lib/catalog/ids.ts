@@ -14,7 +14,7 @@
  */
 export const MAX_PRODUCT_IDS = 100;
 
-/** شناسه‌های این پروژه متن‌اند (مثل prd-1020)؛ فاصله و کاراکتر نحوی مجاز نیست */
+/** شناسه‌های این پروژه UUID هستند (مثل 8e8e56af-7708-49f2-9b7f-ccdb2bb3a58c)؛ فاصله و کاراکتر نحوی مجاز نیست */
 const PRODUCT_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/;
 
 export function isProductId(value: unknown): value is string {

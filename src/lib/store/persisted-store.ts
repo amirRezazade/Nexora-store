@@ -1,28 +1,34 @@
+import { createStore, type StoreApi } from "zustand/vanilla";
+import { persist, type PersistStorage } from "zustand/middleware";
 import type { z } from "zod";
 
 /**
- * store کوچک و پایدار روی localStorage برای داده‌های سمت مرورگر (سبد، علاقه‌مندی).
+ * store پایدار روی localStorage برای داده‌های سمت مرورگر (سبد، علاقه‌مندی، مقایسه).
  *
- * چرا این شکل؟
- *  - `useSyncExternalStore` روی همین API سوار می‌شود: بدون Provider، بدون
- *    hydration mismatch (سرور snapshot اولیه را می‌بیند و کلاینت بعد از mount).
- *  - snapshot همیشه همان reference است تا useSyncExternalStore بی‌نهایت رندر نشود.
- *  - داده‌ی ذخیره‌شده با Zod اعتبارسنجی می‌شود؛ JSON خراب یا نسخه‌ی ناشناس
- *    به مقدار اولیه برمی‌گردد و برنامه نمی‌شکند.
- *  - تغییر در تب‌های دیگر با رویداد `storage` گرفته می‌شود تا سبد/علاقه‌مندی
- *    بین تب‌های باز هم‌زمان بمانند.
+ * چرا Zustand؟
+ *  - موتور state تست‌شده و کوچک، با selector برای جلوگیری از رندرهای اضافی؛
+ *  - بدون Provider (برخلاف Redux) و سازگار با Server Components؛
+ *  - middleware `persist` کار خواندن/نوشتن را بر عهده می‌گیرد.
+ *
+ * دو نکته‌ی مهم درباره‌ی hydration و اعتبارسنجی:
+ *  - SSR هیچ‌وقت localStorage را نمی‌خواند؛ `getServerSnapshot` مقدار اولیه را
+ *    برمی‌گرداند، پس HTML سرور و کلاینت یکی است و hydration mismatch نداریم.
+ *    Zustand هم برای snapshot سرور از `getInitialState` استفاده می‌کند که
+ *    persist آن را روی مقدار اولیه نگه می‌دارد (نه مقدار خوانده‌شده از storage).
+ *  - localStorage داده‌ی غیرقابل‌اعتماد است؛ به همین دلیل storage سفارشی با Zod
+ *    اعتبارسنجی می‌شود. JSON خراب یا شکل ناسازگار → مقدار اولیه (و حذف مقدار خراب).
+ *    Zod همین‌جا نقش «نسخه‌بندی» را هم دارد: تغییر شکل داده = رد شدن مقدار قدیمی.
+ *  - تغییر در تب دیگر با رویداد `storage` گرفته می‌شود تا همه‌ی تب‌ها هم‌زمان بمانند.
  */
 
 export interface PersistedStore<T> {
   readonly key: string;
-  /** مقدار فعلی؛ برای useSyncExternalStore باید مرجع پایدار باشد */
+  /** هسته‌ی Zustand: getState / subscribe / getInitialState برای هوک و selector */
+  readonly api: StoreApi<T>;
   getSnapshot: () => T;
-  /** مقدار روی سرور (هیچ‌وقت localStorage خوانده نمی‌شود) */
   getServerSnapshot: () => T;
   subscribe: (listener: () => void) => () => void;
-  /** به‌روزرسانی با تابع خالص؛ اگر همان state برگردد، کاری نمی‌کند */
   update: (updater: (current: T) => T) => void;
-  /** پاک کردن کامل مقدار ذخیره‌شده */
   reset: () => void;
 }
 
@@ -35,66 +41,95 @@ export function createPersistedStore<T>({
   initial: T;
   schema: z.ZodType<T, unknown>;
 }): PersistedStore<T> {
-  const listeners = new Set<() => void>();
-
-  /** مقدار اولیه‌ی سرور و کلاینت — reference ثابت برای useSyncExternalStore */
-  const serverSnapshot = initial;
-
-  function parse(raw: string | null): T {
-    if (!raw) return serverSnapshot;
+  /** خواندن و اعتبارسنجی مقدار خام — تنها محل اعتماد به داده‌ی localStorage */
+  function parseStored(raw: string | null): T | null {
+    if (!raw) return null;
     try {
-      const result = schema.safeParse(JSON.parse(raw));
-      return result.success ? result.data : serverSnapshot;
+      const parsed = schema.safeParse(JSON.parse(raw));
+      return parsed.success ? parsed.data : null;
     } catch {
-      return serverSnapshot;
+      return null;
     }
   }
 
-  let snapshot: T = serverSnapshot;
+  const storage: PersistStorage<T> = {
+    getItem: (name) => {
+      if (typeof window === "undefined") return null;
+
+      try {
+        const value = parseStored(window.localStorage.getItem(name));
+        if (!value) {
+          // مقدار خراب/ناسازگار را دور می‌ریزیم تا هر بار دوباره parse نشود
+          storage.removeItem(name);
+          return null;
+        }
+
+        return { state: value, version: 0 };
+      } catch {
+        return null;
+      }
+    },
+    setItem: (name, value) => {
+      try {
+        // فقط خود state ذخیره می‌شود؛ نسخه در Zod/Schema کنترل می‌شود
+        window.localStorage.setItem(name, JSON.stringify(value.state));
+      } catch {
+        // حالت private/سهمیه‌پر — در حافظه ادامه می‌دهیم؛ سبد فقط پایدار نمی‌ماند.
+      }
+    },
+    removeItem: (name) => {
+      try {
+        window.localStorage.removeItem(name);
+      } catch {
+        // نادیده گرفتن خطای دسترسی به localStorage
+      }
+    },
+  };
+
+  const api = createStore<T>()(
+    persist(() => initial, {
+      name: key,
+      storage,
+      // مقدار ذخیره‌شده از قبل کامل و با Zod معتبر شده است؛ پس ادغام لازم نیست.
+      // وقتی چیزی ذخیره نشده، همان state فعلی برگردانده می‌شود تا مرجع اولیه
+      // (و در نتیجه snapshot پایدار) دست‌نخورده بماند.
+      merge: (persisted, current) => (persisted ? (persisted as T) : current),
+    }),
+  );
 
   if (typeof window !== "undefined") {
-    snapshot = parse(window.localStorage.getItem(key));
-
-    // تغییر هم‌زمان در تب/پنجره‌ی دیگر
     window.addEventListener("storage", (event) => {
       if (event.key !== key) return;
-      snapshot = parse(event.newValue);
-      for (const listener of listeners) listener();
-    });
-  }
 
-  function persist(next: T) {
-    try {
-      window.localStorage.setItem(key, JSON.stringify(next));
-    } catch {
-      // حالت private/سهمیه‌پر — در حافظه ادامه می‌دهیم؛ سبد فقط پایدار نمی‌ماند.
-    }
+      // مقدار جدید را مستقیم از رویداد می‌خوانیم (مثل داده‌ی localStorage
+      // غیرقابل‌اعتماد است و از همان مسیر Zod رد می‌شود).
+      const next = parseStored(event.newValue);
+
+      if (!next) {
+        // تب دیگر مقدار را پاک (یا خراب) کرده است؛ state حافظه هم خالی می‌شود.
+        api.setState(initial, true);
+        api.persist.clearStorage();
+        return;
+      }
+
+      api.setState(next, true);
+    });
   }
 
   return {
     key,
-    getSnapshot: () => snapshot,
-    getServerSnapshot: () => serverSnapshot,
-    subscribe: (listener) => {
-      listeners.add(listener);
-      return () => listeners.delete(listener);
-    },
+    api,
+    getSnapshot: () => api.getState(),
+    getServerSnapshot: () => initial,
+    subscribe: (listener) => api.subscribe(listener),
     update: (updater) => {
-      const next = updater(snapshot);
-      if (next === snapshot) return;
-      snapshot = next;
-      persist(next);
-      for (const listener of listeners) listener();
+      const next = updater(api.getState());
+      if (next === api.getState()) return;
+      api.setState(next, true);
     },
     reset: () => {
-      if (snapshot === serverSnapshot) return;
-      snapshot = serverSnapshot;
-      try {
-        window.localStorage.removeItem(key);
-      } catch {
-        // نادیده گرفتن خطای دسترسی به localStorage
-      }
-      for (const listener of listeners) listener();
+      api.setState(initial, true);
+      api.persist.clearStorage();
     },
   };
 }

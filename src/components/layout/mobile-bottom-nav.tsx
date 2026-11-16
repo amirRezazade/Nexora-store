@@ -3,10 +3,8 @@
 import { Home, Store, ShoppingCart, Heart, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
-import { cartCount } from "@/lib/cart/model";
-import { useCart } from "@/lib/cart/store";
-import { wishlistCount } from "@/lib/wishlist/model";
-import { useWishlist } from "@/lib/wishlist/store";
+import { useCartCount } from "@/lib/cart/store";
+import { useWishlistCount } from "@/lib/wishlist/store";
 import { isNavLinkActive } from "@/lib/nav-active";
 import { cn } from "@/lib/utils";
 
@@ -20,12 +18,12 @@ export function MobileBottomNav() {
   const t = useTranslations("nav");
   const common = useTranslations("common");
   const pathname = usePathname();
-  const cart = useCart();
-  const wishlist = useWishlist();
+  const cartItems = useCartCount();
+  const wishlistItems = useWishlistCount();
 
   const counts: Record<string, number> = {
-    "/cart": cartCount(cart),
-    "/wishlist": wishlistCount(wishlist),
+    "/cart": cartItems,
+    "/wishlist": wishlistItems,
   };
 
   const items = [

@@ -99,6 +99,7 @@ export function LanguageSwitcher({
           role="menu"
           className={cn(
             "absolute z-50 w-40 overflow-hidden rounded-2xl border border-border bg-surface p-1 shadow-xl",
+            placement === "top" ? "menu-pop-up" : "menu-pop",
             align === "start" ? "start-0" : "end-0",
             placement === "top" ? "bottom-full mb-2" : "top-full mt-2",
           )}

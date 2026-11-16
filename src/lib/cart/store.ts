@@ -1,10 +1,12 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useStore } from "zustand";
 import { createPersistedStore } from "@/lib/store/persisted-store";
 import {
   CART_STORAGE_KEY,
   addToCart,
+  cartCount,
+  cartItemQuantity,
   cartSchema,
   clearCart,
   emptyCart,
@@ -41,10 +43,17 @@ export const cartActions = {
   },
 };
 
+/** کل state سبد — فقط برای جاهایی که به آیتم‌ها نیاز دارند (پنل سبد) */
 export function useCart(): CartState {
-  return useSyncExternalStore(
-    cartStore.subscribe,
-    cartStore.getSnapshot,
-    cartStore.getServerSnapshot,
-  );
+  return useStore(cartStore.api);
+}
+
+/** فقط تعداد کل — تغییر قیمت/آیتم‌های دیگر باعث رندر مجدد نمی‌شود */
+export function useCartCount(): number {
+  return useStore(cartStore.api, cartCount);
+}
+
+/** تعداد یک محصول مشخص — برای دکمه‌های افزودن/کم‌کردن */
+export function useCartQuantity(productId: string): number {
+  return useStore(cartStore.api, (state) => cartItemQuantity(state, productId));
 }

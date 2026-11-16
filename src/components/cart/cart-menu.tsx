@@ -9,6 +9,8 @@ import { formatPrice } from "@/lib/money";
 import { MAX_ITEM_QUANTITY } from "@/lib/cart/model";
 import { cartActions, useCart } from "@/lib/cart/store";
 import { useProductsByIds } from "@/lib/catalog/use-products-by-ids";
+import { useExitRemoval } from "@/lib/ui/use-exit-removal";
+import { cn } from "@/lib/utils";
 
 /** حداکثر ردیفی که در پیش‌نمایش پنل نشان داده می‌شود؛ بقیه در صفحه‌ی سبد */
 const PREVIEW_LIMIT = 4;
@@ -28,6 +30,7 @@ export function CartMenu({ close }: { close: () => void }) {
 
   const ids = useMemo(() => cart.items.map((item) => item.productId), [cart.items]);
   const { products, status, retry } = useProductsByIds(ids);
+  const { isExiting, removeWithExit } = useExitRemoval(cartActions.remove);
   const byId = useMemo(
     () => new Map(products.map((product) => [product.id, product])),
     [products],
@@ -124,6 +127,7 @@ export function CartMenu({ close }: { close: () => void }) {
               <ul className="divide-y divide-border">
                 {preview.map((item) => {
                   const product = byId.get(item.productId);
+                  const exiting = isExiting(item.productId);
 
                   if (!product || product.stock <= 0) {
                     const unavailableName = product
@@ -133,7 +137,13 @@ export function CartMenu({ close }: { close: () => void }) {
                       : null;
 
                     return (
-                      <li key={item.productId} className="flex items-center gap-3 px-4 py-3">
+                      <li
+                        key={item.productId}
+                        className={cn(
+                          "flex items-center gap-3 px-4 py-3",
+                          exiting && "menu-item-exit",
+                        )}
+                      >
                         {product?.image ? (
                           <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-surface-secondary">
                             <Image
@@ -159,7 +169,7 @@ export function CartMenu({ close }: { close: () => void }) {
                         </div>
                         <button
                           type="button"
-                          onClick={() => cartActions.remove(item.productId)}
+                          onClick={() => removeWithExit(item.productId)}
                           aria-label={t("removeUnavailable")}
                           title={t("removeUnavailable")}
                           className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-error-bg hover:text-error"
@@ -175,7 +185,10 @@ export function CartMenu({ close }: { close: () => void }) {
                   const atMax = item.quantity >= max;
 
                   return (
-                    <li key={item.productId} className="flex gap-3 px-4 py-3">
+                    <li
+                      key={item.productId}
+                      className={cn("flex gap-3 px-4 py-3", exiting && "menu-item-exit")}
+                    >
                       <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-surface-secondary">
                         {product.image && (
                           <Image
@@ -230,7 +243,7 @@ export function CartMenu({ close }: { close: () => void }) {
 
                           <button
                             type="button"
-                            onClick={() => cartActions.remove(item.productId)}
+                            onClick={() => removeWithExit(item.productId)}
                             aria-label={t("remove", { name })}
                             title={t("remove", { name })}
                             className="ms-auto inline-flex h-7 w-7 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-error-bg hover:text-error"

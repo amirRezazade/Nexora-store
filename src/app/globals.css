@@ -76,7 +76,7 @@
     U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FEFF;
 }
 
-/* Tailwind v4: دارک‌مود با class «.dark» روی <html> فعال می‌شود (next-themes آن را مدیریت می‌کند) */
+/* Tailwind v4: دارک‌مود با class «.dark» روی <html> فعال می‌شود (ThemeProvider پروژه آن را مدیریت می‌کند) */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ─────────────────────────────────────────────
@@ -268,6 +268,43 @@ input[type="search"]::-webkit-search-cancel-button {
   animation: nexora-badge-pop 240ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
+/* ─────────────────────────────────────────────
+   پاپ‌آورهای هدر (سبد، علاقه‌مندی، دسته‌بندی، زبان، تم، جستجو)
+   باز شدن با محو + کمی حرکت/بزرگ‌نمایی از سمت لنگر، تا ظاهر شدن
+   «یهویی» نباشد. جهت حرکت (پایین/بالا) به محل قرارگیری پنل بستگی دارد.
+   ───────────────────────────────────────────── */
+@keyframes nexora-popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes nexora-popover-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.menu-pop {
+  transform-origin: top center;
+  animation: nexora-popover-in 160ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.menu-pop-up {
+  transform-origin: bottom center;
+  animation: nexora-popover-in-up 160ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
 /*
  * Preflight تیلویند cursor دکمه‌ها را default می‌کند (طبق رفتار خود مرورگرها).
  * در این پروژه دکمه‌ها همیشه تعاملی‌اند، پس اشاره‌گر دست می‌گیرند؛ دکمهٔ غیرفعال
@@ -283,6 +320,45 @@ input[type="search"]::-webkit-search-cancel-button {
   .nav-link::after,
   .cart-badge {
     transition: none;
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-pop,
+  .menu-pop-up {
+    animation: none;
+  }
+}
+
+/*
+ * خروج ردیف‌های سبد/علاقه‌مندی هنگام حذف.
+ * ارتفاع ابتدا ثابت می‌ماند و با محو شدن، padding و ارتفاع هم جمع می‌شوند؛
+ * بنابراین ردیف «هیچ‌وقت» بلافاصله از صفحه پرت نمی‌شود.
+ * مدت این انیمیشن باید با EXIT_DURATION_MS در use-exit-removal هم‌خوان باشد.
+ */
+@keyframes nexora-item-out {
+  from {
+    opacity: 1;
+    max-height: 8rem;
+  }
+  to {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-top-width: 0;
+  }
+}
+
+.menu-item-exit {
+  overflow: hidden;
+  pointer-events: none;
+  animation: nexora-item-out 180ms ease-in both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-item-exit {
     animation: none;
   }
 }

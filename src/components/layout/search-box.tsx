@@ -25,6 +25,7 @@ interface Suggestion {
   name: string;
   nameFa: string | null;
   brand: string | null;
+  brandFa: string | null;
   price: number;
   image: { url: string; alt: string | null } | null;
 }
@@ -339,7 +340,7 @@ function SearchBoxController({
         <div
           id={panelId}
           aria-busy={status === "loading"}
-          className="absolute inset-x-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-border bg-surface text-foreground shadow-xl"
+          className="menu-pop absolute inset-x-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-border bg-surface text-foreground shadow-xl"
         >
           <div className="max-h-[min(60vh,26rem)] overflow-y-auto overscroll-contain p-1.5">
             {status === "idle" && (
@@ -399,6 +400,8 @@ function SearchBoxController({
                   {items.map((suggestion, index) => {
                     const name =
                       locale === "fa" ? (suggestion.nameFa ?? suggestion.name) : suggestion.name;
+                    const brand =
+                      locale === "fa" ? (suggestion.brandFa ?? suggestion.brand) : suggestion.brand;
                     const active = activeIndex === index;
 
                     return (
@@ -443,9 +446,9 @@ function SearchBoxController({
                               {name}
                             </span>
                             <span className="mt-0.5 flex min-w-0 items-center gap-1.5 text-xs text-text-muted">
-                              {suggestion.brand && (
+                              {brand && (
                                 <>
-                                  <span className="truncate">{suggestion.brand}</span>
+                                  <span className="truncate">{brand}</span>
                                   <span aria-hidden>·</span>
                                 </>
                               )}
