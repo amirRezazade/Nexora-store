@@ -52,9 +52,22 @@
       "next": "اسلاید بعدی"
     },
     "perks": {
-      "authenticity": "ضمانت اصالت کالا",
-      "shipping": "ارسال سریع سراسری",
-      "pricing": "بهترین قیمت و تخفیف‌ها"
+      "authenticity": {
+        "title": "پرداخت امن",
+        "description": "اطلاعات شما در امان است."
+      },
+      "shipping": {
+        "title": "ارسال رایگان",
+        "description": "برای سفارش‌های بالای ۱۰۰ دلار."
+      },
+      "pricing": {
+        "title": "بازگشت آسان",
+        "description": "بازگشت بدون دردسر."
+      },
+      "support": {
+        "title": "پشتیبانی ۲۴ ساعته",
+        "description": "ما اینجا هستیم تا کمک کنیم."
+      }
     }
   },
   "footer": {
