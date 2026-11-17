@@ -31,10 +31,17 @@ import { cn } from "@/lib/utils";
  * می‌چینیم تا چیدمان با محاسبهٔ پلاگین هم‌خوان شود و جهت متن را روی خود اسلاید
  * برمی‌گردانیم. Embla همچنان جهت صفحه را RTL می‌بیند و کشیدن درست کار می‌کند.
  *
- * ارتفاع: عمداً تمام‌صفحه نیست و در هر بریک‌پوینت ثابت است. تصویر بنر ۱۶:۹ است
- * و در این نوار کوتاه‌تر با object-cover بخشی از بالا/پایین تصویر برش می‌خورد؛
- * ارتفاع ثابت باعث می‌شود اسلاید در صفحه‌های کوتاه بی‌رویه بزرگ نشود و چیدمان
- * صفحه نپرد.
+ * ارتفاع و برش تصویر:
+ *  - موبایل: تصویر بنر عمودی است و سوژه در پایین کادر قرار دارد؛ بالای تصویر
+ *    عمداً فضای خالی برای متن/دکمه است. بنابراین ارتفاع با نسبت ۹:۱۶ و سقف
+ *    ۷۰svh تعیین می‌شود، تصویر به پایین لنگر می‌گیرد (object-bottom) تا سوژه
+ *    بریده نشود، و متن در همان فضای خالی بالا می‌نشیند. چون متن بالای تصویر
+ *    است، تصویر موبایل در RTL آینه نمی‌شود.
+ *  - دسکتاپ: تصویر افقی ۱۶:۹ در نواری کوتاه‌تر با object-cover وسط‌چین می‌شود
+ *    (رفتار قبلی)، متن کنار سوژه قرار می‌گیرد و تصویر در RTL آینه می‌شود تا
+ *    سوژه زیر متن نیفتد.
+ * ارتفاع ثابت/کنترل‌شده باعث می‌شود اسلاید در صفحه‌های کوتاه بی‌رویه بزرگ نشود
+ * و چیدمان صفحه نپرد.
  *
  * دسترس‌پذیری:
  *  - هر اسلاید aria-roledescription="slide" دارد و اسلایدهای غیرفعال inert هستند
@@ -82,9 +89,18 @@ const AUTOPLAY_DELAY = 7000;
 const horizontalScrim =
   "bg-[linear-gradient(to_right,rgba(10,9,8,0.9)_0%,rgba(10,9,8,0.8)_26%,rgba(10,9,8,0.5)_46%,rgba(10,9,8,0.16)_64%,rgba(10,9,8,0)_78%)]";
 
-/** در موبایل متن تقریباً تمام عرض را می‌گیرد و به پردهٔ عمودی هم نیاز دارد. */
-const verticalScrim =
-  "bg-[linear-gradient(to_top,rgba(10,9,8,0.95)_0%,rgba(10,9,8,0.85)_38%,rgba(10,9,8,0.55)_66%,rgba(10,9,8,0.14)_86%,rgba(10,9,8,0)_100%)]";
+/**
+ * موبایل: متن در فضای خالی بالای تصویر می‌نشیند، پس پردهٔ تیره باید از بالا
+ * شروع شود. چون جدول بنرها رنگ متن ندارد و پس‌زمینهٔ بنرها روشن/تیره است، این
+ * گرادیان تضمین می‌کند متن سفید روی هر دو خوانا بماند و در عین حال سوژهٔ پایین
+ * تصویر را تیره نکند.
+ */
+const mobileTopScrim =
+  "bg-[linear-gradient(to_bottom,rgba(10,9,8,0.66)_0%,rgba(10,9,8,0.6)_30%,rgba(10,9,8,0.5)_38%,rgba(10,9,8,0)_45%)]";
+
+/** پردهٔ سبک پایین صفحه فقط برای خوانایی نقطه‌های اسلایدر روی عکس روشن. */
+const mobileControlsScrim =
+  "bg-[linear-gradient(to_top,rgba(10,9,8,0.7)_0%,rgba(10,9,8,0.3)_8%,rgba(10,9,8,0)_20%)]";
 
 /** استایل متن و کنترل‌ها روی پردهٔ تیره — مستقل از روشنایی تصویر بنر */
 const overlay = {
@@ -165,7 +181,7 @@ export function HeroSlider({ slides, dir }: { slides: HeroSlide[]; dir: "rtl" | 
           emblaApi?.plugins().autoplay?.play();
         }
       }}
-      className="relative isolate h-[22rem] max-h-[70svh] select-none overflow-hidden bg-stone-950 xs:h-[23rem] md:h-[24rem] lg:h-[25rem] xl:h-[28rem]"
+      className="relative isolate aspect-[9/16] max-h-[70svh] w-full max-[359px]:max-h-[78svh] select-none overflow-hidden bg-stone-950 md:aspect-auto md:h-[24rem] lg:h-[25rem] xl:h-[28rem]"
     >
       <div ref={viewportRef} className="absolute inset-0 overflow-hidden">
         {/* dir="ltr" عمداً: چیدمان ردیف باید مثل فرض پلاگین fade باشد (توضیح بالا) */}
@@ -183,8 +199,9 @@ export function HeroSlider({ slides, dir }: { slides: HeroSlide[]; dir: "rtl" | 
                 dir={dir}
                 className="relative h-full w-full shrink-0 grow-0 basis-full"
               >
-                {/* گروه تصویر: در RTL آینه می‌شود تا سوژهٔ عکس زیر متن نیفتد */}
-                <div className="absolute inset-0 rtl:scale-x-[-1]">
+                {/* گروه تصویر: فقط در دسکتاپ و RTL آینه می‌شود تا سوژهٔ عکس زیر متن نیفتد؛
+                    متن موبایل بالای تصویر است، پس تصویر موبایل آینه نمی‌شود */}
+                <div className="absolute inset-0 md:rtl:scale-x-[-1]">
                   {/* موبایل تصویر عمودی، از md به بالا تصویر افقی — فقط یکی دانلود می‌شود */}
                   <picture className="absolute inset-0 block">
                     <source media="(min-width: 768px)" srcSet={slide.media.desktopSrcSet} />
@@ -196,20 +213,27 @@ export function HeroSlider({ slides, dir }: { slides: HeroSlide[]; dir: "rtl" | 
                       loading={index === 0 ? "eager" : "lazy"}
                       fetchPriority={index === 0 ? "high" : "auto"}
                       draggable={false}
-                      className="h-full w-full object-cover object-center"
+                      className="h-full w-full object-cover object-bottom md:object-center"
                     />
                   </picture>
-                  <div aria-hidden className={cn("absolute inset-0", horizontalScrim)} />
+                  <div
+                    aria-hidden
+                    className={cn("absolute inset-0 hidden md:block", horizontalScrim)}
+                  />
                 </div>
 
-                <div aria-hidden className={cn("absolute inset-0 md:hidden", verticalScrim)} />
+                <div aria-hidden className={cn("absolute inset-0 md:hidden", mobileTopScrim)} />
+                <div
+                  aria-hidden
+                  className={cn("absolute inset-0 md:hidden", mobileControlsScrim)}
+                />
 
                 {/* متن روی فضای خالی عکس */}
-                <div className="absolute inset-0 flex items-center">
+                <div className="absolute inset-0 flex items-start md:items-center">
                   <div className="mx-auto w-full max-w-[90rem] px-5 xs:px-6 md:px-10 lg:px-14">
                     <div
                       inert={!isActive}
-                      className="flex max-w-[30rem] flex-col items-start gap-3 pb-16 sm:gap-4 md:max-w-[34rem] md:pb-8 lg:max-w-[36rem]"
+                      className="flex max-w-[30rem] flex-col items-start gap-3 pt-7 xs:pt-8 sm:gap-4 md:max-w-[34rem] md:pt-0 md:pb-8 lg:max-w-[36rem]"
                     >
                       <h2
                         className={cn(
