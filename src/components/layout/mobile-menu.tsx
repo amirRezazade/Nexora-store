@@ -4,20 +4,20 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useLocale, useTranslations } from "next-intl";
 import {
-  Home,
-  LayoutGrid,
-  Menu,
+  House,
+  SquaresFour,
+  List,
   X,
-  Store,
-  BadgePercent,
+  Storefront,
+  Percent,
   Tag,
-  GitCompare,
+  ArrowsLeftRight,
   Info,
   Phone,
-  LifeBuoy,
+  Lifebuoy,
   User,
-  ChevronDown,
-} from "lucide-react";
+  CaretDown,
+} from "@phosphor-icons/react/dist/ssr";
 import { Link, usePathname } from "@/i18n/navigation";
 import { Logo } from "./logo";
 import { categoryHref, categoryName, type CategoryNode } from "@/lib/category-tree";
@@ -131,14 +131,14 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
   };
 
   const mainLinks = [
-    { href: "/", label: t("home"), icon: Home },
-    { href: "/shop", label: t("shop"), icon: Store },
-    { href: "/deals", label: t("deals"), icon: BadgePercent },
+    { href: "/", label: t("home"), icon: House },
+    { href: "/shop", label: t("shop"), icon: Storefront },
+    { href: "/deals", label: t("deals"), icon: Percent },
     { href: "/brands", label: t("brands"), icon: Tag },
-    { href: "/compare", label: t("compare"), icon: GitCompare },
+    { href: "/compare", label: t("compare"), icon: ArrowsLeftRight },
     { href: "/about", label: t("about"), icon: Info },
     { href: "/contact", label: t("contact"), icon: Phone },
-    { href: "/help", label: t("help"), icon: LifeBuoy },
+    { href: "/help", label: t("help"), icon: Lifebuoy },
   ] as const;
 
   return (
@@ -150,9 +150,9 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
         aria-label={common("menu")}
         aria-expanded={open}
         aria-controls={open ? "mobile-menu" : undefined}
-        className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-secondary transition-all duration-150 hover:bg-primary-soft hover:text-primary active:scale-95 md:hidden"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-secondary transition-all duration-150 hover:bg-icon-surface hover:text-primary-text active:scale-95 md:hidden"
       >
-        <Menu className="h-[18px] w-[18px]" aria-hidden />
+        <List className="h-[18px] w-[18px]" aria-hidden />
       </button>
 
       {/* Portal به body: چون هدر backdrop-blur دارد (containing block برای fixed)،
@@ -199,7 +199,7 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
                 onClick={() => close()}
                 disabled={closing}
                 aria-label={common("close")}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-primary-soft hover:text-primary"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-icon-surface hover:text-primary-text"
               >
                 <X className="h-5 w-5" aria-hidden />
               </button>
@@ -215,16 +215,16 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
                     onClick={() => close(false)}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-surface-secondary hover:text-primary",
+                      "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-icon-surface hover:text-primary-text",
                       active
-                        ? "bg-primary-soft font-semibold text-primary"
+                        ? "bg-icon-surface font-semibold text-primary-text"
                         : "font-medium text-foreground",
                     )}
                   >
                     <Icon
                       className={cn(
                         "h-5 w-5",
-                        active ? "text-primary" : "text-text-secondary",
+                        active ? "text-primary-text" : "text-text-secondary",
                       )}
                       aria-hidden
                     />
@@ -239,11 +239,11 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
                 onClick={() => setCatsOpen((v) => !v)}
                 aria-expanded={catsOpen}
                 aria-controls="mobile-menu-categories"
-                className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground hover:bg-surface-secondary"
+                className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground hover:bg-icon-surface"
               >
-                <LayoutGrid className="h-5 w-5 text-text-secondary" aria-hidden />
+                <SquaresFour className="h-5 w-5 text-text-secondary" aria-hidden />
                 <span className="flex-1 text-start">{t("categories")}</span>
-                <ChevronDown
+                <CaretDown
                   className={cn("h-4 w-4 transition-transform", catsOpen && "rotate-180")}
                   aria-hidden
                 />
@@ -263,7 +263,7 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
                     <Link
                       href="/shop"
                       onClick={() => close(false)}
-                      className="block rounded-lg px-3 py-2 text-sm font-medium text-primary hover:bg-primary-soft"
+                      className="block rounded-lg px-3 py-2 text-sm font-medium text-primary-text hover:bg-icon-surface"
                     >
                       {t("allCategories")}
                     </Link>
@@ -276,9 +276,9 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
                             onClick={() => close(false)}
                             aria-current={nodeActive ? "page" : undefined}
                             className={cn(
-                              "block rounded-lg px-3 py-2 text-sm font-medium hover:bg-surface-secondary",
+                              "block rounded-lg px-3 py-2 text-sm font-medium hover:bg-icon-surface",
                               nodeActive
-                                ? "bg-primary-soft text-primary"
+                                ? "bg-icon-surface text-primary-text"
                                 : "text-foreground",
                             )}
                           >
@@ -293,9 +293,9 @@ export function MobileMenu({ tree }: { tree: CategoryNode[] }) {
                                 onClick={() => close(false)}
                                 aria-current={childActive ? "page" : undefined}
                                 className={cn(
-                                  "block rounded-lg py-1.5 pe-3 ps-7 text-sm hover:bg-surface-secondary",
+                                  "block rounded-lg py-1.5 pe-3 ps-7 text-sm hover:bg-icon-surface",
                                   childActive
-                                    ? "bg-primary-soft font-semibold text-primary"
+                                    ? "bg-icon-surface font-semibold text-primary-text"
                                     : "text-text-secondary",
                                 )}
                               >

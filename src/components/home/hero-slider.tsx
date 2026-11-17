@@ -5,7 +5,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import Fade from "embla-carousel-fade";
 import type { EmblaPluginType } from "embla-carousel";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CaretLeft, CaretRight } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -260,7 +260,7 @@ export function HeroSlider({ slides, dir }: { slides: HeroSlide[]; dir: "rtl" | 
                           <Link
                             href={slide.primary.href}
                             className={cn(
-                              "inline-flex h-11 items-center rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover sm:h-12 sm:px-7 sm:text-base",
+                              "gradient-brand inline-flex h-11 items-center rounded-full px-5 text-sm font-bold shadow-sm transition-all duration-150 hover:brightness-110 active:scale-[0.99] sm:h-12 sm:px-7 sm:text-base",
                               focusRing,
                             )}
                           >
@@ -310,7 +310,7 @@ export function HeroSlider({ slides, dir }: { slides: HeroSlide[]; dir: "rtl" | 
                   focusRing,
                 )}
               >
-                <ChevronLeft className="h-[1.125rem] w-[1.125rem] rtl:rotate-180" aria-hidden />
+                <CaretLeft className="h-[1.125rem] w-[1.125rem] rtl:rotate-180" aria-hidden />
               </button>
               <button
                 type="button"
@@ -322,7 +322,7 @@ export function HeroSlider({ slides, dir }: { slides: HeroSlide[]; dir: "rtl" | 
                   focusRing,
                 )}
               >
-                <ChevronRight className="h-[1.125rem] w-[1.125rem] rtl:rotate-180" aria-hidden />
+                <CaretRight className="h-[1.125rem] w-[1.125rem] rtl:rotate-180" aria-hidden />
               </button>
             </div>
           </div>

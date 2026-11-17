@@ -86,7 +86,7 @@ describe("CategoriesDropdown", () => {
     expect(screen.getByText("viewCategoryProducts:کفش")).toBeInTheDocument();
 
     // آیکون پیش‌فرض برای دسته‌هایی که سرور آیکون ندارند
-    expect(container.querySelectorAll("svg.lucide-shapes")).toHaveLength(2);
+    expect(container.querySelectorAll('svg[data-icon="category-fallback"]')).toHaveLength(2);
   });
 
   it("لینک‌های واقعی به صفحه‌ی هر دسته می‌سازد", () => {

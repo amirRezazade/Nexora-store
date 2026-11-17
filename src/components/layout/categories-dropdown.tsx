@@ -5,10 +5,10 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import {
   ArrowRight,
-  ChevronDown,
-  LayoutGrid,
+  CaretDown,
+  SquaresFour,
   Shapes,
-} from "lucide-react";
+} from "@phosphor-icons/react/dist/ssr";
 import { Link, usePathname } from "@/i18n/navigation";
 import { categoryHref, categoryName, type CategoryNode } from "@/lib/category-tree";
 import { cn } from "@/lib/utils";
@@ -93,13 +93,13 @@ export function CategoriesDropdown({ tree }: { tree: CategoryNode[] }) {
         aria-controls={open ? panelId : undefined}
         className={cn(
           focusRing,
-          "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md py-1.5 text-sm font-semibold transition-colors hover:text-primary",
-          open || onCategoryPage ? "text-primary" : "text-foreground",
+          "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md py-1.5 text-sm font-semibold transition-colors hover:text-primary-text",
+          open || onCategoryPage ? "text-primary-text" : "text-foreground",
         )}
       >
-        <LayoutGrid className="h-4 w-4" aria-hidden />
+        <SquaresFour className="h-4 w-4" aria-hidden />
         {t("categories")}
-        <ChevronDown
+        <CaretDown
           className={cn("h-4 w-4 transition-transform", open && "rotate-180")}
           aria-hidden
         />
@@ -122,7 +122,7 @@ export function CategoriesDropdown({ tree }: { tree: CategoryNode[] }) {
                   onClick={() => setOpen(false)}
                   className={cn(
                     focusRing,
-                    "rounded text-[11px] font-semibold text-text-muted transition-colors hover:text-primary",
+                    "rounded text-[11px] font-semibold text-text-muted transition-colors hover:text-primary-text",
                   )}
                 >
                   {t("viewAllShort")}
@@ -145,19 +145,19 @@ export function CategoriesDropdown({ tree }: { tree: CategoryNode[] }) {
                             focusRing,
                             "flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm transition-colors",
                             selected
-                              ? "bg-primary-soft font-semibold text-primary"
-                              : "font-medium text-text-secondary hover:bg-surface-secondary hover:text-foreground",
+                              ? "bg-icon-surface font-semibold text-primary-text"
+                              : "font-medium text-text-secondary hover:bg-icon-surface hover:text-foreground",
                           )}
                         >
                           <span
                             className={cn(
                               "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
-                              selected ? "bg-surface text-primary" : "text-text-muted",
+                              selected ? "bg-surface text-primary-text" : "text-text-muted",
                             )}
                           >
                             <Shapes
+                              data-icon="category-fallback"
                               className="h-4 w-4"
-                              strokeWidth={1.8}
                               aria-hidden
                             />
                           </span>
@@ -201,7 +201,7 @@ export function CategoriesDropdown({ tree }: { tree: CategoryNode[] }) {
                               onClick={() => setOpen(false)}
                               className={cn(
                                 focusRing,
-                                "flex min-h-8 items-center rounded-md px-2 text-[13px] text-text-secondary transition-colors hover:bg-surface-secondary hover:text-primary",
+                                "flex min-h-8 items-center rounded-md px-2 text-[13px] text-text-secondary transition-colors hover:bg-icon-surface hover:text-primary-text",
                               )}
                             >
                               <span className="truncate">
@@ -223,7 +223,7 @@ export function CategoriesDropdown({ tree }: { tree: CategoryNode[] }) {
                     onClick={() => setOpen(false)}
                     className={cn(
                       focusRing,
-                      "mt-auto inline-flex items-center gap-1.5 self-start rounded pt-4 text-xs font-semibold text-primary transition-colors hover:text-primary-hover",
+                      "mt-auto inline-flex items-center gap-1.5 self-start rounded pt-4 text-xs font-semibold text-primary-text transition-colors hover:text-primary-hover",
                     )}
                   >
                     {t("viewCategoryProducts", {

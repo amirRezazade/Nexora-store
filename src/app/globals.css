@@ -102,59 +102,98 @@
 }
 
 /* ─────────────────────────────────────────────
-   ۲) لایت‌تم — توکن‌های معنایی
-   نوت‌های خنثی «Stone» گرم‌اند تا با برند نارنجی هماهنگ باشند
-   (به‌جای Slate خنثی — الگوی پالت‌های ایکامرس نارنجی، ردیف ۲۳/۴ پایگاه داده)
+   ۲) لایت‌تم — توکن‌های معنایی (پالت تأییدشدهٔ برند)
+   Primary #FC6305 · Base #FBFBFD · Soft #F0F0F7 · Muted #E6E2EC
    ───────────────────────────────────────────── */
 :root {
-  --background: #fafaf9;
+  --background: #fbfbfd;
   --surface: #ffffff;
-  --surface-secondary: #f5f5f4;
-  --surface-tertiary: #eae8e5;
-  --foreground: #1c1917;
-  --text-secondary: #57534e;
-  --text-muted: #78716c;
-  --border: #e8e5e2;
-  --border-strong: #d6d3d1;
+  --surface-secondary: #f0f0f7;
+  --surface-tertiary: #e6e2ec;
+  --icon-surface: #f8f8fb;   /* سطح مخصوص آیکون‌ها: خیلی نزدیک به پسزمینهٔ صفحه */
+  --foreground: #0d0f17;
+  --text-secondary: #52535f;
+  --text-muted: #6b6b7b;   /* Muted شما #838393 بود؛ برای AA کمی تیره‌تر شد */
+  --border: #e6e2ec;
+  --border-strong: #c6c7d7;
 
-  --primary: #c2410c;           /* طبق سند: دکمه‌ی اصلی لایت‌تم */
-  --primary-hover: #9a3412;
-  --primary-foreground: #ffffff;
-  --primary-soft: #fdf1e7;
+  --primary: #fc6305;
+  --primary-hover: #e95600;
+  --primary-foreground: #0d0f17;   /* متن تیره روی نارنجی روشن — کنتراست ۶.۵ به‌جای ۲.۹ با سفید */
+  --primary-soft: #fce0d0;
+  --primary-text: #c2410c;         /* فقط برای متن/آیکون نارنجی؛ خودِ fill همان #FC6305 می‌ماند */
 
-  --success: #15803d;  --success-bg: #f0fdf4;  --success-foreground: #ffffff;
-  --warning: #b45309;  --warning-bg: #fffbeb;  --warning-foreground: #ffffff;
-  --error:   #dc2626;  --error-bg:   #fef2f2;  --error-foreground:   #ffffff;
-  --info:    #2563eb;  --info-bg:    #eff6ff;  --info-foreground:    #ffffff;
+  /* رنگ متنِ وضعیت‌ها تیره‌تر از fill است تا روی سفید/تینت AA شود */
+  --success: #16a36a;  --success-text: #0e7c50;  --success-bg: #e8f6f0;  --success-foreground: #0d0f17;
+  --warning: #f5a623;  --warning-text: #9a5b00;  --warning-bg: #fdf2df;  --warning-foreground: #0d0f17;
+  --error:   #e5484d;  --error-text:   #c62a2f;  --error-bg:   #fcebec;  --error-foreground:   #0d0f17;
+  --info:    #3366cc;  --info-text:    #3366cc;  --info-bg:    #ebf0fa;  --info-foreground:    #0d0f17;
 
   color-scheme: light;
 }
 
 /* ─────────────────────────────────────────────
-   ۳) دارک‌تم — گرم (قهوه‌ای-دودی) نه آبی-خاکستری؛ طبق همان پالت گرم
+   ۳) دارک‌تم — پالت تأییدشدهٔ برند
+   Background #090A0B · Surface #141416 · Primary #FD5D01
    ───────────────────────────────────────────── */
 .dark {
-  --background: #1b1917;
-  --surface: #232120;
-  --surface-secondary: #2b2927;
-  --surface-tertiary: #373431;
-  --foreground: #f5f4f2;
-  --text-secondary: #cfccc8;
-  --text-muted: #a8a29e;
-  --border: #383532;
-  --border-strong: #4d4a45;
+  --background: #090a0b;
+  --surface: #141416;
+  --surface-secondary: #25272b;   /* سطح دوم: تامبنیل، چیپ‌ها، پنل‌ها */
+  --surface-tertiary: #303237;    /* سطح سوم: بج شمارنده و حالت فعال */
+  --icon-surface: #1c1e21;        /* سطح مخصوص آیکون‌ها */
+  --foreground: #f5f5f5;
+  --text-secondary: #b8b8b8;
+  --text-muted: #85858a;
+  --border: #303236;
+  --border-strong: #45484d;
 
-  --primary: #f97316;           /* طبق سند: اکسنت اصلی دارک‌تم */
-  --primary-hover: #fb923c;
-  --primary-foreground: #1b1917;
-  --primary-soft: #33261c;
+  --primary: #fd5d01;
+  --primary-hover: #e95100;
+  --primary-foreground: #090a0b;
+  --primary-soft: #351a0d;
+  --primary-text: #fd5d01;
 
-  --success: #4ade80;  --success-bg: #183326;  --success-foreground: #1b1917;
-  --warning: #fbbf24;  --warning-bg: #3a301b;  --warning-foreground: #1b1917;
-  --error:   #f87171;  --error-bg:   #3b2023;  --error-foreground:   #1b1917;
-  --info:    #60a5fa;  --info-bg:    #1d2d45;  --info-foreground:    #1b1917;
+  --success: #22c55e;  --success-text: #22c55e;  --success-bg: #10261a;  --success-foreground: #090a0b;
+  --warning: #f5a623;  --warning-text: #f5a623;  --warning-bg: #2e2210;  --warning-foreground: #090a0b;
+  --error:   #ef4444;  --error-text:   #ef4444;  --error-bg:   #2e1415;  --error-foreground:   #090a0b;
+  --info:    #3b82f6;  --info-text:    #3b82f6;  --info-bg:    #101e33;  --info-foreground:    #090a0b;
 
   color-scheme: dark;
+}
+
+/* ─────────────────────────────────────────────
+   ۳٫۵) گرادینت برند — دکمهٔ اصلی سبد و دکمهٔ بنرها
+   تغییر رنگ گرادینت فقط با ویرایش همین سه متغیر در اینجاست؛
+   کامپوننتها فقط کلاس .gradient-brand را میگیرند و هاردکدی ندارند.
+   ───────────────────────────────────────────── */
+:root {
+  --gradient-brand-from: #c2410c;
+  --gradient-brand-via: #fc6305;
+  --gradient-brand-to: #ff8a3d;
+  --gradient-brand-direction: to right;
+  --gradient-brand-foreground: #ffffff;
+}
+
+.dark {
+  --gradient-brand-from: #b94700;
+  --gradient-brand-via: #fd5d01;
+  --gradient-brand-to: #ff8a3d;
+}
+
+/* در RTL هم گرادینت از سمت شروع متن (راست) شروع شود */
+[dir="rtl"] {
+  --gradient-brand-direction: to left;
+}
+
+.gradient-brand {
+  background-image: linear-gradient(
+    var(--gradient-brand-direction) in oklab,
+    var(--gradient-brand-from),
+    var(--gradient-brand-via),
+    var(--gradient-brand-to)
+  );
+  color: var(--gradient-brand-foreground);
 }
 
 /* ─────────────────────────────────────────────
@@ -166,6 +205,7 @@
   --color-surface: var(--surface);
   --color-surface-secondary: var(--surface-secondary);
   --color-surface-tertiary: var(--surface-tertiary);
+  --color-icon-surface: var(--icon-surface);
   --color-foreground: var(--foreground);
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
@@ -176,17 +216,22 @@
   --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-soft: var(--primary-soft);
+  --color-primary-text: var(--primary-text);
 
   --color-success: var(--success);
+  --color-success-text: var(--success-text);
   --color-success-bg: var(--success-bg);
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
+  --color-warning-text: var(--warning-text);
   --color-warning-bg: var(--warning-bg);
   --color-warning-foreground: var(--warning-foreground);
   --color-error: var(--error);
+  --color-error-text: var(--error-text);
   --color-error-bg: var(--error-bg);
   --color-error-foreground: var(--error-foreground);
   --color-info: var(--info);
+  --color-info-text: var(--info-text);
   --color-info-bg: var(--info-bg);
   --color-info-foreground: var(--info-foreground);
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import type { LucideIcon } from "lucide-react";
+import type { Icon } from "@phosphor-icons/react/lib";
 import { cn } from "@/lib/utils";
 
 /**
@@ -17,21 +17,7 @@ import { cn } from "@/lib/utils";
  *  - بستن با Escape (بازگشت فوکوس به trigger)، کلیک بیرون و خروج فوکوس با Tab
  *  - پنل با role="dialog" و label محلی‌شده
  */
-export function HeaderMenu({
-  icon: Icon,
-  label,
-  panelLabel,
-  count = 0,
-  children,
-  triggerClassName,
-}: {
-  icon: LucideIcon;
-  label: string;
-  panelLabel?: string;
-  count?: number;
-  children: (close: () => void) => ReactNode;
-  triggerClassName?: string;
-}) {
+export function HeaderMenu({ icon: Icon, label, panelLabel, count = 0, children, triggerClassName }: { icon: Icon; label: string; panelLabel?: string; count?: number; children: (close: () => void) => ReactNode; triggerClassName?: string }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -60,9 +46,7 @@ export function HeaderMenu({
   // ورود فوکوس به پنل هنگام باز شدن؛ خروج با Tab در onBlur بسته می‌شود
   useEffect(() => {
     if (!open) return;
-    panelRef.current
-      ?.querySelector<HTMLElement>('a[href], button:not([disabled])')
-      ?.focus();
+    panelRef.current?.querySelector<HTMLElement>("a[href], button:not([disabled])")?.focus();
   }, [open]);
 
   const onRootBlur = (event: React.FocusEvent<HTMLDivElement>) => {
@@ -72,34 +56,13 @@ export function HeaderMenu({
 
   return (
     <div ref={rootRef} onBlur={onRootBlur} className="relative">
-      <button
-        ref={triggerRef}
-        type="button"
-        aria-label={label}
-        title={label}
-        aria-haspopup="dialog"
-        aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
-        className={cn(
-          "relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-secondary transition-all duration-150 hover:bg-primary-soft hover:text-primary active:scale-95 sm:h-10 sm:w-10",
-          triggerClassName,
-        )}
-      >
-        <Icon className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.8} aria-hidden />
-        {count > 0 && (
-          <span className="cart-badge absolute -top-1 -end-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
-            {count > 99 ? "99+" : count}
-          </span>
-        )}
+      <button ref={triggerRef} type="button" aria-label={label} title={label} aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen((value) => !value)} className={cn("relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-secondary transition-all duration-150 hover:bg-icon-surface hover:text-primary-text active:scale-95 sm:h-10 sm:w-10", triggerClassName)}>
+        <Icon className="h-[18px] w-[18px] sm:h-5 sm:w-5" aria-hidden />
+        {count > 0 && <span className="cart-badge absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary-soft px-1 text-[10px] font-bold text-primary-text ring-2 ring-background">{count > 99 ? "99+" : count}</span>}
       </button>
 
       {open && (
-        <div
-          ref={panelRef}
-          role="dialog"
-          aria-label={panelLabel ?? label}
-          className="menu-pop absolute end-0 top-full z-50 mt-2 w-[min(22rem,calc(100vw-1rem))] overflow-hidden rounded-2xl border border-border bg-surface shadow-xl"
-        >
+        <div ref={panelRef} role="dialog" aria-label={panelLabel ?? label} className="menu-pop absolute end-0 top-full z-50 mt-2 w-[min(22rem,calc(100vw-1rem))] overflow-hidden rounded-2xl border border-border bg-surface shadow-xl">
           {children(() => setOpen(false))}
         </div>
       )}

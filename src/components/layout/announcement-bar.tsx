@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
-import { Truck, X } from "lucide-react";
+import { Truck, X } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
 
 const DISMISS_KEY = "nexora:announcement:dismissed";
@@ -19,10 +19,11 @@ const dismissedClient = () => window.localStorage.getItem(DISMISS_KEY) === "1";
 const dismissedServer = () => false;
 
 /**
- * بنر نارنجی بالای هدر (لایه‌ی ۱).
+ * نوار اطلاع‌رسانی بالای هدر (لایه‌ی ۱).
+ * - پس‌زمینه خنثی (surface-secondary) و متن/آیکون نارنجیِ قابل‌خواندن؛
+ *   طبق جهت جدید طراحی، هیچ سطح نارنجی پرکننده‌ای در رابط نیست.
  * - دکمه‌ی X کاربر را می‌بندد و انتخاب در localStorage ذخیره می‌شود
  * - قبل از hydration چیزی رندر نمی‌شود (نه flash، نه hydration mismatch)
- * - تضاد رنگی WCAG AA: لایت‌تم نارنجی تیره + متن سفید؛ دارک‌تم نارنجی روشن + متن تیره
  */
 export function AnnouncementBar() {
   const t = useTranslations("common");
@@ -40,7 +41,7 @@ export function AnnouncementBar() {
   return (
     <div
       role="status"
-      className="relative flex h-8 items-center justify-center gap-2 bg-primary-soft px-10 text-center text-xs font-semibold text-primary"
+      className="relative flex h-8 items-center justify-center gap-2 bg-surface-secondary px-10 text-center text-xs font-semibold text-primary-text"
     >
       <Truck className="h-3.5 w-3.5 shrink-0" aria-hidden />
       <span className="truncate">{t("freeShipping")}</span>
@@ -51,7 +52,7 @@ export function AnnouncementBar() {
           setSessionDismissed(true);
         }}
         aria-label={t("dismiss")}
-        className="absolute end-1 inline-flex h-6 w-6 items-center justify-center rounded-lg transition-colors hover:text-primary-hover"
+        className="absolute end-1 inline-flex h-6 w-6 items-center justify-center rounded-lg transition-opacity hover:opacity-70"
       >
         <X className="h-3.5 w-3.5" aria-hidden />
       </button>

@@ -23,7 +23,7 @@ export function SiteFooter() {
             <Link
               key={l.href}
               href={l.href}
-              className="transition-colors hover:text-primary"
+              className="transition-colors hover:text-primary-text"
             >
               {l.label}
             </Link>

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { ChevronRight, PackageSearch, Shapes, TriangleAlert } from "lucide-react";
+import { CaretRight, Package, Shapes, Warning } from "@phosphor-icons/react/dist/ssr";
 import { Link } from "@/i18n/navigation";
 import { categoryHref, categoryName } from "@/lib/category-tree";
 import { getCategoryBySlug } from "@/server/dal/categories";
@@ -37,14 +37,14 @@ export default async function CategoryPage({
     return (
       <main className="mx-auto max-w-[90rem] px-3 py-10 xs:px-4 sm:px-6 sm:py-16">
         <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-3xl border border-border bg-surface px-6 py-14 text-center">
-          <div className="mb-1 flex h-16 w-16 items-center justify-center rounded-2xl bg-error-bg text-error">
-            <TriangleAlert className="h-8 w-8" aria-hidden />
+          <div className="mb-1 flex h-16 w-16 items-center justify-center rounded-2xl bg-error-bg text-error-text">
+            <Warning className="h-8 w-8" aria-hidden />
           </div>
           <h1 className="text-xl font-bold text-foreground">{t("errorTitle")}</h1>
           <p className="text-sm leading-6 text-text-secondary">{t("errorHint")}</p>
           <Link
             href={categoryHref(slug)}
-            className="mt-2 inline-flex h-11 items-center justify-center rounded-full border border-border px-6 text-sm font-semibold text-foreground transition-colors hover:border-border-strong hover:text-primary"
+            className="mt-2 inline-flex h-11 items-center justify-center rounded-full border border-border px-6 text-sm font-semibold text-foreground transition-colors hover:border-border-strong hover:text-primary-text"
           >
             {t("retry")}
           </Link>
@@ -69,24 +69,24 @@ export default async function CategoryPage({
           <li>
             <Link
               href="/"
-              className="rounded transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="rounded transition-colors hover:text-primary-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               {t("home")}
             </Link>
           </li>
           <li aria-hidden>
-            <ChevronRight className="h-4 w-4 shrink-0 rtl:rotate-180" />
+            <CaretRight className="h-4 w-4 shrink-0 rtl:rotate-180" />
           </li>
           <li>
             <Link
               href="/shop"
-              className="rounded transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="rounded transition-colors hover:text-primary-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               {t("categories")}
             </Link>
           </li>
           <li aria-hidden>
-            <ChevronRight className="h-4 w-4 shrink-0 rtl:rotate-180" />
+            <CaretRight className="h-4 w-4 shrink-0 rtl:rotate-180" />
           </li>
           <li aria-current="page" className="font-semibold text-foreground">
             {name}
@@ -96,8 +96,8 @@ export default async function CategoryPage({
 
       <header className="mt-6 border-b border-border pb-8">
         <div className="flex items-start gap-4">
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary">
-            <Shapes className="h-7 w-7" strokeWidth={1.8} aria-hidden />
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-icon-surface text-primary-text">
+            <Shapes className="h-7 w-7" aria-hidden />
           </span>
           <div className="min-w-0">
             <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
@@ -124,7 +124,7 @@ export default async function CategoryPage({
                 <li key={child.id}>
                   <Link
                     href={categoryHref(child.slug)}
-                    className="inline-flex min-h-9 items-center rounded-full border border-border bg-surface px-4 text-sm font-medium text-text-secondary transition-colors hover:border-border-strong hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    className="inline-flex min-h-9 items-center rounded-full border border-border bg-surface px-4 text-sm font-medium text-text-secondary transition-colors hover:border-border-strong hover:text-primary-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
                     {categoryName(child, locale)}
                   </Link>
@@ -137,7 +137,7 @@ export default async function CategoryPage({
 
       {/* جای فهرست محصولات — در مرحله‌ی بعد با محصولات و فیلترهای همین دسته پر می‌شود */}
       <section className="mt-8 rounded-3xl border border-dashed border-border bg-surface px-6 py-14 text-center">
-        <PackageSearch className="mx-auto h-8 w-8 text-text-muted" aria-hidden />
+        <Package className="mx-auto h-8 w-8 text-text-muted" aria-hidden />
         <h2 className="mt-3 text-lg font-bold text-foreground">
           {t("productsPlaceholderTitle")}
         </h2>
@@ -146,7 +146,7 @@ export default async function CategoryPage({
         </p>
         <Link
           href="/shop"
-          className="mt-5 inline-flex h-11 items-center justify-center rounded-full border border-border px-6 text-sm font-semibold text-foreground transition-colors hover:border-border-strong hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="mt-5 inline-flex h-11 items-center justify-center rounded-full border border-border px-6 text-sm font-semibold text-foreground transition-colors hover:border-border-strong hover:text-primary-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           {t("backToShop")}
         </Link>

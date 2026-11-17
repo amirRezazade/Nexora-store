@@ -1,4 +1,4 @@
-import { BadgePercent, ShieldCheck, Truck } from "lucide-react";
+import { Percent, ShieldCheck, Truck } from "@phosphor-icons/react/dist/ssr";
 import { getImageProps } from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { HeroSlider, type HeroSlide } from "@/components/home/hero-slider";
@@ -60,7 +60,7 @@ export default async function HomePage({
   const perks = [
     { icon: ShieldCheck, label: t("perks.authenticity") },
     { icon: Truck, label: t("perks.shipping") },
-    { icon: BadgePercent, label: t("perks.pricing") },
+    { icon: Percent, label: t("perks.pricing") },
   ];
 
   return (
@@ -79,7 +79,7 @@ export default async function HomePage({
               key={label}
               className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-4"
             >
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-icon-surface text-primary-text">
                 <Icon className="h-6 w-6" aria-hidden />
               </span>
               <span className="text-sm font-semibold">{label}</span>

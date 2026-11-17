@@ -54,6 +54,7 @@ export function ProductGrid({
                       alt={product.image.alt ?? name}
                       fill
                       sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                      quality={95}
                       className="object-cover transition-transform duration-300 hover:scale-[1.03]"
                     />
                   </Link>
@@ -63,6 +64,7 @@ export function ProductGrid({
                     alt={product.image.alt ?? name}
                     fill
                     sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                    quality={95}
                     className="object-cover"
                   />
                 ))}
@@ -73,7 +75,7 @@ export function ProductGrid({
                   <Link
                     href={href}
                     prefetch={false}
-                    className="transition-colors hover:text-primary"
+                    className="transition-colors hover:text-primary-text"
                   >
                     {name}
                   </Link>
@@ -81,7 +83,7 @@ export function ProductGrid({
                   name
                 )}
               </h2>
-              <span className="mt-auto text-sm font-bold text-primary">
+              <span className="mt-auto text-sm font-bold text-primary-text">
                 <bdi dir="ltr">{formatPrice(product.price)}</bdi>
               </span>
               <ProductActions productId={product.id} stock={product.stock} />

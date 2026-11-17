@@ -2,11 +2,11 @@
 
 import { useMemo } from "react";
 import Image from "next/image";
-import { Minus, Plus, ShoppingCart, Trash2, TriangleAlert } from "lucide-react";
+import { Minus, Plus, ShoppingCartSimple, Trash, Warning } from "@phosphor-icons/react/dist/ssr";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatPrice } from "@/lib/money";
-import { MAX_ITEM_QUANTITY } from "@/lib/cart/model";
+import { MAX_ITEM_QUANTITY, cartCount } from "@/lib/cart/model";
 import { cartActions, useCart } from "@/lib/cart/store";
 import { useProductsByIds } from "@/lib/catalog/use-products-by-ids";
 import { useExitRemoval } from "@/lib/ui/use-exit-removal";
@@ -31,10 +31,7 @@ export function CartMenu({ close }: { close: () => void }) {
   const ids = useMemo(() => cart.items.map((item) => item.productId), [cart.items]);
   const { products, status, retry } = useProductsByIds(ids);
   const { isExiting, removeWithExit } = useExitRemoval(cartActions.remove);
-  const byId = useMemo(
-    () => new Map(products.map((product) => [product.id, product])),
-    [products],
-  );
+  const byId = useMemo(() => new Map(products.map((product) => [product.id, product])), [products]);
 
   const preview = cart.items.slice(0, PREVIEW_LIMIT);
   const remaining = cart.items.length - preview.length;
@@ -58,41 +55,26 @@ export function CartMenu({ close }: { close: () => void }) {
     <div className="flex flex-col">
       <header className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
         <div className="flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-soft text-primary">
-            <ShoppingCart className="h-4 w-4" strokeWidth={1.9} aria-hidden />
-          </span>
+          {/* آیکون تزئینی است؛ فقط دکمه‌های قابل کلیک هاور پسزمینه میگیرند */}
+          <ShoppingCartSimple className="h-6 w-6 shrink-0 text-primary-text" aria-hidden />
           <div>
             <p className="text-sm font-bold text-foreground">{t("panelTitle")}</p>
-            <p className="text-xs text-text-muted">
-              {cart.items.length > 0
-                ? t("itemsCount", { count: cart.items.length })
-                : t("empty")}
-            </p>
+            <p className="text-xs text-text-muted">{cart.items.length > 0 ? t("itemsCount", { count: cart.items.length }) : t("empty")}</p>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={close}
-          aria-label={common("close")}
-          title={common("close")}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-surface-secondary hover:text-foreground"
-        >
-          <span aria-hidden className="text-lg leading-none">×</span>
+        <button type="button" onClick={close} aria-label={common("close")} title={common("close")} className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-icon-surface hover:text-foreground">
+          <span aria-hidden className="text-lg leading-none">
+            ×
+          </span>
         </button>
       </header>
 
       {cart.items.length === 0 ? (
         <div className="flex flex-col items-center gap-2 px-6 py-8 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-secondary text-text-muted">
-            <ShoppingCart className="h-6 w-6" strokeWidth={1.6} aria-hidden />
-          </span>
+          <ShoppingCartSimple className="h-8 w-8 text-text-muted" aria-hidden />
           <p className="text-sm font-semibold text-foreground">{t("empty")}</p>
           <p className="text-xs leading-6 text-text-muted">{t("emptyHint")}</p>
-          <Link
-            href="/shop"
-            onClick={close}
-            className="mt-1 inline-flex h-9 items-center justify-center rounded-full border border-border px-4 text-xs font-semibold text-foreground transition-colors hover:border-border-strong hover:text-primary"
-          >
+          <Link href="/shop" onClick={close} className="mt-1 inline-flex h-9 items-center justify-center rounded-full border border-border px-4 text-xs font-semibold text-foreground transition-colors hover:border-border-strong hover:text-primary-text">
             {t("browse")}
           </Link>
         </div>
@@ -113,13 +95,9 @@ export function CartMenu({ close }: { close: () => void }) {
               </ul>
             ) : status === "error" ? (
               <div className="flex flex-col items-center gap-2 px-6 py-8 text-center" role="alert">
-                <TriangleAlert className="h-6 w-6 text-error" aria-hidden />
+                <Warning className="h-6 w-6 text-error-text" aria-hidden />
                 <p className="text-sm font-semibold text-foreground">{t("error")}</p>
-                <button
-                  type="button"
-                  onClick={retry}
-                  className="mt-1 inline-flex h-9 items-center justify-center rounded-full border border-border px-4 text-xs font-semibold text-foreground transition-colors hover:border-border-strong hover:text-primary"
-                >
+                <button type="button" onClick={retry} className="mt-1 inline-flex h-9 items-center justify-center rounded-full border border-border px-4 text-xs font-semibold text-foreground transition-colors hover:border-border-strong hover:text-primary-text">
                   {t("retry")}
                 </button>
               </div>
@@ -130,134 +108,69 @@ export function CartMenu({ close }: { close: () => void }) {
                   const exiting = isExiting(item.productId);
 
                   if (!product || product.stock <= 0) {
-                    const unavailableName = product
-                      ? locale === "fa"
-                        ? (product.nameFa ?? product.name)
-                        : product.name
-                      : null;
+                    const unavailableName = product ? (locale === "fa" ? product.nameFa ?? product.name : product.name) : null;
 
                     return (
-                      <li
-                        key={item.productId}
-                        className={cn(
-                          "flex items-center gap-3 px-4 py-3",
-                          exiting && "menu-item-exit",
-                        )}
-                      >
+                      <li key={item.productId} className={cn("flex items-center gap-3 px-4 py-3", exiting && "menu-item-exit")}>
                         {product?.image ? (
                           <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-surface-secondary">
-                            <Image
-                              src={product.image.url}
-                              alt={unavailableName ?? ""}
-                              fill
-                              sizes="56px"
-                              className="object-cover opacity-60"
-                            />
+                            <Image src={product.image.url} alt={unavailableName ?? ""} fill sizes="56px" quality={95} className="object-cover opacity-60" />
                           </div>
                         ) : (
-                          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-error-bg text-error">
-                            <TriangleAlert className="h-5 w-5" strokeWidth={1.7} aria-hidden />
+                          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-error-bg text-error-text">
+                            <Warning className="h-5 w-5" aria-hidden />
                           </span>
                         )}
                         <div className="min-w-0 flex-1">
-                          <p className="line-clamp-2 text-xs font-semibold leading-5 text-foreground">
-                            {unavailableName ?? t("unavailableItem")}
-                          </p>
-                          <p className="mt-0.5 text-[11px] leading-5 text-text-muted">
-                            {t("unavailableHint")}
-                          </p>
+                          <p className="truncate text-xs font-semibold leading-5 text-foreground">{unavailableName ?? t("unavailableItem")}</p>
+                          <p className="mt-0.5 text-[11px] leading-5 text-text-muted">{t("unavailableHint")}</p>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => removeWithExit(item.productId)}
-                          aria-label={t("removeUnavailable")}
-                          title={t("removeUnavailable")}
-                          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-error-bg hover:text-error"
-                        >
-                          <Trash2 className="h-4 w-4" strokeWidth={1.8} aria-hidden />
+                        <button type="button" onClick={() => removeWithExit(item.productId)} aria-label={t("removeUnavailable")} title={t("removeUnavailable")} className="ms-1.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-error-text transition-colors hover:bg-error-bg">
+                          <Trash className="h-[18px] w-[18px]" aria-hidden />
                         </button>
                       </li>
                     );
                   }
 
-                  const name = locale === "fa" ? (product.nameFa ?? product.name) : product.name;
+                  const name = locale === "fa" ? product.nameFa ?? product.name : product.name;
                   const max = Math.min(product.stock, MAX_ITEM_QUANTITY);
                   const atMax = item.quantity >= max;
 
                   return (
-                    <li
-                      key={item.productId}
-                      className={cn("flex gap-3 px-4 py-3", exiting && "menu-item-exit")}
-                    >
-                      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-surface-secondary">
-                        {product.image && (
-                          <Image
-                            src={product.image.url}
-                            alt={product.image.alt ?? name}
-                            fill
-                            sizes="56px"
-                            className="object-cover"
-                          />
-                        )}
-                      </div>
+                    <li key={item.productId} className={cn("flex items-center gap-2.5 px-4 py-3", exiting && "menu-item-exit")}>
+                      {/* ۱) تصویر — لینک به صفحهٔ محصول */}
+                      <Link href={`/product/${encodeURIComponent(product.slug ?? "")}`} onClick={close} className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-surface-secondary">
+                        {product.image && <Image src={product.image.url} alt={product.image.alt ?? name} fill sizes="56px" quality={95} className="object-cover" />}
+                      </Link>
 
+                      {/* ۲) نام محصول (لینک) و قیمت */}
                       <div className="min-w-0 flex-1">
-                        <Link
-                          href={`/product/${encodeURIComponent(product.slug ?? "")}`}
-                          onClick={close}
-                          className="line-clamp-2 text-xs font-semibold leading-5 text-foreground transition-colors hover:text-primary"
-                        >
+                        <Link href={`/product/${encodeURIComponent(product.slug ?? "")}`} onClick={close} className="block truncate text-xs font-semibold leading-5 text-foreground transition-colors hover:text-primary-text">
                           {name}
                         </Link>
-                        <p className="mt-0.5 text-xs font-bold text-primary">
+                        <p className="mt-0.5 text-xs font-bold text-primary-text">
                           <bdi dir="ltr">{formatPrice(product.price)}</bdi>
                         </p>
-
-                        <div className="mt-2 flex items-center gap-1">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              cartActions.setQuantity(item.productId, item.quantity - 1)
-                            }
-                            disabled={item.quantity <= 1}
-                            aria-label={t("decrease")}
-                            className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:border-border-strong hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
-                          >
-                            <Minus className="h-3.5 w-3.5" aria-hidden />
-                          </button>
-                          <span className="min-w-6 text-center text-xs font-bold text-foreground" aria-live="polite">
-                            {item.quantity}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              cartActions.setQuantity(item.productId, item.quantity + 1)
-                            }
-                            disabled={atMax}
-                            aria-label={atMax ? t("maxReached") : t("increase")}
-                            title={atMax ? t("maxReached") : t("increase")}
-                            className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:border-border-strong hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
-                          >
-                            <Plus className="h-3.5 w-3.5" aria-hidden />
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => removeWithExit(item.productId)}
-                            aria-label={t("remove", { name })}
-                            title={t("remove", { name })}
-                            className="ms-auto inline-flex h-7 w-7 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-error-bg hover:text-error"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" strokeWidth={1.8} aria-hidden />
-                          </button>
-                        </div>
-
-                        {item.quantity > max && (
-                          <p className="mt-1 text-[11px] text-warning">
-                            {t("stockChanged", { count: max })}
-                          </p>
-                        )}
+                        {item.quantity > max && <p className="mt-1 text-[11px] leading-4 text-warning-text">{t("stockChanged", { count: max })}</p>}
                       </div>
+
+                      {/* ۳) کنترل تعداد */}
+                      <div className="flex shrink-0 items-center gap-0.5">
+                        <button type="button" onClick={() => cartActions.setQuantity(item.productId, item.quantity - 1)} disabled={item.quantity <= 1} aria-label={t("decrease")} className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:bg-icon-surface hover:text-primary-text disabled:cursor-not-allowed disabled:opacity-40">
+                          <Minus className="h-3.5 w-3.5" aria-hidden />
+                        </button>
+                        <span className="min-w-5 text-center text-xs font-bold text-foreground" aria-live="polite">
+                          {item.quantity}
+                        </span>
+                        <button type="button" onClick={() => cartActions.setQuantity(item.productId, item.quantity + 1)} disabled={atMax} aria-label={atMax ? t("maxReached") : t("increase")} title={atMax ? t("maxReached") : t("increase")} className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:bg-icon-surface hover:text-primary-text disabled:cursor-not-allowed disabled:opacity-40">
+                          <Plus className="h-3.5 w-3.5" aria-hidden />
+                        </button>
+                      </div>
+
+                      {/* ۴) حذف */}
+                      <button type="button" onClick={() => removeWithExit(item.productId)} aria-label={t("remove", { name })} title={t("remove", { name })} className="ms-1.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-error-text transition-colors hover:bg-error-bg">
+                        <Trash className="h-[18px] w-[18px]" aria-hidden />
+                      </button>
                     </li>
                   );
                 })}
@@ -265,32 +178,16 @@ export function CartMenu({ close }: { close: () => void }) {
             )}
           </div>
 
-          {remaining > 0 && status !== "error" && (
-            <p className="border-t border-border px-4 py-2 text-center text-[11px] text-text-muted">
-              {t("moreItems", { count: remaining })}
-            </p>
-          )}
+          {remaining > 0 && status !== "error" && <p className="border-t border-border px-4 py-2 text-center text-[11px] text-text-muted">{t("moreItems", { count: remaining })}</p>}
 
           <footer className="border-t border-border px-4 py-3">
-            {unavailableCount > 0 && (
-              <p className="mb-2 text-[11px] leading-5 text-text-muted">{t("partial")}</p>
-            )}
+            {unavailableCount > 0 && <p className="mb-2 text-[11px] leading-5 text-text-muted">{t("partial")}</p>}
             <div className="flex items-center justify-between gap-2 text-sm">
-              <span className="text-text-secondary">{t("subtotal")}</span>
-              <span className="font-extrabold text-primary">
-                {loading ? (
-                  <span aria-hidden>…</span>
-                ) : (
-                  <bdi dir="ltr">{formatPrice(subtotal)}</bdi>
-                )}
-              </span>
+              <span className="text-text-secondary">{t("subtotalWithCount", { count: cartCount(cart) })}</span>
+              <span className="font-extrabold text-primary-text">{loading ? <span aria-hidden>…</span> : <bdi dir="ltr">{formatPrice(subtotal)}</bdi>}</span>
             </div>
-            <Link
-              href="/cart"
-              onClick={close}
-              className="mt-3 flex h-10 items-center justify-center rounded-xl bg-primary text-sm font-bold text-primary-foreground transition-all duration-150 hover:bg-primary-hover active:scale-[0.99]"
-            >
-              {t("viewCart")}
+            <Link href="/cart" onClick={close} className="gradient-brand mt-3 flex h-11 items-center justify-center rounded-xl text-sm font-bold shadow-sm transition-all duration-150 hover:brightness-110 active:scale-[0.99]">
+              {t("viewAndCheckout")}
             </Link>
           </footer>
         </>

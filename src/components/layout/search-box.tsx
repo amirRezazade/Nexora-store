@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { Loader2, Search, TriangleAlert } from "lucide-react";
+import { CircleNotch, MagnifyingGlass, Warning } from "@phosphor-icons/react/dist/ssr";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { formatPrice } from "@/lib/money";
 import { SEARCH_TERM_MAX_LENGTH, normalizeSearchTerm } from "@/lib/search/normalize";
@@ -330,9 +330,9 @@ function SearchBoxController({
         <button
           type="submit"
           aria-label={t("search")}
-          className="absolute end-1 inline-flex h-11 w-11 items-center justify-center rounded-full text-text-secondary transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-surface sm:h-9 sm:w-9"
+          className="absolute end-1 inline-flex h-11 w-11 items-center justify-center rounded-full text-text-secondary transition-colors hover:text-primary-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-surface sm:h-9 sm:w-9"
         >
-          <Search className="h-[18px] w-[18px] sm:h-5 sm:w-5" aria-hidden />
+          <MagnifyingGlass className="h-[18px] w-[18px] sm:h-5 sm:w-5" aria-hidden />
         </button>
       </form>
 
@@ -348,7 +348,7 @@ function SearchBoxController({
                 role="status"
                 className="flex items-start gap-2.5 px-3 py-4 text-sm leading-6 text-text-muted"
               >
-                <Search className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+                <MagnifyingGlass className="mt-0.5 h-4 w-4 shrink-0 text-primary-text" aria-hidden />
                 <span>{tSearch("suggestionsIdle")}</span>
               </p>
             )}
@@ -359,8 +359,8 @@ function SearchBoxController({
                 aria-live="polite"
                 className="flex items-center gap-2.5 px-3 py-4 text-sm text-text-muted"
               >
-                <Loader2
-                  className="h-4 w-4 shrink-0 animate-spin text-primary"
+                <CircleNotch
+                  className="h-4 w-4 shrink-0 animate-spin text-primary-text"
                   aria-hidden
                 />
                 <span>{tSearch("suggestionsLoading")}</span>
@@ -372,8 +372,8 @@ function SearchBoxController({
                 role="status"
                 className="flex items-start gap-2.5 px-3 py-4 text-sm leading-6 text-text-muted"
               >
-                <TriangleAlert
-                  className="mt-0.5 h-4 w-4 shrink-0 text-error"
+                <Warning
+                  className="mt-0.5 h-4 w-4 shrink-0 text-error-text"
                   aria-hidden
                 />
                 <span>{tSearch("suggestionsError")}</span>
@@ -420,8 +420,8 @@ function SearchBoxController({
                           className={cn(
                             "relative flex min-h-14 cursor-pointer items-center gap-3 rounded-xl px-2.5 py-2 transition-colors",
                             active
-                              ? "bg-primary-soft"
-                              : "hover:bg-surface-secondary",
+                              ? "bg-icon-surface"
+                              : "hover:bg-icon-surface",
                           )}
                         >
                           {active && (
@@ -452,7 +452,7 @@ function SearchBoxController({
                                   <span aria-hidden>·</span>
                                 </>
                               )}
-                              <span className="shrink-0 font-semibold text-primary">
+                              <span className="shrink-0 font-semibold text-primary-text">
                                 {formatPrice(suggestion.price)}
                               </span>
                             </span>
@@ -480,10 +480,10 @@ function SearchBoxController({
                       onMouseDown={(event) => event.preventDefault()}
                       onClick={() => closeList()}
                       className={cn(
-                        "relative flex min-h-11 cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-primary transition-colors",
+                        "relative flex min-h-11 cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-primary-text transition-colors",
                         activeIndex === items.length
-                          ? "bg-primary-soft"
-                          : "hover:bg-surface-secondary",
+                          ? "bg-icon-surface"
+                          : "hover:bg-icon-surface",
                       )}
                     >
                       {activeIndex === items.length && (
@@ -492,7 +492,7 @@ function SearchBoxController({
                           className="absolute inset-y-2 start-0 w-0.5 rounded-full bg-primary"
                         />
                       )}
-                      <Search className="h-4 w-4 shrink-0" aria-hidden />
+                      <MagnifyingGlass className="h-4 w-4 shrink-0" aria-hidden />
                       <span className="min-w-0 flex-1 truncate">
                         {tSearch("viewAllResultsFor", { term: normalizedTerm })}
                       </span>
@@ -545,7 +545,7 @@ export function SearchBoxFallback({ placeholder }: { placeholder: string }) {
     >
       <span className="truncate text-sm text-text-muted">{placeholder}</span>
       <span className="absolute end-1 inline-flex h-11 w-11 items-center justify-center rounded-full text-text-secondary sm:h-9 sm:w-9">
-        <Search className="h-[18px] w-[18px] sm:h-5 sm:w-5" aria-hidden />
+        <MagnifyingGlass className="h-[18px] w-[18px] sm:h-5 sm:w-5" aria-hidden />
       </span>
     </div>
   );

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
-import { User } from "lucide-react";
+import { User } from "@phosphor-icons/react/dist/ssr";
 import { Link } from "@/i18n/navigation";
 import { getCategoryTree } from "@/server/dal/categories";
 import { cn } from "@/lib/utils";
@@ -20,14 +20,14 @@ import { AnnouncementBar } from "./announcement-bar";
  *
  *  لایه ۱: بنر ارسال رایگان (قابل بستن)
  *  لایه ۲ (ردیف اصلی):
- *    - xl+:  لوگو | ناوبری | جستجو | تم + زبان + حساب + علاقه‌مندی + سبد
+ *    - xl+:  لوگو | ناوبری | جستجو | حساب + علاقه‌مندی + سبد | تم + زبان
  *    - md تا xl: لوگو | جستجو | آیکون‌ها + ردیف دوم: ناوبری (w-full)
  *    - < md: لوگو + آیکون‌ها | جستجو در خط دوم تمام‌عرض (ناوبری در منو)
  *
  * چیدمان فقط با «order» و flex-wrap انجام می‌شود — بدون markup تکراری.
- * تم/زبان از xs به بالا در هدر و در موبایل داخل منوی همبرگری هستند.
- * حساب کاربری زیر md فقط در منو است.
- * آیکون‌ها ghost هستند: بدون پرشدگی، هاور با تینت گرم برند (primary-soft).
+ * از xs به بالا تم/زبان در انتهای نوار و با یک جداکننده از بقیهٔ آیکونها جدا میشوند.
+ * حساب کاربری و سبد/علاقهٔمندی زیر xs در ناوبری پایین هستند.
+ * آیکونها ghost هستند: بدون پرشدگی، هاور با سطح خنثی (icon-surface) و آیکون نارنجی.
  * max-width: 90rem
  */
 export async function SiteHeader() {
@@ -35,7 +35,7 @@ export async function SiteHeader() {
   const nav = await getTranslations("nav");
   const tree = await getCategoryTree();
 
-  const iconBtn = "inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-secondary transition-all duration-150 hover:bg-primary-soft hover:text-primary active:scale-95 sm:h-10 sm:w-10";
+  const iconBtn = "inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-secondary transition-all duration-150 hover:bg-icon-surface hover:text-primary-text active:scale-95 sm:h-10 sm:w-10";
 
   return (
     <header className="sticky top-0 z-40">
@@ -60,17 +60,21 @@ export async function SiteHeader() {
 
             {/* آیکون‌های پایانی — ms-auto فقط زیر md؛ از md به بعد جستجو می‌کشد */}
             <div className="order-2 ms-auto flex shrink-0 items-center gap-1.5 xs:gap-1 sm:gap-2  md:order-3 md:ms-0 xl:order-4">
-              {/* تم و زبان: در همهٔ اندازه‌ها در نوار بالا (در موبایل جای سبد/علاقه‌مندی) */}
-              <ThemeToggle />
-              <LanguageSwitcher />
               {/* حساب کاربری: زیر xs در ناوبری پایین؛ از xs به بالا در نوار */}
               <Link href="/account" aria-label={common("account")} title={common("account")} className={cn(iconBtn, "hidden xs:inline-flex")}>
-                <User className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.8} aria-hidden />
+                <User className="h-[18px] w-[18px] sm:h-5 sm:w-5" aria-hidden />
               </Link>
               {/* سبد و علاقه‌مندی: زیر xs در ناوبری پایین؛ از xs به بالا در نوار */}
               <div className="hidden items-center gap-2 xs:gap-1 sm:gap-2  xs:flex">
                 <WishlistTrigger />
                 <CartTrigger />
+              </div>
+              {/* جداکننده — فقط از xs به بالا که تم/زبان در انتهای نوار هستند */}
+              <span aria-hidden className=" hidden h-5 w-px shrink-0 bg-border-strong xs:block" />
+              {/* تم و زبان: انتهای نوار از xs به بالا؛ زیر xs تنها آیکون‌های موجود */}
+              <div className="flex items-center justify-center  gap-1.5 xs:gap-1 ">
+                <ThemeToggle />
+                <LanguageSwitcher />
               </div>
             </div>
 

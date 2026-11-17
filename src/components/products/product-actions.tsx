@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, Minus, Plus, ShoppingCart } from "lucide-react";
+import { Heart, Minus, Plus, ShoppingCartSimple } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
 import { MAX_ITEM_QUANTITY } from "@/lib/cart/model";
 import { cartActions, useCartQuantity } from "@/lib/cart/store";
@@ -56,7 +56,7 @@ export function ProductActions({
           title={!inStock ? cartT("outOfStock") : atMax ? cartT("maxReached") : cartT("addToCart")}
           className="inline-flex h-9 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary px-2 text-xs font-bold text-primary-foreground transition-all duration-150 hover:bg-primary-hover active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-surface-secondary disabled:text-text-muted"
         >
-          <ShoppingCart className="h-4 w-4 shrink-0" aria-hidden />
+          <ShoppingCartSimple className="h-4 w-4 shrink-0" aria-hidden />
           <span className="truncate">{addLabel}</span>
         </button>
 
@@ -69,13 +69,13 @@ export function ProductActions({
           className={cn(
             "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition-colors",
             wishlisted
-              ? "border-primary bg-primary-soft text-primary"
-              : "border-border text-text-secondary hover:border-border-strong hover:text-primary",
+              ? "border-primary bg-icon-surface text-primary-text"
+              : "border-border text-text-secondary hover:border-border-strong hover:text-primary-text",
           )}
         >
           <Heart
-            className={cn("h-4 w-4", wishlisted && "fill-current")}
-            strokeWidth={1.8}
+            className="h-4 w-4"
+            weight={wishlisted ? "fill" : "regular"}
             aria-hidden
           />
         </button>
@@ -92,7 +92,7 @@ export function ProductActions({
             onClick={() => cartActions.setQuantity(productId, quantity - 1)}
             disabled={quantity <= 1}
             aria-label={cartT("decrease")}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-surface-secondary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-icon-surface hover:text-primary-text disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Minus className="h-4 w-4" aria-hidden />
           </button>
@@ -105,7 +105,7 @@ export function ProductActions({
             disabled={atMax}
             aria-label={atMax ? cartT("maxReached") : cartT("increase")}
             title={atMax ? cartT("maxReached") : cartT("increase")}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-surface-secondary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-icon-surface hover:text-primary-text disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Plus className="h-4 w-4" aria-hidden />
           </button>
@@ -117,7 +117,7 @@ export function ProductActions({
           disabled={!inStock}
           className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-primary text-sm font-bold text-primary-foreground transition-all duration-150 hover:bg-primary-hover active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-surface-secondary disabled:text-text-muted"
         >
-          <ShoppingCart className="h-4 w-4" aria-hidden />
+          <ShoppingCartSimple className="h-4 w-4" aria-hidden />
           {inStock ? cartT("addToCart") : cartT("outOfStock")}
         </button>
       )}
@@ -129,13 +129,13 @@ export function ProductActions({
         className={cn(
           "inline-flex h-12 items-center justify-center gap-2 rounded-2xl border text-sm font-semibold transition-colors",
           wishlisted
-            ? "border-primary bg-primary-soft text-primary"
-            : "border-border text-foreground hover:border-border-strong hover:text-primary",
+            ? "border-primary bg-icon-surface text-primary-text"
+            : "border-border text-foreground hover:border-border-strong hover:text-primary-text",
         )}
       >
         <Heart
-          className={cn("h-4 w-4", wishlisted && "fill-current")}
-          strokeWidth={1.8}
+          className="h-4 w-4"
+          weight={wishlisted ? "fill" : "regular"}
           aria-hidden
         />
         {wishlisted ? wishlistT("inWishlist") : wishlistT("addToWishlist")}

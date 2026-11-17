@@ -1,6 +1,6 @@
 "use client";
 
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCartSimple } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
 import { HeaderMenu } from "@/components/layout/header-menu";
 import { useCartCount } from "@/lib/cart/store";
@@ -17,7 +17,7 @@ export function CartTrigger() {
 
   return (
     <HeaderMenu
-      icon={ShoppingCart}
+      icon={ShoppingCartSimple}
       label={t("cart")}
       panelLabel={cartT("panelLabel")}
       count={count}

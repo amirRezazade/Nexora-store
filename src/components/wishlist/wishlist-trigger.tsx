@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart } from "lucide-react";
+import { Heart } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
 import { HeaderMenu } from "@/components/layout/header-menu";
 import { useWishlistCount } from "@/lib/wishlist/store";

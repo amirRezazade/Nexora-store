@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { Check, Monitor, Moon, Sun } from "lucide-react";
+import { Check, Monitor, Moon, Sun } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
 import { useTheme, type Theme } from "@/components/theme/theme-provider";
 import { cn } from "@/lib/utils";
@@ -82,7 +82,7 @@ export function ThemeToggle({
         aria-expanded={open}
         title={t("toggle")}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-secondary transition-all duration-150 hover:bg-primary-soft hover:text-primary active:scale-95 sm:h-10 sm:w-10"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-secondary transition-all duration-150 hover:bg-icon-surface hover:text-primary-text active:scale-95 sm:h-10 sm:w-10"
       >
         <ActiveIcon className="h-[18px] w-[18px] sm:h-5 sm:w-5" aria-hidden />
       </button>
@@ -111,8 +111,8 @@ export function ThemeToggle({
                 className={cn(
                   "flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors",
                   selected
-                    ? "bg-primary-soft font-semibold text-primary"
-                    : "text-foreground hover:bg-surface-secondary",
+                    ? "bg-icon-surface font-semibold text-primary-text"
+                    : "text-foreground hover:bg-icon-surface",
                 )}
               >
                 <Icon className="h-4 w-4" aria-hidden />

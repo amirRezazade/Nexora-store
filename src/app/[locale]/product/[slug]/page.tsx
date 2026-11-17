@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { ArrowLeft, ImageOff, TriangleAlert } from "lucide-react";
+import { ArrowLeft, ImageBroken, Warning } from "@phosphor-icons/react/dist/ssr";
 import { Link } from "@/i18n/navigation";
 import { formatPrice } from "@/lib/money";
 import { ProductActions } from "@/components/products/product-actions";
@@ -41,14 +41,14 @@ export default async function ProductPage({
     return (
       <main className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-3xl border border-border bg-surface px-6 py-14 text-center">
-          <div className="mb-1 flex h-16 w-16 items-center justify-center rounded-2xl bg-error-bg text-error">
-            <TriangleAlert className="h-8 w-8" aria-hidden />
+          <div className="mb-1 flex h-16 w-16 items-center justify-center rounded-2xl bg-error-bg text-error-text">
+            <Warning className="h-8 w-8" aria-hidden />
           </div>
           <h1 className="text-xl font-bold text-foreground">{t("errorTitle")}</h1>
           <p className="text-sm leading-6 text-text-secondary">{t("errorHint")}</p>
           <Link
             href={`/product/${encodeURIComponent(slug)}`}
-            className="mt-2 inline-flex h-11 items-center justify-center rounded-full border border-border px-6 text-sm font-semibold text-foreground transition-colors hover:border-border-strong hover:text-primary"
+            className="mt-2 inline-flex h-11 items-center justify-center rounded-full border border-border px-6 text-sm font-semibold text-foreground transition-colors hover:border-border-strong hover:text-primary-text"
           >
             {t("retry")}
           </Link>
@@ -72,7 +72,7 @@ export default async function ProductPage({
     <main className="mx-auto max-w-[90rem] px-3 py-8 xs:px-4 sm:px-6 sm:py-12">
       <Link
         href="/shop"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-text-secondary transition-colors hover:text-primary"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-text-secondary transition-colors hover:text-primary-text"
       >
         <ArrowLeft className="h-4 w-4 rtl:rotate-180" aria-hidden />
         {t("backToShop")}
@@ -94,7 +94,7 @@ export default async function ProductPage({
                 />
               ) : (
                 <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center text-sm text-text-muted">
-                  <ImageOff className="h-8 w-8" aria-hidden />
+                  <ImageBroken className="h-8 w-8" aria-hidden />
                   <span>{t("noImage")}</span>
                 </div>
               )}
@@ -133,21 +133,21 @@ export default async function ProductPage({
           </h1>
 
           <div className="flex flex-wrap items-center gap-3">
-            <span
-              className={cn(
-                "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold",
-                product.inStock
-                  ? "bg-success-bg text-success"
-                  : "bg-error-bg text-error",
-              )}
-            >
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-secondary px-3 py-1 text-xs font-semibold text-text-secondary">
+              <span
+                aria-hidden
+                className={cn(
+                  "h-1.5 w-1.5 rounded-full",
+                  product.inStock ? "bg-success" : "bg-error",
+                )}
+              />
               {product.inStock ? t("inStock") : t("outOfStock")}
             </span>
           </div>
 
           <div className="rounded-2xl border border-border bg-surface p-5">
             <p className="text-xs font-medium text-text-muted">{t("priceLabel")}</p>
-            <p className="mt-1 text-2xl font-extrabold text-primary">
+            <p className="mt-1 text-2xl font-extrabold text-primary-text">
               <bdi dir="ltr">{formatPrice(product.price)}</bdi>
             </p>
           </div>

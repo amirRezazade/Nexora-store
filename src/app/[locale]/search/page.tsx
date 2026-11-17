@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import { PackageSearch, SearchX, TriangleAlert } from "lucide-react";
+import { Package, MagnifyingGlass, Warning } from "@phosphor-icons/react/dist/ssr";
 import { Link } from "@/i18n/navigation";
 import { ProductGrid } from "@/components/products/product-grid";
 import { SearchPagination } from "@/components/search/search-pagination";
@@ -54,7 +54,7 @@ async function SearchResults({
   if (!q) {
     return (
       <StateCard
-        icon={<SearchX className="h-10 w-10" aria-hidden />}
+        icon={<MagnifyingGlass className="h-10 w-10" aria-hidden />}
         title={t("emptyQueryTitle")}
         hint={t("emptyQueryHint")}
         action={
@@ -74,13 +74,13 @@ async function SearchResults({
   if (result.status === "error") {
     return (
       <StateCard
-        icon={<TriangleAlert className="h-10 w-10" aria-hidden />}
+        icon={<Warning className="h-10 w-10" aria-hidden />}
         title={t("errorTitle")}
         hint={t("errorHint")}
         action={
           <Link
             href={`/search?q=${encodeURIComponent(q)}`}
-            className="inline-flex h-11 items-center justify-center rounded-full border border-border px-6 text-sm font-semibold text-foreground transition-colors hover:border-border-strong hover:text-primary"
+            className="inline-flex h-11 items-center justify-center rounded-full border border-border px-6 text-sm font-semibold text-foreground transition-colors hover:border-border-strong hover:text-primary-text"
           >
             {t("retry")}
           </Link>
@@ -92,7 +92,7 @@ async function SearchResults({
   if (result.products.length === 0) {
     return (
       <StateCard
-        icon={<PackageSearch className="h-10 w-10" aria-hidden />}
+        icon={<Package className="h-10 w-10" aria-hidden />}
         title={t("noResultsTitle")}
         hint={t("noResultsHint", { query: q })}
         action={
@@ -144,7 +144,7 @@ function StateCard({
 }) {
   return (
     <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-3xl border border-border bg-surface px-6 py-14 text-center">
-      <div className="mb-1 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-soft text-primary">
+      <div className="mb-1 flex h-16 w-16 items-center justify-center rounded-2xl bg-icon-surface text-primary-text">
         {icon}
       </div>
       <h1 className="text-xl font-bold text-foreground">{title}</h1>

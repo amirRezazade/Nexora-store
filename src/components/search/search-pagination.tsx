@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CaretLeft, CaretRight } from "@phosphor-icons/react/dist/ssr";
 import { Link } from "@/i18n/navigation";
 import { buildSearchHref, type SortKey } from "@/lib/search/search-params";
 import { cn } from "@/lib/utils";
@@ -31,10 +31,10 @@ export async function SearchPagination({
         <Link
           href={buildSearchHref({ q, sort, page: page - 1 })}
           rel="prev"
-          className="inline-flex h-11 items-center gap-1 rounded-xl border border-border bg-surface px-4 text-sm font-medium text-foreground transition-colors hover:border-border-strong hover:text-primary"
+          className="inline-flex h-11 items-center gap-1 rounded-xl border border-border bg-surface px-4 text-sm font-medium text-foreground transition-colors hover:border-border-strong hover:text-primary-text"
         >
           <span className="rtl:-scale-x-100">
-            <ChevronLeft className="h-4 w-4" aria-hidden />
+            <CaretLeft className="h-4 w-4" aria-hidden />
           </span>
           {t("previous")}
         </Link>
@@ -45,7 +45,7 @@ export async function SearchPagination({
           )}
         >
           <span className="rtl:-scale-x-100">
-            <ChevronLeft className="h-4 w-4" aria-hidden />
+            <CaretLeft className="h-4 w-4" aria-hidden />
           </span>
           {t("previous")}
         </span>
@@ -59,18 +59,18 @@ export async function SearchPagination({
         <Link
           href={buildSearchHref({ q, sort, page: page + 1 })}
           rel="next"
-          className="inline-flex h-11 items-center gap-1 rounded-xl border border-border bg-surface px-4 text-sm font-medium text-foreground transition-colors hover:border-border-strong hover:text-primary"
+          className="inline-flex h-11 items-center gap-1 rounded-xl border border-border bg-surface px-4 text-sm font-medium text-foreground transition-colors hover:border-border-strong hover:text-primary-text"
         >
           {t("next")}
           <span className="rtl:-scale-x-100">
-            <ChevronRight className="h-4 w-4" aria-hidden />
+            <CaretRight className="h-4 w-4" aria-hidden />
           </span>
         </Link>
       ) : (
         <span className="inline-flex h-11 items-center gap-1 rounded-xl border border-border px-4 text-sm font-medium text-text-muted opacity-60">
           {t("next")}
           <span className="rtl:-scale-x-100">
-            <ChevronRight className="h-4 w-4" aria-hidden />
+            <CaretRight className="h-4 w-4" aria-hidden />
           </span>
         </span>
       )}

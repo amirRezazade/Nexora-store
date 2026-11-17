@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Check, Globe } from "lucide-react";
+import { Check, Globe } from "@phosphor-icons/react/dist/ssr";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
@@ -88,7 +88,7 @@ export function LanguageSwitcher({
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={t("selectLanguage")}
-        className="inline-flex h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold uppercase text-text-secondary transition-all duration-150 hover:bg-primary-soft hover:text-primary active:scale-95 sm:h-10"
+        className="inline-flex h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold uppercase text-text-secondary transition-all duration-150 hover:bg-icon-surface hover:text-primary-text active:scale-95 sm:h-10"
       >
         <Globe className="h-4 w-4" aria-hidden />
         <span>{current}</span>
@@ -115,8 +115,8 @@ export function LanguageSwitcher({
                 className={cn(
                   "flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors",
                   selected
-                    ? "bg-primary-soft font-semibold text-primary"
-                    : "text-foreground hover:bg-surface-secondary",
+                    ? "bg-icon-surface font-semibold text-primary-text"
+                    : "text-foreground hover:bg-icon-surface",
                 )}
               >
                 <span className="flex-1 text-start">{LOCALE_LABELS[locale]}</span>

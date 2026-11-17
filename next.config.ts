@@ -23,6 +23,9 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   images: {
+    // quality={95} در کارت‌ها فقط وقتی مجاز است که در این لیست باشد؛
+    // در غیر این صورت Next به سکوت کیفیت پیشفرض ۷۵ برمیگردد.
+    qualities: [75, 95],
     remotePatterns: supabaseImageHost
       ? [
           {
