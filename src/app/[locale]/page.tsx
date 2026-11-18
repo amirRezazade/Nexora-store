@@ -2,7 +2,10 @@ import { Headset, ArrowUUpLeftIcon, ShieldCheck, Truck } from "@phosphor-icons/r
 import { getImageProps } from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { HeroSlider, type HeroSlide } from "@/components/home/hero-slider";
+import { CategorySlider, type CategorySlide } from "@/components/home/category-slider";
+import { categoryName } from "@/lib/category-tree";
 import { getHeroBanners } from "@/server/dal/banners";
+import { getHomeCategories } from "@/server/dal/categories";
 
 /**
  * صفحهٔ اصلی.
@@ -18,6 +21,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const t = await getTranslations("home");
 
   const { banners } = await getHeroBanners(locale);
+  const homeCategories = await getHomeCategories();
 
   /**
    * دو تصویر هر بنر (عمودی موبایل / افقی دسکتاپ) با getImageProps به srcSet
@@ -73,6 +77,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     },
   ];
 
+  /** فقط دستههایی که تصویر دارند وارد اسلایدر میشوند؛ نامها به زبان جاری است */
+  const categorySlides: CategorySlide[] = homeCategories.map((category) => ({
+    id: category.id,
+    slug: category.slug,
+    name: categoryName(category, locale),
+    imageUrl: category.imageUrl,
+  }));
+
   return (
     <div>
       <h1 className="sr-only">{t("hero.hiddenTitle")}</h1>
@@ -82,18 +94,22 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       {/* مزیتها — کانتینر خاکستری با عرض برابر ناوبری (90rem)، گوشه گرد و
          فاصله از بالا/پایین. جداسازها فقط میان آیتمهااند و ارتفاع کوتاهی دارند */}
       <section className="mx-auto max-w-[90rem] px-3 py-6 xs:px-4 sm:px-6 sm:py-8">
-        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 rounded-2xl bg-surface-secondary px-4 py-2 md:py-6 gap-1 sm:px-6  md:divide-x  divide-border-strong md:px-0 md:py-0">
+        <div className="grid grid-cols-4  md:grid-cols-4 rounded-2xl bg-surface-secondary xs:px-4  xs:py-2 md:py-6 gap-1 sm:px-6  md:divide-x  divide-border-strong md:p-0 ">
           {perks.map(({ icon: Icon, title, description }) => (
-            <div key={title} className="relative flex items-center justify-center gap-4 py-2 sm:py-4 md:py-0">
-              <Icon className="h-9 w-9 shrink-0 text-primary lg:h-12 lg:w-12" aria-hidden />
-              <div className="min-w-0">
-                <p className="text-sm font-bold leading-5 text-foreground">{title}</p>
-                <p className="mt-1 text-xs leading-5 text-text-muted">{description}</p>
+            <div key={title} className="relative flex flex-col md:flex-row items-center justify-center gap-0.5 xs:gap-2 md:gap-4 xl:gap-5 py-1.5  md:py-0">
+              <Icon className="size-7 xs:size-8 sm:size-9 shrink-0 text-primary lg:h-12 lg:w-12" aria-hidden />
+              <div className="min-w-0 grow md:grow-0 flex flex-col items-center justify-center md:inline-block">
+                <p className=" text-[10px] xs:text-xs sm:text-sm font-bold leading-5 text-foreground">{title}</p>
+                <p className="hidden sm:inline mt-1 text-xs leading-5 text-text-muted">{description}</p>
               </div>
             </div>
           ))}
         </div>
       </section>
+
+      {categorySlides.length > 0 && (
+        <CategorySlider categories={categorySlides} dir={locale === "fa" ? "rtl" : "ltr"} />
+      )}
     </div>
   );
 }

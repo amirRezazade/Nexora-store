@@ -11,6 +11,8 @@ export interface CategoryRow {
   parent_id: string | null;
   description: string | null;
   description_fa: string | null;
+  /** مسیر تصویر داخل باکت Storage؛ اختیاری چون برخی خوانندهها فقط نام میخواهند */
+  image_path?: string | null;
 }
 
 export interface CategoryNode extends CategoryRow {
@@ -42,7 +44,10 @@ export function buildCategoryTree(rows: CategoryRow[]): CategoryNode[] {
 }
 
 /** نام نمایشی بر اساس locale */
-export function categoryName(row: CategoryRow, locale: string): string {
+export function categoryName(
+  row: Pick<CategoryRow, "name" | "name_fa">,
+  locale: string,
+): string {
   return locale === "fa" ? (row.name_fa ?? row.name) : row.name;
 }
 

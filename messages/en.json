@@ -68,6 +68,14 @@
         "title": "24/7 Support",
         "description": "We're here to help."
       }
+    },
+    "categories": {
+      "title": "Shop by category",
+      "subtitle": "Explore our main collections to find what you need faster.",
+      "carouselLabel": "Shop by category",
+      "slideLabel": "Category {index} of {total}",
+      "keyboardHint": "Use the left and right arrow keys to browse categories.",
+      "viewAll": "View all categories"
     }
   },
   "footer": {

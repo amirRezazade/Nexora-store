@@ -2,6 +2,7 @@ import { z } from "zod";
 import { cacheLife, cacheTag } from "next/cache";
 import { env } from "@/lib/env";
 import { buildCategoryTree, type CategoryNode, type CategoryRow } from "@/lib/category-tree";
+import { buildCategoryImageUrl } from "@/lib/categories/paths";
 
 /**
  * لایه‌ی دسترسی به داده‌های دسته‌بندی (DAL).
@@ -36,6 +37,7 @@ const categoryRowSchema = z.object({
   parent_id: z.string().nullable(),
   sort_order: z.number().nullable(),
   category_translations: z.array(translationSchema).nullable(),
+  image_path: z.string().nullish(),
 });
 
 type RawCategoryRow = z.infer<typeof categoryRowSchema>;
@@ -46,7 +48,7 @@ type RawCategoryRow = z.infer<typeof categoryRowSchema>;
  * مرتب‌سازی روی آن در PostgREST ناسالم/تکراری می‌شود).
  */
 const CATEGORY_COLUMNS =
-  "id,slug,parent_id,sort_order,category_translations(locale,name,description)";
+  "id,slug,parent_id,sort_order,image_path,category_translations(locale,name,description)";
 
 /**
  * ردیف خام را به قرارداد CategoryRow پروژه تبدیل می‌کند.
@@ -69,6 +71,7 @@ function mapRow(row: RawCategoryRow): CategoryRow {
     parent_id: row.parent_id,
     description: en?.description ?? null,
     description_fa: fa?.description ?? null,
+    image_path: row.image_path ?? null,
   };
 }
 
@@ -114,6 +117,47 @@ export async function getCategoryTree(): Promise<CategoryNode[]> {
 
   const rows = await fetchActiveCategoryRows();
   return rows ? buildCategoryTree(rows) : [];
+}
+
+/** آیتم اسلایدر صفحهٔ اصلی — فقط دستههایی که عکس دارند */
+export interface HomeCategory {
+  id: string;
+  slug: string;
+  name: string;
+  name_fa: string | null;
+  imageUrl: string;
+}
+
+/**
+ * دستههای دارای تصویر را برای اسلایدر صفحهٔ اصلی میخواند.
+ * - دستههای بدون `image_path` حذف میشوند (پس فقط دستههای اصلی عکسدار میمانند)
+ * - عمر کش کوتاهتر از منو است تا عکسهای تازهآپلودشده زودتر دیده شوند
+ * - خواندن دیتابیس شکست بخورد → آرایهٔ خالی (اسلایدر رندر نمیشود)
+ */
+export async function getHomeCategories(): Promise<HomeCategory[]> {
+  "use cache";
+  cacheTag("categories");
+  cacheLife("minutes");
+
+  const rows = await fetchActiveCategoryRows();
+  if (!rows) return [];
+
+  return rows.flatMap((row) => {
+    // فقط سر‌دسته‌ها (بدون والد) در اسلایدر صفحهٔ اصلی نمایش داده میشوند
+    if (row.parent_id !== null) return [];
+
+    const imageUrl = buildCategoryImageUrl(env.NEXT_PUBLIC_SUPABASE_URL, row.image_path);
+    if (!imageUrl) return [];
+    return [
+      {
+        id: row.id,
+        slug: row.slug,
+        name: row.name,
+        name_fa: row.name_fa,
+        imageUrl,
+      },
+    ];
+  });
 }
 
 export interface CategoryDetailResult {
