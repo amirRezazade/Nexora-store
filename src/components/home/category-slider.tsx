@@ -87,7 +87,7 @@ export function CategorySlider({ categories, dir }: { categories: CategorySlide[
           <h2 className={sectionHeader.title}>{t("title")}</h2>
           <p className={sectionHeader.subtitle}>{t("subtitle")}</p>
         </div>
-        <Link href="/shop" className={`${sectionHeader.viewAll} ${focusRing}`}>
+        <Link href="/category" className={`${sectionHeader.viewAll} ${focusRing}`}>
           {t("viewAll")}
           <ArrowRight className="h-4 w-4 shrink-0 rtl:rotate-180" weight="bold" aria-hidden />
         </Link>
