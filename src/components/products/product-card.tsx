@@ -32,15 +32,13 @@ export interface ProductCardProps {
   product: ProductSummary;
   locale: string;
   sizes: string;
-  /** amتیاز ۰ تا ۵؛ تا وقتی منبع نظرات اضافه نشده خالی می‌ماند */
+  /** امتیاز ۰ تا ۵؛ تا وقتی منبع نظرات اضافه نشده خالی می‌ماند */
   rating?: number | null;
   /** تعداد نظرات برای نمایش کنار امتیاز */
   reviewCount?: number | null;
-  /** "deal" برای کارت‌های ریل پیشنهادها (بدون وضعیت موجودی، دکمه سبد آیکونی کنار قیمت) */
-  variant?: "default" | "deal";
 }
 
-export function ProductCard({ product, locale, sizes, variant = "default" }: ProductCardProps) {
+export function ProductCard({ product, locale, sizes }: ProductCardProps) {
   const t = useTranslations("product");
   const name = locale === "fa" ? product.nameFa ?? product.name : product.name;
   const href = product.slug ? `/product/${encodeURIComponent(product.slug)}` : null;
@@ -52,8 +50,8 @@ export function ProductCard({ product, locale, sizes, variant = "default" }: Pro
   const reviewCount = 128;
 
   return (
-    <article className="group flex h-full flex-col  overflow-hidden rounded-xl bg-surface/90 select-none shadow-[0_10px_22px_-20px_rgba(15,23,42,0.35)] ring-1 ring-border transition-shadow duration-200 hover:shadow-[0_16px_30px_-20px_rgba(15,23,42,0.4)] dark:shadow-[0_10px_22px_-18px_rgba(0,0,0,0.8)]">
-      <div className="relative aspect-square shrink-0 overflow-hidden bg-transparent">
+    <article className="group flex h-full flex-col overflow-hidden rounded-xl bg-surface/90 select-none  shadow-[0_2px_8px_-2px_rgba(15,23,42,0.08),0_8px_20px_-12px_rgba(15,23,42,0.12)] ring-1 ring-border transition-shadow duration-200 hover:shadow-[0_8px_24px_-10px_rgba(15,23,42,0.18)] dark:shadow-[0_2px_10px_-2px_rgba(0,0,0,0.45)]">
+      <div className="relative shrink-0 overflow-hidden bg-transparent aspect-[4/3]">
         {discount > 0 && (
           <span title={t("discountLabel", { percent: discount })} className="absolute start-2 top-2 z-20 rounded-md bg-primary px-1.5 py-0.5 text-[10px] font-extrabold leading-4 text-white shadow-sm">
             <bdi dir="ltr">-{discount}%</bdi>
@@ -93,61 +91,35 @@ export function ProductCard({ product, locale, sizes, variant = "default" }: Pro
           <span dir="ltr" className="text-[10px] font-semibold tabular-nums text-foreground">
             {rating.toFixed(1)}
           </span>
-          {variant !== "deal" && (
-            <span className="text-[10px] text-text-muted">
-              ({reviewCount.toLocaleString(locale === "fa" ? "fa-IR" : "en-US")} {locale === "fa" ? "نظر" : "reviews"})
+          <span className="text-[10px] text-text-muted">
+            ({reviewCount.toLocaleString(locale === "fa" ? "fa-IR" : "en-US")} {locale === "fa" ? "نظر" : "reviews"})
+          </span>
+        </div>
+
+        <div className="mt-1.5 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+          <span className="text-[13px] font-extrabold text-foreground sm:text-[15px]">
+            <bdi dir="ltr" className="whitespace-nowrap">
+              {formatPrice(product.price)}
+            </bdi>
+          </span>
+
+          {product.compareAtPrice != null && (
+            <span className="text-[10.5px] font-medium text-text-muted sm:text-[11px]">
+              <bdi dir="ltr" className="whitespace-nowrap">
+                {formatPrice(product.compareAtPrice)}
+              </bdi>
             </span>
           )}
         </div>
 
-        {variant === "deal" ? (
-          <div dir="ltr" className="mt-auto flex items-center justify-between gap-2 pt-2">
-            <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-              <span className="text-[13px] font-extrabold text-foreground sm:text-[15px]">
-                <bdi dir="ltr" className="whitespace-nowrap">
-                  {formatPrice(product.price)}
-                </bdi>
-              </span>
+        <div className="mt-auto flex items-end justify-between gap-2 pt-1">
+          <span className={cn("inline-flex items-center gap-1.5 text-[10px] font-semibold sm:text-[11px]", product.inStock ? "text-success-text" : "text-error-text")}>
+            <span aria-hidden className={cn("size-1.5 shrink-0 rounded-full", product.inStock ? "bg-success" : "bg-error")} />
+            {product.inStock ? t("inStock") : t("outOfStock")}
+          </span>
 
-              {product.compareAtPrice != null && (
-                <span className="text-[10.5px] font-medium text-text-muted sm:text-[11px]">
-                  <bdi dir="ltr" className="whitespace-nowrap">
-                    {formatPrice(product.compareAtPrice)}
-                  </bdi>
-                </span>
-              )}
-            </div>
-
-            <CardCartButton productId={product.id} productName={name} inStock={product.inStock} iconOnly />
-          </div>
-        ) : (
-          <>
-            <div className="mt-1.5 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-              <span className="text-[13px] font-extrabold text-foreground sm:text-[15px]">
-                <bdi dir="ltr" className="whitespace-nowrap">
-                  {formatPrice(product.price)}
-                </bdi>
-              </span>
-
-              {product.compareAtPrice != null && (
-                <span className="text-[10.5px] font-medium text-text-muted sm:text-[11px]">
-                  <bdi dir="ltr" className="whitespace-nowrap">
-                    {formatPrice(product.compareAtPrice)}
-                  </bdi>
-                </span>
-              )}
-            </div>
-
-            <div className="mt-auto flex items-end justify-between gap-2 pt-1">
-              <span className={cn("inline-flex items-center gap-1.5 text-[10px] font-semibold sm:text-[11px]", product.inStock ? "text-success-text" : "text-error-text")}>
-                <span aria-hidden className={cn("size-1.5 shrink-0 rounded-full", product.inStock ? "bg-success" : "bg-error")} />
-                {product.inStock ? t("inStock") : t("outOfStock")}
-              </span>
-
-              <CardCartButton productId={product.id} productName={name} inStock={product.inStock} />
-            </div>
-          </>
-        )}
+          <CardCartButton productId={product.id} productName={name} inStock={product.inStock} />
+        </div>
       </div>
     </article>
   );
@@ -185,10 +157,10 @@ function CardWishlistButton({ productId }: { productId: string }) {
 }
 
 /**
- * دکمهٔ سبد — یک دکمه، دو حالت.
+ * دکمهٔ سبد — فقط آیکون، دو حالت.
  * تعداد از store خوانده می‌شود؛ پس حذف از پنل سبد هم ظاهر دکمه را برمی‌گرداند.
  */
-function CardCartButton({ productId, productName, inStock, iconOnly = false }: { productId: string; productName: string; inStock: boolean; iconOnly?: boolean }) {
+function CardCartButton({ productId, productName, inStock }: { productId: string; productName: string; inStock: boolean }) {
   const t = useTranslations("cart");
   const quantity = useCartQuantity(productId);
   const inCart = quantity > 0;
@@ -203,12 +175,11 @@ function CardCartButton({ productId, productName, inStock, iconOnly = false }: {
       aria-pressed={inCart}
       aria-label={label}
       title={label}
-      className={cn("inline-flex shrink-0 items-center justify-center rounded-[11px] transition-colors duration-150 active:scale-95 disabled:cursor-not-allowed", iconOnly ? "size-8" : "h-8 w-[7.25rem] gap-1.5 px-2 sm:w-[7.75rem]", inCart ? "bg-primary text-white hover:bg-primary-hover" : "border border-primary bg-transparent text-primary hover:bg-primary-soft", !inStock && "border-border bg-surface-secondary text-text-muted")}
+      className={cn("inline-flex size-8 shrink-0 items-center justify-center rounded-[11px] transition-colors duration-150 active:scale-95 disabled:cursor-not-allowed", inCart ? "bg-primary text-white hover:bg-primary-hover" : "border border-primary bg-transparent text-primary hover:bg-primary-soft", !inStock && "border-border bg-surface-secondary text-text-muted")}
     >
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5 shrink-0">
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
       </svg>
-      {!iconOnly && <span className="truncate text-[10px] font-semibold leading-none sm:text-[11px]">{!inStock ? t("outOfStock") : inCart ? t("removeFromCart") : t("addToCart")}</span>}
     </button>
   );
 }

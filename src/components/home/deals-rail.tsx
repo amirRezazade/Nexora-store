@@ -108,7 +108,7 @@ export function DealsRail({ dir, products, locale }: { dir: "rtl" | "ltr"; produ
           {products.length > 0
             ? products.map((product, index) => (
                 <div key={product.id} role="group" aria-label={t("slideLabel", { index: index + 1, total: products.length })} className={slideBasis}>
-                  <ProductCard product={product} locale={locale} sizes={imageSizes} variant="deal" />
+                  <ProductCard product={product} locale={locale} sizes={imageSizes} />
                 </div>
               ))
             : Array.from({ length: placeholderCount }, (_, index) => (
@@ -120,9 +120,10 @@ export function DealsRail({ dir, products, locale }: { dir: "rtl" | "ltr"; produ
                       <div className="h-2 w-4/5 rounded-full bg-[#ece4df]" />
                       <div className="mt-1.5 h-2 w-3/5 rounded-full bg-[#ece4df]" />
                       <div className="mt-2 h-1.5 w-2/5 rounded-full bg-[#ece4df]" />
-                      <div className="mt-auto flex items-center justify-between gap-2 pt-3">
-                        <div className="h-2 w-20 rounded-full bg-[#e3d8d2]" />
-                        <div className="size-8 rounded-md bg-[#f7ece6]" />
+                      <div className="mt-3 h-2 w-16 rounded-full bg-[#e3d8d2]" />
+                      <div className="mt-auto flex items-end justify-between gap-2 pt-2">
+                        <div className="h-2 w-14 rounded-full bg-[#ece4df]" />
+                        <div className="size-8 rounded-[11px] bg-[#f7ece6]" />
                       </div>
                     </div>
                   </div>

@@ -865,3 +865,68 @@ export async function listDealProducts({
 
   return { products, status: "ok" };
 }
+
+/**
+ * محصولات یک دسته برای بخش «محصولات منتخب» صفحه اصلی.
+ * فقط محصولات منتشرشده با حداقل یک واریانت فعال برمی‌گرداند.
+ */
+export async function listProductsByCategory({
+  categoryId,
+  limit = 10,
+}: {
+  categoryId: string;
+  limit?: number;
+}): Promise<{ products: ProductSummary[]; status: "ok" | "error" }> {
+  "use cache";
+  cacheTag("products");
+  cacheTag("categories");
+  cacheLife("minutes");
+
+  const safeLimit = Math.min(Math.max(Math.trunc(limit), 1), 20);
+  const safeCategoryId = z.string().uuid().safeParse(categoryId);
+  if (!safeCategoryId.success) {
+    return { products: [], status: "ok" };
+  }
+
+  const { data: categoryRows } = await getPublicSupabaseClient()
+    .from("categories")
+    .select("id,parent_id")
+    .eq("is_active", true);
+
+  const categoryIds = new Set<string>([safeCategoryId.data]);
+  const allRows = (categoryRows ?? []) as Array<{ id: string; parent_id: string | null }>;
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const row of allRows) {
+      if (row.parent_id && categoryIds.has(row.parent_id) && !categoryIds.has(row.id)) {
+        categoryIds.add(row.id);
+        changed = true;
+      }
+    }
+  }
+
+  const { data, error } = await getPublicSupabaseClient()
+    .from(PRODUCTS_TABLE)
+    .select(PRODUCT_COLUMNS)
+    .eq("status", PUBLISHED_STATUS)
+    .in("category_id", Array.from(categoryIds))
+    .eq("product_variants.is_active", true)
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .order("sort_order", { referencedTable: "product_images", ascending: true })
+    .order("sort_order", { referencedTable: "product_variants", ascending: true })
+    .limit(safeLimit);
+
+  if (error) {
+    console.error("[dal/products] Failed to query category products:", error.message);
+    return { products: [], status: "error" };
+  }
+
+  const parsed = z.array(productRowSchema).safeParse(data ?? []);
+  if (!parsed.success) {
+    console.error("[dal/products] Unexpected category product shape:", parsed.error.message);
+    return { products: [], status: "error" };
+  }
+
+  return { products: await mapRowsToSummaries(parsed.data), status: "ok" };
+}

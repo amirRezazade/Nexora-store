@@ -93,6 +93,17 @@
       "previous": "Previous deal",
       "next": "Next deal",
       "keyboardHint": "Use the left and right arrow keys to browse deals."
+    },
+    "featured": {
+      "title": "Featured products",
+      "subtitle": "Handpicked products from popular categories.",
+      "carouselLabel": "Featured products",
+      "slideLabel": "Product {index} of {total}",
+      "previous": "Previous products",
+      "next": "Next products",
+      "keyboardHint": "Use the left and right arrow keys to browse products.",
+      "tablistLabel": "Featured categories",
+      "viewAll": "View all products"
     }
   },
   "footer": {
