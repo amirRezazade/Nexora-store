@@ -76,6 +76,23 @@
       "slideLabel": "Category {index} of {total}",
       "keyboardHint": "Use the left and right arrow keys to browse categories.",
       "viewAll": "View all categories"
+    },
+    "deals": {
+      "eyebrow": "Today's deals",
+      "headline": "Top picks at special prices",
+      "description": "A curated selection of favorites at limited-time prices — grab them before the timer runs out.",
+      "primaryCta": "Shop all deals",
+      "endsIn": "Ends in",
+      "countdownLabel": "{days} days, {hours} hours, {minutes} minutes and {seconds} seconds left",
+      "days": "days",
+      "hours": "hours",
+      "minutes": "min",
+      "seconds": "sec",
+      "carouselLabel": "Today's deals",
+      "slideLabel": "Deal {index} of {total}",
+      "previous": "Previous deal",
+      "next": "Next deal",
+      "keyboardHint": "Use the left and right arrow keys to browse deals."
     }
   },
   "footer": {
@@ -129,6 +146,9 @@
     "backToShop": "Back to shop",
     "inStock": "In stock",
     "outOfStock": "Out of stock",
+    "new": "New",
+    "discountLabel": "{percent}% off",
+    "ratingLabel": "Rated {rating} out of 5",
     "priceLabel": "Price",
     "descriptionTitle": "Product description",
     "galleryLabel": "Product images",
@@ -152,6 +172,7 @@
     "unavailableHint": "This product is no longer available and is not included in the subtotal.",
     "partial": "Some items are unavailable and aren't included in the subtotal.",
     "remove": "Remove {name} from cart",
+    "removeFromCart": "Remove from cart",
     "removeUnavailable": "Remove unavailable item",
     "decrease": "Decrease quantity",
     "increase": "Increase quantity",

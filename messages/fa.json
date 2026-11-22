@@ -76,6 +76,23 @@
       "slideLabel": "دسته\u200Cبندی {index} از {total}",
       "keyboardHint": "برای جابهجی میان دسته\u200Cبندی\u200Cها از کلیدهای جهتدار چپ و راست استفاده کنید.",
       "viewAll": "مشاهده همه دسته\u200Cبندی\u200Cها"
+    },
+    "deals": {
+      "eyebrow": "پیشنهاد\u200Cهای امروز",
+      "headline": "منتخب\u200Cهای محبوب با تخفیف ویژه",
+      "description": "چند محصول پرفروش با قیمت محدود؛ تا پایان شمارش معکوس فرصت خرید دارید.",
+      "primaryCta": "مشاهده همه پیشنهادها",
+      "endsIn": "باقی\u200Cمانده",
+      "countdownLabel": "{days} روز، {hours} ساعت، {minutes} دقیقه و {seconds} ثانیه باقی مانده",
+      "days": "روز",
+      "hours": "ساعت",
+      "minutes": "دقیقه",
+      "seconds": "ثانیه",
+      "carouselLabel": "پیشنهاد\u200Cهای امروز",
+      "slideLabel": "پیشنهاد {index} از {total}",
+      "previous": "پیشنهاد قبلی",
+      "next": "پیشنهاد بعدی",
+      "keyboardHint": "برای جابه\u200Cجایی میان پیشنهادها از کلیدهای جهت\u200Cدار چپ و راست استفاده کنید."
     }
   },
   "footer": {
@@ -129,6 +146,9 @@
     "backToShop": "بازگشت به فروشگاه",
     "inStock": "موجود در انبار",
     "outOfStock": "ناموجود",
+    "new": "جدید",
+    "discountLabel": "{percent}٪ تخفیف",
+    "ratingLabel": "امتیاز {rating} از ۵",
     "priceLabel": "قیمت",
     "descriptionTitle": "توضیحات محصول",
     "galleryLabel": "تصاویر محصول",
@@ -152,6 +172,7 @@
     "unavailableHint": "این محصول دیگر در دسترس نیست و در جمع سبد حساب نشده است.",
     "partial": "برخی اقلام ناموجودند و در جمع سبد حساب نشده‌اند.",
     "remove": "حذف {name} از سبد",
+    "removeFromCart": "حذف از سبد",
     "removeUnavailable": "حذف محصول ناموجود",
     "decrease": "کاهش تعداد",
     "increase": "افزایش تعداد",

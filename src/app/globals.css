@@ -22,8 +22,7 @@
   font-weight: 400;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+200C-200E,
-    U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FEFF;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FEFF;
 }
 
 @font-face {
@@ -32,8 +31,7 @@
   font-weight: 500;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+200C-200E,
-    U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FEFF;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FEFF;
 }
 
 @font-face {
@@ -42,8 +40,7 @@
   font-weight: 600;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+200C-200E,
-    U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FEFF;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FEFF;
 }
 
 @font-face {
@@ -52,8 +49,7 @@
   font-weight: 700;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+200C-200E,
-    U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FEFF;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FEFF;
 }
 
 @font-face {
@@ -62,8 +58,7 @@
   font-weight: 800;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+200C-200E,
-    U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FEFF;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FEFF;
 }
 
 @font-face {
@@ -72,8 +67,7 @@
   font-weight: 900;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+200C-200E,
-    U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FEFF;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FEFF;
 }
 
 /* Tailwind v4: دارک‌مود با class «.dark» روی <html> فعال می‌شود (ThemeProvider پروژه آن را مدیریت می‌کند) */
@@ -85,7 +79,7 @@
 @theme {
   --breakpoint-xs: 30rem; /* 480px — گوشی‌های کوچک؛ طبق درخواست سفارشی */
 
-  --color-brand-50:  #fff7ed;
+  --color-brand-50: #fff7ed;
   --color-brand-100: #ffedd5;
   --color-brand-200: #fed7aa;
   --color-brand-300: #fdba74;
@@ -103,31 +97,43 @@
 
 /* ─────────────────────────────────────────────
    ۲) لایت‌تم — توکن‌های معنایی (پالت تأییدشدهٔ برند)
-   Primary #FC6305 · Base #FBFBFD · Soft #F0F0F7 · Muted #E6E2EC
+   Primary #fa5700 · Base #FBFBFD · Soft #F0F0F7 · Muted #E6E2EC
    ───────────────────────────────────────────── */
 :root {
   --background: #fbfbfd;
   --surface: #ffffff;
   --surface-secondary: #f0f0f7;
   --surface-tertiary: #e6e2ec;
-  --icon-surface: #f8f8fb;   /* سطح مخصوص آیکون‌ها: خیلی نزدیک به پسزمینهٔ صفحه */
+  --icon-surface: #f8f8fb; /* سطح مخصوص آیکون‌ها: خیلی نزدیک به پسزمینهٔ صفحه */
   --foreground: #0d0f17;
   --text-secondary: #52535f;
-  --text-muted: #6b6b7b;   /* Muted شما #838393 بود؛ برای AA کمی تیره‌تر شد */
+  --text-muted: #6b6b7b; /* Muted شما #838393 بود؛ برای AA کمی تیره‌تر شد */
   --border: #e6e2ec;
   --border-strong: #c6c7d7;
 
-  --primary: #fc6305;
+  --primary: #fa5700;
   --primary-hover: #e95600;
-  --primary-foreground: #0d0f17;   /* متن تیره روی نارنجی روشن — کنتراست ۶.۵ به‌جای ۲.۹ با سفید */
+  --primary-foreground: #0d0f17; /* متن تیره روی نارنجی روشن — کنتراست ۶.۵ به‌جای ۲.۹ با سفید */
   --primary-soft: #fce0d0;
-  --primary-text: #c2410c;         /* فقط برای متن/آیکون نارنجی؛ خودِ fill همان #FC6305 می‌ماند */
+  --primary-text: #c2410c; /* فقط برای متن/آیکون نارنجی؛ خودِ fill همان #fa5700 می‌ماند */
 
   /* رنگ متنِ وضعیت‌ها تیره‌تر از fill است تا روی سفید/تینت AA شود */
-  --success: #16a36a;  --success-text: #0e7c50;  --success-bg: #e8f6f0;  --success-foreground: #0d0f17;
-  --warning: #f5a623;  --warning-text: #9a5b00;  --warning-bg: #fdf2df;  --warning-foreground: #0d0f17;
-  --error:   #e5484d;  --error-text:   #c62a2f;  --error-bg:   #fcebec;  --error-foreground:   #0d0f17;
-  --info:    #3366cc;  --info-text:    #3366cc;  --info-bg:    #ebf0fa;  --info-foreground:    #0d0f17;
+  --success: #16a36a;
+  --success-text: #0e7c50;
+  --success-bg: #e8f6f0;
+  --success-foreground: #0d0f17;
+  --warning: #f5a623;
+  --warning-text: #9a5b00;
+  --warning-bg: #fdf2df;
+  --warning-foreground: #0d0f17;
+  --error: #e5484d;
+  --error-text: #c62a2f;
+  --error-bg: #fcebec;
+  --error-foreground: #0d0f17;
+  --info: #3366cc;
+  --info-text: #3366cc;
+  --info-bg: #ebf0fa;
+  --info-foreground: #0d0f17;
 
   color-scheme: light;
 }
@@ -139,9 +145,9 @@
 .dark {
   --background: #090a0b;
   --surface: #141416;
-  --surface-secondary: #25272b;   /* سطح دوم: تامبنیل، چیپ‌ها، پنل‌ها */
-  --surface-tertiary: #303237;    /* سطح سوم: بج شمارنده و حالت فعال */
-  --icon-surface: #1c1e21;        /* سطح مخصوص آیکون‌ها */
+  --surface-secondary: #25272b; /* سطح دوم: تامبنیل، چیپ‌ها، پنل‌ها */
+  --surface-tertiary: #303237; /* سطح سوم: بج شمارنده و حالت فعال */
+  --icon-surface: #1c1e21; /* سطح مخصوص آیکون‌ها */
   --foreground: #f5f5f5;
   --text-secondary: #b8b8b8;
   --text-muted: #85858a;
@@ -154,10 +160,22 @@
   --primary-soft: #351a0d;
   --primary-text: #fd5d01;
 
-  --success: #22c55e;  --success-text: #22c55e;  --success-bg: #10261a;  --success-foreground: #090a0b;
-  --warning: #f5a623;  --warning-text: #f5a623;  --warning-bg: #2e2210;  --warning-foreground: #090a0b;
-  --error:   #ef4444;  --error-text:   #ef4444;  --error-bg:   #2e1415;  --error-foreground:   #090a0b;
-  --info:    #3b82f6;  --info-text:    #3b82f6;  --info-bg:    #101e33;  --info-foreground:    #090a0b;
+  --success: #22c55e;
+  --success-text: #22c55e;
+  --success-bg: #10261a;
+  --success-foreground: #090a0b;
+  --warning: #f5a623;
+  --warning-text: #f5a623;
+  --warning-bg: #2e2210;
+  --warning-foreground: #090a0b;
+  --error: #ef4444;
+  --error-text: #ef4444;
+  --error-bg: #2e1415;
+  --error-foreground: #090a0b;
+  --info: #3b82f6;
+  --info-text: #3b82f6;
+  --info-bg: #101e33;
+  --info-foreground: #090a0b;
 
   color-scheme: dark;
 }
@@ -169,7 +187,7 @@
    ───────────────────────────────────────────── */
 :root {
   --gradient-brand-from: #c2410c;
-  --gradient-brand-via: #fc6305;
+  --gradient-brand-via: #fa5700;
   --gradient-brand-to: #ff8a3d;
   --gradient-brand-direction: to right;
   --gradient-brand-foreground: #ffffff;
@@ -187,12 +205,7 @@
 }
 
 .gradient-brand {
-  background-image: linear-gradient(
-    var(--gradient-brand-direction) in oklab,
-    var(--gradient-brand-from),
-    var(--gradient-brand-via),
-    var(--gradient-brand-to)
-  );
+  background-image: linear-gradient(var(--gradient-brand-direction) in oklab, var(--gradient-brand-from), var(--gradient-brand-via), var(--gradient-brand-to));
   color: var(--gradient-brand-foreground);
 }
 
@@ -409,34 +422,66 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 @keyframes nexora-overlay-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes nexora-drawer-in-ltr {
-  from { opacity: 0; transform: translateX(-100%); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes nexora-drawer-in-rtl {
-  from { opacity: 0; transform: translateX(100%); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* خروج: بک‌دراپ fade و پنل slide به بیرون (هم‌جهت ورود) */
 @keyframes nexora-overlay-out {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes nexora-drawer-out-ltr {
-  from { opacity: 1; transform: translateX(0); }
-  to { opacity: 0; transform: translateX(-100%); }
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
 }
 
 @keyframes nexora-drawer-out-rtl {
-  from { opacity: 1; transform: translateX(0); }
-  to { opacity: 0; transform: translateX(100%); }
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
 }
 
 .menu-backdrop {
@@ -469,5 +514,119 @@ input[type="search"]::-webkit-search-cancel-button {
   [data-closing="true"] .menu-backdrop,
   [data-closing="true"] .menu-panel {
     animation: none;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   دکمه علاقه‌مندی کارت محصول — انیمیشن الهام‌گرفته از نمونهٔ پیوست‌شده
+   رنگ فعال قرمز است (نه نارنجی)؛ رنگ پیش‌فرض برای خوانایی روی سطح کارت تیره/روشن تنظیم شده.
+   ───────────────────────────────────────────── */
+.ui-like {
+  --icon-size: 22px;
+  --icon-secondary-color: currentColor;
+  --icon-hover-color: #ef4444;
+  --icon-primary-color: #e61a1a;
+  --icon-circle-border: 1px solid var(--icon-primary-color);
+  --icon-circle-size: 34px;
+  --icon-anmt-duration: 0.3s;
+}
+
+.ui-like input {
+  appearance: none;
+  display: none;
+}
+
+.ui-like .like {
+  width: var(--icon-size);
+  height: auto;
+  fill: var(--icon-secondary-color);
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transform-origin: top;
+}
+
+.ui-like .like::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  box-shadow: 0 30px 0 -4px var(--icon-primary-color), 30px 0 0 -4px var(--icon-primary-color), 0 -30px 0 -4px var(--icon-primary-color), -30px 0 0 -4px var(--icon-primary-color), -22px 22px 0 -4px var(--icon-primary-color), -22px -22px 0 -4px var(--icon-primary-color), 22px -22px 0 -4px var(--icon-primary-color), 22px 22px 0 -4px var(--icon-primary-color);
+  border-radius: 50%;
+  transform: scale(0);
+}
+
+.ui-like .like::before {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  border: var(--icon-circle-border);
+  opacity: 0;
+}
+
+.ui-like.add .like::after {
+  animation: circles var(--icon-anmt-duration) cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation-delay: var(--icon-anmt-duration);
+}
+
+.ui-like.add .like {
+  fill: var(--icon-primary-color);
+  animation: like var(--icon-anmt-duration) forwards;
+  transition-delay: 0.3s;
+}
+
+.ui-like.add .like::before {
+  animation: circle var(--icon-anmt-duration) cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation-delay: var(--icon-anmt-duration);
+}
+
+@keyframes like {
+  50% {
+    transform: scaleY(0.6);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes circle {
+  from {
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+  90% {
+    width: var(--icon-circle-size);
+    height: var(--icon-circle-size);
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes circles {
+  from {
+    transform: scale(0);
+  }
+  40% {
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-like .like,
+  .ui-like.add .like,
+  .ui-like.add .like::before,
+  .ui-like.add .like::after {
+    animation: none;
+    transition: none;
   }
 }

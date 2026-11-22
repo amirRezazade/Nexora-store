@@ -1,7 +1,9 @@
 import { z } from "zod";
+import { cacheLife, cacheTag } from "next/cache";
 import { env } from "@/lib/env";
 import { getPublicSupabaseClient } from "@/lib/supabase/public";
 import { normalizeProductIds } from "@/lib/catalog/ids";
+import { discountPercent } from "@/lib/money";
 import { normalizeSearchTerm } from "@/lib/search/normalize";
 import { SEARCH_PAGE_SIZE, type SortKey } from "@/lib/search/search-params";
 import { SUGGESTION_LIMIT } from "@/lib/search/suggestions";
@@ -85,6 +87,7 @@ const variantRowSchema = z.object({
 const productRowSchema = z.object({
   id: z.string().min(1),
   slug: z.string().nullish(),
+  published_at: z.string().nullish(),
   product_translations: z.array(translationRowSchema).nullish(),
   product_images: z.array(imageRowSchema).nullish(),
   product_variants: z.array(variantRowSchema).nullish(),
@@ -132,6 +135,10 @@ export interface ProductSummary {
   name: string;
   nameFa: string | null;
   price: number;
+  /** قیمت قبل از تخفیف؛ فقط وقتی واریانت compare_at بزرگ‌تر از قیمت فعلی داشته باشد */
+  compareAtPrice: number | null;
+  /** تازه منتشر شده است (برای بج «جدید» روی کارت) */
+  isNew: boolean;
   image: ProductImage | null;
   /** موجودی عددی — سبد تعداد را با همین سقف محدود می‌کند */
   stock: number;
@@ -224,10 +231,10 @@ function findTranslation(row: ProductRow, locale: string) {
 }
 
 /**
- * قیمت «واریانت اول»: واریانتی با کمترین sort_order که قیمت دارد.
- * مقدار برگشتی همان price_cents است (سنت)؛ تبدیل به واحد پول در mapSummary.
+ * واریانت نمایشی: واریانتی با کمترین sort_order که قیمت دارد.
+ * قیمت و compare_at هر دو از همین واریانت خوانده می‌شوند تا با هم هم‌خوان باشند.
  */
-function pickPriceCents(variants: ProductRow["product_variants"]): number | null {
+function pickVariant(variants: ProductRow["product_variants"]) {
   const priced = (variants ?? []).filter((variant) => variant.price_cents != null);
   if (priced.length === 0) return null;
 
@@ -236,7 +243,23 @@ function pickPriceCents(variants: ProductRow["product_variants"]): number | null
     (best.sort_order ?? Number.MAX_SAFE_INTEGER)
       ? variant
       : best,
-  ).price_cents ?? null;
+  );
+}
+
+function pickPriceCents(variants: ProductRow["product_variants"]): number | null {
+  return pickVariant(variants)?.price_cents ?? null;
+}
+
+/** تازگی محصول برای بج «جدید» — پنجره‌ی ۱۴ روزه از زمان انتشار */
+const NEW_BADGE_DAYS = 14;
+
+function isRecentlyPublished(publishedAt: string | null | undefined): boolean {
+  if (!publishedAt) return false;
+
+  const time = Date.parse(publishedAt);
+  if (Number.isNaN(time)) return false;
+
+  return Date.now() - time <= NEW_BADGE_DAYS * 24 * 60 * 60 * 1000;
 }
 
 /** موجودی هر واریانت؛ status=unknown یعنی جدول inventory خوانده نشد */
@@ -331,13 +354,22 @@ function mapSummary(row: ProductRow, stock: StockLookup): ProductSummary | null 
   if (!name) return null;
 
   const stockCount = stockForProduct(row.product_variants, stock);
+  const variant = pickVariant(row.product_variants);
+  const priceCents = variant?.price_cents ?? null;
+  const compareCents = variant?.compare_at_cents ?? null;
+  const price = toDisplayPrice(priceCents);
 
   return {
     id: row.id,
     slug: row.slug ?? null,
     name,
     nameFa: fa?.name ?? null,
-    price: toDisplayPrice(pickPriceCents(row.product_variants)),
+    price,
+    compareAtPrice:
+      priceCents != null && compareCents != null && compareCents > priceCents
+        ? compareCents / 100
+        : null,
+    isNew: isRecentlyPublished(row.published_at),
     image: pickPrimaryImage(row.product_images),
     stock: stockCount,
     inStock: stockCount > 0,
@@ -774,4 +806,62 @@ export async function listProducts(input: {
   pageSize?: number;
 }): Promise<ProductListResult> {
   return queryProducts({ ...input, sort: input.sort ?? "newest", query: "" });
+}
+
+/**
+ * پیشنهادهای دارای تخفیف — برای ریل «پیشنهادهای امروز» صفحه‌ی اصلی.
+ *
+ * PostgREST امکان مقایسه‌ی دو ستون در یک فیلتر را نمی‌دهد؛ پس فقط ردیف‌هایی
+ * خوانده می‌شوند که دست‌کم یک واریانتِ دارای compare_at دارند (فیلتر روی embed
+ * داخلی) و شرط «compare_at > price» در سرور اعمال می‌شود.
+ *
+ * تعداد ردیف‌های کاندید محدود است تا با بزرگ‌شدن کاتالوگ، این کوئری سنگین نشود.
+ * ترتیب نهایی: بیشترین درصد تخفیف.
+ */
+const DEALS_CANDIDATE_LIMIT = 60;
+
+export async function listDealProducts({
+  limit = 8,
+}: { limit?: number } = {}): Promise<{
+  products: ProductSummary[];
+  status: "ok" | "error";
+}> {
+  "use cache";
+  cacheTag("products");
+  cacheLife("minutes");
+
+  const safeLimit = Math.min(Math.max(Math.trunc(limit), 1), 12);
+
+  const { data, error } = await getPublicSupabaseClient()
+    .from(PRODUCTS_TABLE)
+    .select(PRODUCT_COLUMNS)
+    .eq("status", PUBLISHED_STATUS)
+    .eq("product_variants.is_active", true)
+    .not("product_variants.compare_at_cents", "is", null)
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .order("sort_order", { referencedTable: "product_images", ascending: true })
+    .order("sort_order", { referencedTable: "product_variants", ascending: true })
+    .limit(DEALS_CANDIDATE_LIMIT);
+
+  if (error) {
+    console.error("[dal/products] Failed to query deal products:", error.message);
+    return { products: [], status: "error" };
+  }
+
+  const parsed = z.array(productRowSchema).safeParse(data ?? []);
+  if (!parsed.success) {
+    console.error("[dal/products] Unexpected deal product shape:", parsed.error.message);
+    return { products: [], status: "error" };
+  }
+
+  const products = (await mapRowsToSummaries(parsed.data))
+    .filter((product) => product.compareAtPrice != null)
+    .sort(
+      (a, b) =>
+        discountPercent(b.compareAtPrice ?? b.price, b.price) -
+        discountPercent(a.compareAtPrice ?? a.price, a.price),
+    )
+    .slice(0, safeLimit);
+
+  return { products, status: "ok" };
 }

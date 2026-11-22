@@ -1,11 +1,13 @@
 import { Headset, ArrowUUpLeftIcon, ShieldCheck, Truck } from "@phosphor-icons/react/dist/ssr";
-import { getImageProps } from "next/image";
+import Image, { getImageProps } from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { HeroSlider, type HeroSlide } from "@/components/home/hero-slider";
 import { CategorySlider, type CategorySlide } from "@/components/home/category-slider";
+import { DealsSection } from "@/components/home/deals-section";
 import { categoryName } from "@/lib/category-tree";
 import { getHeroBanners } from "@/server/dal/banners";
 import { getHomeCategories } from "@/server/dal/categories";
+import { listDealProducts } from "@/server/dal/products";
 
 /**
  * صفحهٔ اصلی.
@@ -22,6 +24,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   const { banners } = await getHeroBanners(locale);
   const homeCategories = await getHomeCategories();
+  const { products: dealProducts } = await listDealProducts({ limit: 8 });
 
   /**
    * دو تصویر هر بنر (عمودی موبایل / افقی دسکتاپ) با getImageProps به srcSet
@@ -110,6 +113,19 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       {categorySlides.length > 0 && (
         <CategorySlider categories={categorySlides} dir={locale === "fa" ? "rtl" : "ltr"} />
       )}
+
+      {/* پیشنهادهای امروز + محصولات منتخب — پس‌زمینه مشترک */}
+      <section className="mx-auto max-w-[90rem] px-3 py-6 xs:px-4 sm:px-6 sm:py-8">
+        <div className="relative isolate overflow-hidden rounded-[2rem] bg-[#f8d5bf] shadow-[0_18px_40px_-32px_rgba(124,45,18,0.55)] ring-1 ring-black/5">
+          <div aria-hidden className="absolute inset-0 -z-10">
+            <Image src="/promo/glossy-peach-deals-bg.png" alt="" fill sizes="(min-width: 90rem) 90rem, 100vw" className="object-cover object-center rtl:scale-x-[-1]" />
+          </div>
+
+          <div className="flex flex-col gap-6 p-4 xs:p-5 sm:p-7 sm:gap-8">
+            <DealsSection dir={locale === "fa" ? "rtl" : "ltr"} locale={locale} products={dealProducts} />
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
