@@ -8,6 +8,7 @@ import { ThemeScript } from "@/components/theme/theme-script";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
+import { AppToaster } from "@/components/notifications/app-toaster";
 import { env } from "@/lib/env";
 import "../globals.css";
 
@@ -71,6 +72,7 @@ export default async function LocaleLayout({
       >
         <ThemeProvider>
           <NextIntlClientProvider>
+            <AppToaster />
             <SiteHeader />
             <main className="flex-1">{children}</main>
             <SiteFooter />

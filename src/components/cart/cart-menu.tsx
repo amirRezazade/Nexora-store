@@ -9,6 +9,7 @@ import { formatPrice } from "@/lib/money";
 import { MAX_ITEM_QUANTITY, cartCount } from "@/lib/cart/model";
 import { cartActions, useCart } from "@/lib/cart/store";
 import { useProductsByIds } from "@/lib/catalog/use-products-by-ids";
+import { useNotify } from "@/lib/notifications/use-notify";
 import { useExitRemoval } from "@/lib/ui/use-exit-removal";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +26,7 @@ const PREVIEW_LIMIT = 4;
 export function CartMenu({ close }: { close: () => void }) {
   const t = useTranslations("cart");
   const common = useTranslations("common");
+  const notify = useNotify();
   const locale = useLocale();
   const cart = useCart();
 
@@ -32,6 +34,12 @@ export function CartMenu({ close }: { close: () => void }) {
   const { products, status, retry } = useProductsByIds(ids);
   const { isExiting, removeWithExit } = useExitRemoval(cartActions.remove);
   const byId = useMemo(() => new Map(products.map((product) => [product.id, product])), [products]);
+
+  const handleRemove = (id: string, name: string) => {
+    if (isExiting(id)) return;
+    removeWithExit(id);
+    notify.cartRemoved(name);
+  };
 
   const preview = cart.items.slice(0, PREVIEW_LIMIT);
   const remaining = cart.items.length - preview.length;
@@ -125,7 +133,7 @@ export function CartMenu({ close }: { close: () => void }) {
                           <p className="truncate text-xs font-semibold leading-5 text-foreground">{unavailableName ?? t("unavailableItem")}</p>
                           <p className="mt-0.5 text-[11px] leading-5 text-text-muted">{t("unavailableHint")}</p>
                         </div>
-                        <button type="button" onClick={() => removeWithExit(item.productId)} aria-label={t("removeUnavailable")} title={t("removeUnavailable")} className="ms-1.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-error-text transition-colors hover:bg-error-bg">
+                        <button type="button" onClick={() => handleRemove(item.productId, unavailableName ?? t("unavailableItem"))} aria-label={t("removeUnavailable")} title={t("removeUnavailable")} className="ms-1.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-error-text transition-colors hover:bg-error-bg">
                           <Trash className="h-[18px] w-[18px]" aria-hidden />
                         </button>
                       </li>
@@ -156,19 +164,19 @@ export function CartMenu({ close }: { close: () => void }) {
 
                       {/* ۳) کنترل تعداد */}
                       <div className="flex shrink-0 items-center gap-0.5">
-                        <button type="button" onClick={() => cartActions.setQuantity(item.productId, item.quantity - 1)} disabled={item.quantity <= 1} aria-label={t("decrease")} className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:bg-icon-surface hover:text-primary-text disabled:cursor-not-allowed disabled:opacity-40">
+                        <button type="button" onClick={() => { cartActions.setQuantity(item.productId, item.quantity - 1); notify.cartQuantityChanged(); }} disabled={item.quantity <= 1} aria-label={t("decrease")} className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:bg-icon-surface hover:text-primary-text disabled:cursor-not-allowed disabled:opacity-40">
                           <Minus className="h-3.5 w-3.5" aria-hidden />
                         </button>
                         <span className="min-w-5 text-center text-xs font-bold text-foreground" aria-live="polite">
                           {item.quantity}
                         </span>
-                        <button type="button" onClick={() => cartActions.setQuantity(item.productId, item.quantity + 1)} disabled={atMax} aria-label={atMax ? t("maxReached") : t("increase")} title={atMax ? t("maxReached") : t("increase")} className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:bg-icon-surface hover:text-primary-text disabled:cursor-not-allowed disabled:opacity-40">
+                        <button type="button" onClick={() => { cartActions.setQuantity(item.productId, item.quantity + 1); notify.cartQuantityChanged(); }} disabled={atMax} aria-label={atMax ? t("maxReached") : t("increase")} title={atMax ? t("maxReached") : t("increase")} className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:bg-icon-surface hover:text-primary-text disabled:cursor-not-allowed disabled:opacity-40">
                           <Plus className="h-3.5 w-3.5" aria-hidden />
                         </button>
                       </div>
 
                       {/* ۴) حذف */}
-                      <button type="button" onClick={() => removeWithExit(item.productId)} aria-label={t("remove", { name })} title={t("remove", { name })} className="ms-1.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-error-text transition-colors hover:bg-error-bg">
+                      <button type="button" onClick={() => handleRemove(item.productId, name)} aria-label={t("remove", { name })} title={t("remove", { name })} className="ms-1.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-error-text transition-colors hover:bg-error-bg">
                         <Trash className="h-[18px] w-[18px]" aria-hidden />
                       </button>
                     </li>

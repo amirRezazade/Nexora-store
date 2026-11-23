@@ -11,7 +11,9 @@ import { ProductCard } from "@/components/products/product-card";
 
 const focusRing = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
 
-const control = "inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-text-muted shadow-sm transition-colors hover:bg-surface-secondary hover:text-foreground disabled:cursor-default disabled:opacity-40 disabled:hover:bg-surface disabled:hover:text-text-muted";
+// نمایش دکمهها از sm به بعد است؛ نباید display پایهای اینجا باشد وگرنه
+// tailwind-merge کلاس hidden را حذف میکند.
+const control = "size-9 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-text-muted shadow-sm transition-colors hover:bg-surface-secondary hover:text-foreground disabled:cursor-default disabled:opacity-40 disabled:hover:bg-surface disabled:hover:text-text-muted";
 
 const sectionHeader = {
   wrap: "mb-4 flex items-end justify-between gap-3 sm:mb-5",

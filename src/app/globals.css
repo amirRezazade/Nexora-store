@@ -139,44 +139,53 @@
   color-scheme: light;
 }
 
-/* ─────────────────────────────────────────────
-   ۳) دارک‌تم — پالت تأییدشدهٔ برند
-   Background #090A0B · Surface #141416 · Primary #FD5D01
-   ───────────────────────────────────────────── */
 .dark {
-  --background: #090a0b;
-  --surface: #141416;
-  --surface-secondary: #25272b; /* سطح دوم: تامبنیل، چیپ‌ها، پنل‌ها */
-  --surface-tertiary: #303237; /* سطح سوم: بج شمارنده و حالت فعال */
-  --icon-surface: #1c1e21; /* سطح مخصوص آیکون‌ها */
-  --foreground: #f5f5f5;
-  --text-secondary: #b8b8b8;
-  --text-muted: #85858a;
-  --border: #303236;
-  --border-strong: #45484d;
+  /* Background & Surfaces */
+  --background: #0c0d10;
+  --surface: #15171c;
+  --surface-secondary: #20232a;
+  --surface-tertiary: #2b2f38;
+  --icon-surface: #1c2027;
 
-  --primary: #fd5d01;
-  --primary-hover: #e95100;
-  --primary-foreground: #090a0b;
-  --primary-soft: #351a0d;
-  --primary-text: #fd5d01;
+  /* Typography */
+  --foreground: #f4f5f7;
+  --text-secondary: #c4cad4;
+  --text-muted: #9aa3b2;
 
-  --success: #22c55e;
-  --success-text: #22c55e;
-  --success-bg: #10261a;
-  --success-foreground: #090a0b;
-  --warning: #f5a623;
-  --warning-text: #f5a623;
-  --warning-bg: #2e2210;
-  --warning-foreground: #090a0b;
-  --error: #ef4444;
-  --error-text: #ef4444;
-  --error-bg: #2e1415;
-  --error-foreground: #090a0b;
-  --info: #3b82f6;
-  --info-text: #3b82f6;
-  --info-bg: #101e33;
-  --info-foreground: #090a0b;
+  /* Borders */
+  --border: #2b3039;
+  --border-strong: #414957;
+
+  /* Primary / Brand */
+  --primary: #ff6b1a;
+  --primary-hover: #f05a0a;
+  --primary-foreground: #170d07;
+  --primary-soft: #351b12;
+  --primary-text: #ff7836;
+
+  /* Success */
+  --success: #34d399;
+  --success-text: #34d399;
+  --success-bg: #10291f;
+  --success-foreground: #071a12;
+
+  /* Warning */
+  --warning: #fbbf24;
+  --warning-text: #fbbf24;
+  --warning-bg: #30240f;
+  --warning-foreground: #211604;
+
+  /* Error */
+  --error: #f87171;
+  --error-text: #f87171;
+  --error-bg: #30191c;
+  --error-foreground: #240b0e;
+
+  /* Info */
+  --info: #60a5fa;
+  --info-text: #60a5fa;
+  --info-bg: #17263d;
+  --info-foreground: #09172a;
 
   color-scheme: dark;
 }
@@ -630,4 +639,146 @@ input[type="search"]::-webkit-search-cancel-button {
     animation: none;
     transition: none;
   }
+}
+
+/* ─────────────────────────────────────────────
+   اعلانهای Sonner — حداکثر 400px زیر xs و حداقل 500px از xs به بعد،
+   با متن چندخطی و بدون سه نقطه
+   ───────────────────────────────────────────── */
+:root {
+  /* پیشفرض تا زمانی که AppToaster ارتفاع واقعی هدر را اندازه بگیرد */
+  --nexora-toast-offset: 149px;
+  /* زیر xs: حداکثر 400px (و clamp در صفحات باریکتر) */
+  --nexora-toast-width: min(400px, calc(100vw - 1.5rem));
+  /* نامهای مستقل: Sonner متغیرهای --success-bg و ... را در تم تاریک
+     بازنویسی میکند، پس نباید مستقیم از آنها استفاده کنیم */
+  --nexora-success-bg: var(--success-bg);
+  --nexora-info-bg: var(--info-bg);
+  --nexora-warning-bg: var(--warning-bg);
+  --nexora-error-bg: var(--error-bg);
+}
+
+/* از xs: حداقل 400px؛ در viewportهای باریکتر از 400 + حاشیه، جلوگیری از سرریز */
+@media (min-width: 30rem) {
+  :root {
+    --nexora-toast-width: min(400px, calc(100vw - 2rem));
+  }
+}
+
+.nexora-toast[data-sonner-toast][data-styled="true"] {
+  padding: 9px 12px;
+  gap: 8px;
+  align-items: center;
+  box-shadow: 0 12px 32px -14px rgba(0, 0, 0, 0.35);
+}
+
+.dark .nexora-toast[data-sonner-toast][data-styled="true"] {
+  box-shadow: 0 12px 32px -14px rgba(0, 0, 0, 0.7);
+}
+
+.nexora-toast[data-sonner-toast]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.nexora-toast[data-sonner-toast][data-styled="true"] [data-icon] {
+  margin: 0;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.nexora-toast[data-sonner-toast][data-styled="true"] [data-icon] svg {
+  width: 18px;
+  height: 18px;
+}
+
+.nexora-toast[data-sonner-toast][data-styled="true"] [data-content] {
+  gap: 0;
+  min-width: 0;
+}
+
+.nexora-toast[data-sonner-toast][data-styled="true"] [data-title].nexora-toast-title {
+  min-width: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: normal;
+  overflow: visible;
+  overflow-wrap: break-word;
+  text-overflow: clip;
+}
+
+/* دکمهٔ بستن در کنار محتوا، نه روی گوشهٔ کارت */
+.nexora-toast[data-sonner-toast][data-styled="true"] [data-close-button].nexora-toast-close {
+  position: static;
+  transform: none;
+  order: 10;
+  align-self: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 0.5rem;
+}
+
+.nexora-toast[data-sonner-toast][data-styled="true"] [data-close-button].nexora-toast-close:hover {
+  border-color: transparent;
+  background: var(--surface-secondary);
+  color: var(--foreground);
+}
+
+/* از xs به بعد فقط اندازهها بزرگتر میشود */
+@media (min-width: 30rem) {
+  .nexora-toast[data-sonner-toast][data-styled="true"] {
+    padding: 11px 14px;
+    gap: 10px;
+  }
+
+  .nexora-toast[data-sonner-toast][data-styled="true"] [data-icon] svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .nexora-toast[data-sonner-toast][data-styled="true"] [data-title].nexora-toast-title {
+    font-size: 0.9375rem;
+  }
+
+  .nexora-toast[data-sonner-toast][data-styled="true"] [data-close-button].nexora-toast-close {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* پسزمینهٔ ملایم متناسب با نوع اعلان + نوار رنگی سمت شروع متن */
+.nexora-toast[data-sonner-toast][data-styled="true"][data-type="success"] {
+  --normal-bg: var(--nexora-success-bg);
+  --normal-border: color-mix(in srgb, var(--success) 30%, transparent);
+  border-inline-start: 3px solid var(--success);
+}
+
+.nexora-toast[data-sonner-toast][data-styled="true"][data-type="default"],
+.nexora-toast[data-sonner-toast][data-styled="true"][data-type="normal"] {
+  --normal-bg: var(--surface-secondary);
+  --normal-border: color-mix(in srgb, var(--primary) 30%, transparent);
+  border-inline-start: 3px solid var(--primary);
+}
+
+.nexora-toast[data-sonner-toast][data-styled="true"][data-type="info"] {
+  --normal-bg: var(--nexora-info-bg);
+  --normal-border: color-mix(in srgb, var(--info) 30%, transparent);
+  border-inline-start: 3px solid var(--info);
+}
+
+.nexora-toast[data-sonner-toast][data-styled="true"][data-type="warning"] {
+  --normal-bg: var(--nexora-warning-bg);
+  --normal-border: color-mix(in srgb, var(--warning) 35%, transparent);
+  border-inline-start: 3px solid var(--warning);
+}
+
+.nexora-toast[data-sonner-toast][data-styled="true"][data-type="error"] {
+  --normal-bg: var(--nexora-error-bg);
+  --normal-border: color-mix(in srgb, var(--error) 30%, transparent);
+  border-inline-start: 3px solid var(--error);
 }

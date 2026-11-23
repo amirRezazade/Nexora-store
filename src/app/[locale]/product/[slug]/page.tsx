@@ -152,7 +152,7 @@ export default async function ProductPage({
             </p>
           </div>
 
-          <ProductActions productId={product.id} stock={product.stock} variant="detail" />
+          <ProductActions productId={product.id} productName={name} stock={product.stock} variant="detail" />
 
           {description && (
             <div className="border-t border-border pt-5">

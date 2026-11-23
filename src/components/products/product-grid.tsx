@@ -86,7 +86,7 @@ export function ProductGrid({
               <span className="mt-auto text-sm font-bold text-primary-text">
                 <bdi dir="ltr">{formatPrice(product.price)}</bdi>
               </span>
-              <ProductActions productId={product.id} stock={product.stock} />
+              <ProductActions productId={product.id} productName={name} stock={product.stock} />
             </div>
           </li>
         );

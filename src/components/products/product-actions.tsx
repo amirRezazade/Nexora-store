@@ -4,6 +4,7 @@ import { Heart, Minus, Plus, ShoppingCartSimple } from "@phosphor-icons/react/di
 import { useTranslations } from "next-intl";
 import { MAX_ITEM_QUANTITY } from "@/lib/cart/model";
 import { cartActions, useCartQuantity } from "@/lib/cart/store";
+import { useNotify } from "@/lib/notifications/use-notify";
 import { useIsWishlisted, wishlistActions } from "@/lib/wishlist/store";
 import { cn } from "@/lib/utils";
 
@@ -18,17 +19,20 @@ import { cn } from "@/lib/utils";
  */
 export function ProductActions({
   productId,
+  productName,
   stock,
   variant = "card",
   className,
 }: {
   productId: string;
+  productName: string;
   stock: number;
   variant?: "card" | "detail";
   className?: string;
 }) {
   const cartT = useTranslations("cart");
   const wishlistT = useTranslations("wishlist");
+  const notify = useNotify();
   const quantity = useCartQuantity(productId);
   const wishlisted = useIsWishlisted(productId);
   const max = Math.min(Math.max(stock, 0), MAX_ITEM_QUANTITY);
@@ -38,6 +42,21 @@ export function ProductActions({
   const heartLabel = wishlisted
     ? wishlistT("removeFromWishlist")
     : wishlistT("addToWishlist");
+
+  const handleAddToCart = () => {
+    cartActions.add(productId);
+    notify.cartAdded(productName);
+  };
+
+  const handleWishlistToggle = () => {
+    if (wishlisted) {
+      wishlistActions.remove(productId);
+      notify.wishlistRemoved(productName);
+    } else {
+      wishlistActions.add(productId);
+      notify.wishlistAdded(productName);
+    }
+  };
 
   if (variant === "card") {
     const addLabel = !inStock
@@ -50,7 +69,7 @@ export function ProductActions({
       <div className={cn("mt-1 flex items-center gap-1.5", className)}>
         <button
           type="button"
-          onClick={() => cartActions.add(productId)}
+          onClick={handleAddToCart}
           disabled={!inStock || atMax}
           aria-label={!inStock ? cartT("outOfStock") : cartT("addToCart")}
           title={!inStock ? cartT("outOfStock") : atMax ? cartT("maxReached") : cartT("addToCart")}
@@ -62,7 +81,7 @@ export function ProductActions({
 
         <button
           type="button"
-          onClick={() => wishlistActions.toggle(productId)}
+          onClick={handleWishlistToggle}
           aria-pressed={wishlisted}
           aria-label={heartLabel}
           title={heartLabel}
@@ -113,7 +132,7 @@ export function ProductActions({
       ) : (
         <button
           type="button"
-          onClick={() => cartActions.add(productId)}
+          onClick={handleAddToCart}
           disabled={!inStock}
           className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-primary text-sm font-bold text-primary-foreground transition-all duration-150 hover:bg-primary-hover active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-surface-secondary disabled:text-text-muted"
         >
@@ -124,7 +143,7 @@ export function ProductActions({
 
       <button
         type="button"
-        onClick={() => wishlistActions.toggle(productId)}
+        onClick={handleWishlistToggle}
         aria-pressed={wishlisted}
         className={cn(
           "inline-flex h-12 items-center justify-center gap-2 rounded-2xl border text-sm font-semibold transition-colors",

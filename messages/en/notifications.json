@@ -1,0 +1,14 @@
+{
+  "notifications": {
+    "dismiss": "Dismiss notification",
+    "cart": {
+      "added": "{name} was added to your cart",
+      "removed": "{name} was removed from your cart",
+      "quantityChanged": "Cart quantity updated"
+    },
+    "wishlist": {
+      "added": "{name} was added to your wishlist",
+      "removed": "{name} was removed from your wishlist"
+    }
+  }
+}

@@ -8,6 +8,7 @@ import { Link } from "@/i18n/navigation";
 import { formatPrice } from "@/lib/money";
 import { cartActions, useCart } from "@/lib/cart/store";
 import { useProductsByIds } from "@/lib/catalog/use-products-by-ids";
+import { useNotify } from "@/lib/notifications/use-notify";
 import { useExitRemoval } from "@/lib/ui/use-exit-removal";
 import { wishlistActions, useWishlist } from "@/lib/wishlist/store";
 import { cn } from "@/lib/utils";
@@ -23,6 +24,7 @@ export function WishlistMenu({ close }: { close: () => void }) {
   const t = useTranslations("wishlist");
   const cartT = useTranslations("cart");
   const common = useTranslations("common");
+  const notify = useNotify();
   const locale = useLocale();
   const wishlist = useWishlist();
   const cart = useCart();
@@ -31,6 +33,12 @@ export function WishlistMenu({ close }: { close: () => void }) {
   const { isExiting, removeWithExit } = useExitRemoval(wishlistActions.remove);
   const byId = useMemo(() => new Map(products.map((product) => [product.id, product])), [products]);
   const cartQuantities = useMemo(() => new Map(cart.items.map((item) => [item.productId, item.quantity])), [cart.items]);
+
+  const handleRemove = (id: string, name: string) => {
+    if (isExiting(id)) return;
+    removeWithExit(id);
+    notify.wishlistRemoved(name);
+  };
 
   const preview = wishlist.ids.slice(0, PREVIEW_LIMIT);
   const remaining = wishlist.ids.length - preview.length;
@@ -102,7 +110,7 @@ export function WishlistMenu({ close }: { close: () => void }) {
                           <p className="text-xs font-semibold text-foreground">{t("unavailable")}</p>
                           <p className="mt-0.5 text-[11px] leading-5 text-text-muted">{t("unavailableHint")}</p>
                         </div>
-                        <button type="button" onClick={() => removeWithExit(id)} aria-label={t("removeUnavailable")} title={t("removeUnavailable")} className="ms-1.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-error-text transition-colors hover:bg-error-bg">
+                        <button type="button" onClick={() => handleRemove(id, t("unavailable"))} aria-label={t("removeUnavailable")} title={t("removeUnavailable")} className="ms-1.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-error-text transition-colors hover:bg-error-bg">
                           <Trash className="h-[18px] w-[18px]" aria-hidden />
                         </button>
                       </li>
@@ -133,13 +141,13 @@ export function WishlistMenu({ close }: { close: () => void }) {
                       </div>
 
                       {/* ۳) افزودن به سبد — وقتی محصول در سبد است غیرفعال میشود */}
-                      <button type="button" onClick={() => cartActions.add(product.id)} disabled={!inStock || inCart} aria-label={addLabel} title={addLabel} className="inline-flex h-7 shrink-0 items-center gap-1 rounded-lg border border-border px-5 text-[11px] font-semibold text-primary-text transition-colors enabled:hover:bg-icon-surface disabled:cursor-auto disabled:opacity-70">
+                      <button type="button" onClick={() => { cartActions.add(product.id); notify.cartAdded(name); }} disabled={!inStock || inCart} aria-label={addLabel} title={addLabel} className="inline-flex h-7 shrink-0 items-center gap-1 rounded-lg border border-border px-5 text-[11px] font-semibold text-primary-text transition-colors enabled:hover:bg-icon-surface disabled:cursor-auto disabled:opacity-70">
                         <ShoppingCartSimple className="h-3.5 w-3.5" aria-hidden />
                         {inCart ? addLabel : inStock ? t("addToCartShort") : t("outOfStock")}
                       </button>
 
                       {/* ۴) حذف */}
-                      <button type="button" onClick={() => removeWithExit(id)} aria-label={t("remove", { name })} title={t("remove", { name })} className="ms-1.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-error-text transition-colors hover:bg-error-bg">
+                      <button type="button" onClick={() => handleRemove(id, name)} aria-label={t("remove", { name })} title={t("remove", { name })} className="ms-1.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-error-text transition-colors hover:bg-error-bg">
                         <Trash className="h-[18px] w-[18px]" aria-hidden />
                       </button>
                     </li>

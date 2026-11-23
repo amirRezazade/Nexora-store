@@ -58,7 +58,7 @@ export function HeaderMenu({ icon: Icon, label, panelLabel, count = 0, children,
     <div ref={rootRef} onBlur={onRootBlur} className="relative">
       <button ref={triggerRef} type="button" aria-label={label} title={label} aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen((value) => !value)} className={cn("relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-secondary transition-all duration-150 hover:bg-icon-surface hover:text-primary-text active:scale-95 sm:h-10 sm:w-10", triggerClassName)}>
         <Icon className="h-[18px] w-[18px] sm:h-5 sm:w-5" aria-hidden />
-        {count > 0 && <span className="cart-badge absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary-soft px-1 text-[10px] font-bold text-primary-text ring-2 ring-background">{count > 99 ? "99+" : count}</span>}
+        {count > 0 && <span className="cart-badge absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary text-white px-1 text-[10px] font-bold  ring-2 ring-background">{count > 99 ? "99+" : count}</span>}
       </button>
 
       {open && (

@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { cartActions, useCartQuantity } from "@/lib/cart/store";
 import { discountPercent, formatPrice } from "@/lib/money";
+import { useNotify } from "@/lib/notifications/use-notify";
 import { cn } from "@/lib/utils";
 import { useIsWishlisted, wishlistActions } from "@/lib/wishlist/store";
 import type { ProductSummary } from "@/server/dal/products";
@@ -62,7 +63,7 @@ export function ProductCard({ product, locale, sizes, forceNewBadge = false }: P
 
         {showNewBadge && <span className="absolute start-2 top-2 z-20 rounded-md bg-[#0e7c50] px-1.5 py-0.5 text-[10px] font-extrabold leading-4 text-white shadow-sm">{t("new")}</span>}
 
-        <CardWishlistButton productId={product.id} />
+        <CardWishlistButton productId={product.id} productName={name} />
 
         {href ? (
           <Link href={href} prefetch={false} aria-label={name} className="absolute inset-0 block">
@@ -140,13 +141,24 @@ function CardImage({ product, name, sizes }: { product: ProductSummary; name: st
 }
 
 /** قلب علاقه‌مندی — دکمهٔ مستقل با انیمیشن، رنگ فعال قرمز. */
-function CardWishlistButton({ productId }: { productId: string }) {
+function CardWishlistButton({ productId, productName }: { productId: string; productName: string }) {
   const t = useTranslations("wishlist");
+  const notify = useNotify();
   const wishlisted = useIsWishlisted(productId);
   const label = wishlisted ? t("removeFromWishlist") : t("addToWishlist");
 
+  const handleToggle = () => {
+    if (wishlisted) {
+      wishlistActions.remove(productId);
+      notify.wishlistRemoved(productName);
+    } else {
+      wishlistActions.add(productId);
+      notify.wishlistAdded(productName);
+    }
+  };
+
   return (
-    <button type="button" onClick={() => wishlistActions.toggle(productId)} aria-pressed={wishlisted} aria-label={label} title={label} className={cn("absolute end-2 top-2 z-20 inline-flex items-center justify-center rounded-[10px] bg-surface/95 p-1 stroke-text-muted shadow-sm transition-colors hover:stroke-[#e61a1a] text-transparent", wishlisted && "fill-[#e61a1a] stroke-[#e61a1a]")}>
+    <button type="button" onClick={handleToggle} aria-pressed={wishlisted} aria-label={label} title={label} className={cn("absolute end-2 top-2 z-20 inline-flex items-center justify-center rounded-[10px] bg-surface/95 p-1 stroke-text-muted shadow-sm transition-colors hover:stroke-[#e61a1a] text-transparent", wishlisted && "fill-[#e61a1a] stroke-[#e61a1a]")}>
       <span className={cn("ui-like", wishlisted && "add")}>
         <span className="like">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden>
@@ -164,15 +176,26 @@ function CardWishlistButton({ productId }: { productId: string }) {
  */
 function CardCartButton({ productId, productName, inStock }: { productId: string; productName: string; inStock: boolean }) {
   const t = useTranslations("cart");
+  const notify = useNotify();
   const quantity = useCartQuantity(productId);
   const inCart = quantity > 0;
 
   const label = !inStock ? t("outOfStock") : inCart ? t("remove", { name: productName }) : t("addToCart");
 
+  const handleToggle = () => {
+    if (inCart) {
+      cartActions.remove(productId);
+      notify.cartRemoved(productName);
+    } else {
+      cartActions.add(productId);
+      notify.cartAdded(productName);
+    }
+  };
+
   return (
     <button
       type="button"
-      onClick={() => (inCart ? cartActions.remove(productId) : cartActions.add(productId))}
+      onClick={handleToggle}
       disabled={!inStock}
       aria-pressed={inCart}
       aria-label={label}

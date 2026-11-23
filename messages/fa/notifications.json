@@ -1,0 +1,14 @@
+{
+  "notifications": {
+    "dismiss": "بستن اعلان",
+    "cart": {
+      "added": "{name} به سبد خرید اضافه شد",
+      "removed": "{name} از سبد خرید حذف شد",
+      "quantityChanged": "تعداد سبد بهروز شد"
+    },
+    "wishlist": {
+      "added": "{name} به علاقهمندیها اضافه شد",
+      "removed": "{name} از علاقهمندیها حذف شد"
+    }
+  }
+}
