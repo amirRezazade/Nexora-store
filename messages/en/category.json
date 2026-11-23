@@ -1,0 +1,14 @@
+{
+  "category": {
+    "breadcrumb": "Breadcrumb",
+    "home": "Home",
+    "categories": "Categories",
+    "subcategoriesTitle": "Subcategories",
+    "productsPlaceholderTitle": "Products for this category are coming soon",
+    "productsPlaceholderHint": "Products and filters for this category will appear here in the next step.",
+    "backToShop": "Back to shop",
+    "errorTitle": "Category information is unavailable",
+    "errorHint": "Something went wrong while loading this category. Please try again in a moment.",
+    "retry": "Try again"
+  }
+}

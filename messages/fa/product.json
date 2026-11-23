@@ -1,0 +1,17 @@
+{
+  "product": {
+    "backToShop": "بازگشت به فروشگاه",
+    "inStock": "موجود در انبار",
+    "outOfStock": "ناموجود",
+    "new": "جدید",
+    "discountLabel": "{percent}٪ تخفیف",
+    "ratingLabel": "امتیاز {rating} از ۵",
+    "priceLabel": "قیمت",
+    "descriptionTitle": "توضیحات محصول",
+    "galleryLabel": "تصاویر محصول",
+    "noImage": "تصویری برای این محصول ثبت نشده",
+    "errorTitle": "اطلاعات محصول در دسترس نیست",
+    "errorHint": "دریافت اطلاعات این محصول با خطا مواجه شد. لطفاً کمی بعد دوباره تلاش کنید.",
+    "retry": "تلاش دوباره"
+  }
+}

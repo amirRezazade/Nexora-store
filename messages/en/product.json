@@ -1,0 +1,17 @@
+{
+  "product": {
+    "backToShop": "Back to shop",
+    "inStock": "In stock",
+    "outOfStock": "Out of stock",
+    "new": "New",
+    "discountLabel": "{percent}% off",
+    "ratingLabel": "Rated {rating} out of 5",
+    "priceLabel": "Price",
+    "descriptionTitle": "Product description",
+    "galleryLabel": "Product images",
+    "noImage": "No image has been added for this product",
+    "errorTitle": "Product information is unavailable",
+    "errorHint": "Something went wrong while loading this product. Please try again in a moment.",
+    "retry": "Try again"
+  }
+}

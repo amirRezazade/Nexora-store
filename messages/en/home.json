@@ -1,0 +1,86 @@
+{
+  "home": {
+    "hero": {
+      "hiddenTitle": "Nexora — tech and lifestyle, all in one place",
+      "carouselLabel": "Featured at Nexora",
+      "slideLabel": "Slide {index} of {total}",
+      "goToSlide": "Go to slide {index}",
+      "previous": "Previous slide",
+      "next": "Next slide"
+    },
+    "perks": {
+      "authenticity": {
+        "title": "Secure Payment",
+        "description": "Your data is safe."
+      },
+      "shipping": {
+        "title": "Free Shipping",
+        "description": "On orders over $100."
+      },
+      "pricing": {
+        "title": "Easy Return",
+        "description": "Hassle-free returns."
+      },
+      "support": {
+        "title": "24/7 Support",
+        "description": "We're here to help."
+      }
+    },
+    "categories": {
+      "title": "Shop by category",
+      "subtitle": "Explore our main collections to find what you need faster.",
+      "carouselLabel": "Shop by category",
+      "slideLabel": "Category {index} of {total}",
+      "keyboardHint": "Use the left and right arrow keys to browse categories.",
+      "viewAll": "View all categories"
+    },
+    "deals": {
+      "eyebrow": "Today's deals",
+      "headline": "Top picks at special prices",
+      "description": "A curated selection of favorites at limited-time prices — grab them before the timer runs out.",
+      "primaryCta": "Shop all deals",
+      "endsIn": "Ends in",
+      "countdownLabel": "{days} days, {hours} hours, {minutes} minutes and {seconds} seconds left",
+      "days": "days",
+      "hours": "hours",
+      "minutes": "min",
+      "seconds": "sec",
+      "carouselLabel": "Today's deals",
+      "slideLabel": "Deal {index} of {total}",
+      "previous": "Previous deal",
+      "next": "Next deal",
+      "keyboardHint": "Use the left and right arrow keys to browse deals."
+    },
+    "featured": {
+      "title": "Featured products",
+      "subtitle": "Handpicked products from popular categories.",
+      "carouselLabel": "Featured products",
+      "slideLabel": "Product {index} of {total}",
+      "previous": "Previous products",
+      "next": "Next products",
+      "keyboardHint": "Use the left and right arrow keys to browse products.",
+      "tablistLabel": "Featured categories",
+      "viewAll": "View all products"
+    },
+    "bestSellers": {
+      "title": "Best sellers",
+      "subtitle": "The products everyone is buying right now.",
+      "viewAll": "View all products",
+      "carouselLabel": "Best selling products",
+      "slideLabel": "Product {index} of {total}",
+      "previous": "Previous products",
+      "next": "Next products",
+      "keyboardHint": "Use the left and right arrow keys to browse products."
+    },
+    "newArrivals": {
+      "title": "New arrivals",
+      "subtitle": "The latest products added to the store.",
+      "viewAll": "View all products",
+      "carouselLabel": "New arrival products",
+      "slideLabel": "Product {index} of {total}",
+      "previous": "Previous products",
+      "next": "Next products",
+      "keyboardHint": "Use the left and right arrow keys to browse products."
+    }
+  }
+}

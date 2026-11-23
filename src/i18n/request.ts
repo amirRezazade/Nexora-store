@@ -1,18 +1,54 @@
 import { getRequestConfig } from "next-intl/server";
 import { hasLocale } from "next-intl";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { routing } from "./routing";
 
+type Messages = Record<string, unknown>;
+
+function isObject(value: unknown): value is Messages {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function deepMerge(target: Messages, source: Messages): Messages {
+  for (const [key, value] of Object.entries(source)) {
+    const existing = target[key];
+    if (isObject(existing) && isObject(value)) {
+      target[key] = deepMerge({ ...existing }, value);
+    } else {
+      target[key] = value;
+    }
+  }
+  return target;
+}
+
+async function loadMessages(locale: string): Promise<Messages> {
+  const dir = path.join(process.cwd(), "messages", locale);
+  const entries = await fs.readdir(dir);
+  const files = entries.filter((file) => file.endsWith(".json")).sort();
+
+  const messages: Messages = {};
+  for (const file of files) {
+    const fullPath = path.join(dir, file);
+    const content = await fs.readFile(fullPath, "utf8");
+    const parsed = JSON.parse(content) as Messages;
+    deepMerge(messages, parsed);
+  }
+
+  return messages;
+}
+
 /**
- * این تابع به‌ازای هر درخواست سرور اجرا می‌شود و پیام‌های زبان همان locale را برمی‌گرداند.
- * اگر locale نامعتبر بود (مثلاً /de/shop) به defaultLocale برمی‌گردیم.
+ * این فایل بر اساس locale هر درخواست، پیام‌های همان زبان را بارگذاری می‌کند.
+ * پیام‌ها به‌صورت فایل‌های جداگانه در messages/{locale} نگه‌داری می‌شوند و
+ * اینجا deep-merge می‌شوند تا namespaceهای مشترک/صفحه‌ای قابل مدیریت بمانند.
  */
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
-  const locale = hasLocale(routing.locales, requested)
-    ? requested
-    : routing.defaultLocale;
+  const locale = hasLocale(routing.locales, requested) ? requested : routing.defaultLocale;
 
-  const messages = (await import(`../../messages/${locale}.json`)).default;
-
-  return { locale, messages };
+  return {
+    locale,
+    messages: await loadMessages(locale),
+  };
 });

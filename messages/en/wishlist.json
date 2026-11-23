@@ -1,0 +1,25 @@
+{
+  "wishlist": {
+    "panelTitle": "Your wishlist",
+    "panelLabel": "Wishlist preview",
+    "itemsCount": "{count, plural, one {# item} other {# items}}",
+    "empty": "Your wishlist is empty",
+    "emptyHint": "Save the products you like to find them here.",
+    "browse": "Explore products",
+    "loading": "Loading your wishlist…",
+    "error": "Couldn't load your wishlist.",
+    "retry": "Try again",
+    "unavailable": "Unavailable",
+    "unavailableHint": "This product is no longer available.",
+    "remove": "Remove {name} from wishlist",
+    "removeUnavailable": "Remove unavailable item",
+    "addToCart": "Add to cart",
+    "addToCartShort": "Add",
+    "viewWishlist": "View wishlist",
+    "moreItems": "{count, plural, one {# more item} other {# more items}}",
+    "addToWishlist": "Add to wishlist",
+    "removeFromWishlist": "Remove from wishlist",
+    "inWishlist": "In wishlist",
+    "outOfStock": "Out of stock"
+  }
+}
