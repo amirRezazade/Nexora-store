@@ -4,9 +4,9 @@ import { useCallback, useId, type KeyboardEvent } from "react";
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import { useTranslations } from "next-intl";
-import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { Link } from "@/i18n/navigation";
 import { categoryHref } from "@/lib/category-tree";
+import { SectionHeader } from "./section-header";
 
 /**
  * اسلایدر دستهبندیها — فقط کشیدن (موس/لمس)؛ نه دکمهای عقب/جلو و نه پیجینیشن.
@@ -33,18 +33,6 @@ const slideBasis = "shrink-0 grow-0 basis-[30%] xs:basis-[22%] sm:basis-[17%] md
 const imageSizes = "(max-width: 480px) 30vw, (max-width: 640px) 22vw, (max-width: 768px) 17vw, (max-width: 1024px) 14vw, (max-width: 1280px) 12.5vw, 11vw";
 
 const focusRing = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
-
-/** استایل‌های هدر بخش: برای تغییر سریع ظاهر تیتر/لینک از اینجا ویرایش کنید */
-const sectionHeader = {
-  wrap: "mb-4 flex items-end justify-between gap-3 sm:mb-5",
-  titleWrap: "min-w-0",
-  /** تیتر با نشانگر نارنجی قبل از متن؛ نشانگر absolute است تا تراز متن با زیرتیتر حفظ شود */
-  title:
-    "relative text-lg font-bold tracking-tight text-foreground before:absolute before:top-1/2 before:-start-3 before:block before:h-[15px] before:w-1 before:-translate-y-1/2 before:rounded-sm before:bg-primary sm:text-xl",
-  subtitle: "mt-1 text-xs leading-5 text-text-muted sm:text-sm",
-  viewAll:
-    "inline-flex shrink-0 items-center gap-1.5 rounded-md text-xs font-semibold text-primary transition-colors hover:text-brand-700 sm:text-sm",
-};
 
 export function CategorySlider({ categories, dir }: { categories: CategorySlide[]; dir: "rtl" | "ltr" }) {
   const t = useTranslations("home.categories");
@@ -82,16 +70,11 @@ export function CategorySlider({ categories, dir }: { categories: CategorySlide[
 
   return (
     <section dir={dir} role="region" aria-roledescription="carousel" aria-label={t("carouselLabel")} aria-describedby={hintId} className="mx-auto max-w-[90rem] select-none px-3 py-6 xs:px-4 sm:px-6 sm:py-8">
-      <div className={sectionHeader.wrap}>
-        <div className={sectionHeader.titleWrap}>
-          <h2 className={sectionHeader.title}>{t("title")}</h2>
-          <p className={sectionHeader.subtitle}>{t("subtitle")}</p>
-        </div>
-        <Link href="/category" className={`${sectionHeader.viewAll} ${focusRing}`}>
-          {t("viewAll")}
-          <ArrowRight className="h-4 w-4 shrink-0 rtl:rotate-180" weight="bold" aria-hidden />
-        </Link>
-      </div>
+      <SectionHeader
+        title={t("title")}
+        subtitle={t("subtitle")}
+        viewAll={{ href: "/category", label: t("viewAll") }}
+      />
       <p id={hintId} className="sr-only">
         {t("keyboardHint")}
       </p>

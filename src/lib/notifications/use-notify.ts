@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
 /**
- * اعلانهای مربوط به سبد و علاقهمندیها.
+ * اعلانهای مربوط به سبد و علاقه‌مندی‌ها.
  *
  * متنها از namespace notifications میآیند و هر اعلان تکخطی است تا در موبایل
  * و دسکتاپ جای کمتری بگیرد.
