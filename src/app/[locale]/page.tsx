@@ -5,6 +5,8 @@ import { HeroSlider, type HeroSlide } from "@/components/home/hero-slider";
 import { CategorySlider, type CategorySlide } from "@/components/home/category-slider";
 import { DealsSection } from "@/components/home/deals-section";
 import { FeaturedProductsSection } from "@/components/home/featured-products-section";
+import { BestSellersSection } from "@/components/home/best-sellers-section";
+import { NewArrivalsSection } from "@/components/home/new-arrivals-section";
 import { categoryName } from "@/lib/category-tree";
 import { getHeroBanners } from "@/server/dal/banners";
 import { getHomeCategories } from "@/server/dal/categories";
@@ -124,6 +126,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
       {/* محصولات منتخب — دسته‌بندی‌های مهم */}
       <FeaturedProductsSection dir={locale === "fa" ? "rtl" : "ltr"} locale={locale} />
+
+      {/* پرفروش‌ترین‌ها */}
+      <BestSellersSection dir={locale === "fa" ? "rtl" : "ltr"} locale={locale} />
+
+      {/* جدیدترین‌ها */}
+      <NewArrivalsSection dir={locale === "fa" ? "rtl" : "ltr"} locale={locale} />
     </div>
   );
 }

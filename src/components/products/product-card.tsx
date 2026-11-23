@@ -36,14 +36,16 @@ export interface ProductCardProps {
   rating?: number | null;
   /** تعداد نظرات برای نمایش کنار امتیاز */
   reviewCount?: number | null;
+  /** همیشه بج سبز «جدید» را نمایش بده (مثلاً بخش New Arrivals) */
+  forceNewBadge?: boolean;
 }
 
-export function ProductCard({ product, locale, sizes }: ProductCardProps) {
+export function ProductCard({ product, locale, sizes, forceNewBadge = false }: ProductCardProps) {
   const t = useTranslations("product");
   const name = locale === "fa" ? product.nameFa ?? product.name : product.name;
   const href = product.slug ? `/product/${encodeURIComponent(product.slug)}` : null;
   const discount = product.compareAtPrice ? discountPercent(product.compareAtPrice, product.price) : 0;
-  const showNewBadge = discount === 0 && product.isNew;
+  const showNewBadge = forceNewBadge || (discount === 0 && product.isNew);
 
   // پیش‌نمایش موقت: تا اتصال منبع واقعی نظرات، امتیاز هاردکد می‌شود.
   const rating = 4.5;
@@ -52,7 +54,7 @@ export function ProductCard({ product, locale, sizes }: ProductCardProps) {
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-xl bg-surface/90 select-none  shadow-[0_2px_8px_-2px_rgba(15,23,42,0.08),0_8px_20px_-12px_rgba(15,23,42,0.12)] ring-1 ring-border transition-shadow duration-200 hover:shadow-[0_8px_24px_-10px_rgba(15,23,42,0.18)] dark:shadow-[0_2px_10px_-2px_rgba(0,0,0,0.45)]">
       <div className="relative shrink-0 overflow-hidden bg-transparent aspect-[4/3]">
-        {discount > 0 && (
+        {!forceNewBadge && discount > 0 && (
           <span title={t("discountLabel", { percent: discount })} className="absolute start-2 top-2 z-20 rounded-md bg-primary px-1.5 py-0.5 text-[10px] font-extrabold leading-4 text-white shadow-sm">
             <bdi dir="ltr">-{discount}%</bdi>
           </span>

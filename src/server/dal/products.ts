@@ -930,3 +930,77 @@ export async function listProductsByCategory({
 
   return { products: await mapRowsToSummaries(parsed.data), status: "ok" };
 }
+
+/**
+ * محصولات پرفروش برای صفحه اصلی.
+ * فعلاً معیار فروش واقعی در دیتابیس نداریم؛ محصولات منتشرشدهٔ فعال را
+ * بر اساس جدیدترین انتشار برمی‌گرداند تا بعداً با متریک فروش جایگزین شود.
+ */
+export async function listBestSellerProducts({
+  limit = 10,
+}: { limit?: number } = {}): Promise<{ products: ProductSummary[]; status: "ok" | "error" }> {
+  "use cache";
+  cacheTag("products");
+  cacheLife("minutes");
+
+  const safeLimit = Math.min(Math.max(Math.trunc(limit), 1), 20);
+
+  const { data, error } = await getPublicSupabaseClient()
+    .from(PRODUCTS_TABLE)
+    .select(PRODUCT_COLUMNS)
+    .eq("status", PUBLISHED_STATUS)
+    .eq("product_variants.is_active", true)
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .order("sort_order", { referencedTable: "product_images", ascending: true })
+    .order("sort_order", { referencedTable: "product_variants", ascending: true })
+    .limit(safeLimit);
+
+  if (error) {
+    console.error("[dal/products] Failed to query best seller products:", error.message);
+    return { products: [], status: "error" };
+  }
+
+  const parsed = z.array(productRowSchema).safeParse(data ?? []);
+  if (!parsed.success) {
+    console.error("[dal/products] Unexpected best seller product shape:", parsed.error.message);
+    return { products: [], status: "error" };
+  }
+
+  return { products: await mapRowsToSummaries(parsed.data), status: "ok" };
+}
+
+/**
+ * جدیدترین محصولات برای صفحه اصلی.
+ */
+export async function listNewArrivalProducts({
+  limit = 10,
+}: { limit?: number } = {}): Promise<{ products: ProductSummary[]; status: "ok" | "error" }> {
+  "use cache";
+  cacheTag("products");
+  cacheLife("minutes");
+
+  const safeLimit = Math.min(Math.max(Math.trunc(limit), 1), 20);
+
+  const { data, error } = await getPublicSupabaseClient()
+    .from(PRODUCTS_TABLE)
+    .select(PRODUCT_COLUMNS)
+    .eq("status", PUBLISHED_STATUS)
+    .eq("product_variants.is_active", true)
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .order("sort_order", { referencedTable: "product_images", ascending: true })
+    .order("sort_order", { referencedTable: "product_variants", ascending: true })
+    .limit(safeLimit);
+
+  if (error) {
+    console.error("[dal/products] Failed to query new arrival products:", error.message);
+    return { products: [], status: "error" };
+  }
+
+  const parsed = z.array(productRowSchema).safeParse(data ?? []);
+  if (!parsed.success) {
+    console.error("[dal/products] Unexpected new arrival product shape:", parsed.error.message);
+    return { products: [], status: "error" };
+  }
+
+  return { products: await mapRowsToSummaries(parsed.data), status: "ok" };
+}

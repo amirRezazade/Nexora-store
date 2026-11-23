@@ -104,6 +104,26 @@
       "keyboardHint": "Use the left and right arrow keys to browse products.",
       "tablistLabel": "Featured categories",
       "viewAll": "View all products"
+    },
+    "bestSellers": {
+      "title": "Best sellers",
+      "subtitle": "The products everyone is buying right now.",
+      "viewAll": "View all products",
+      "carouselLabel": "Best selling products",
+      "slideLabel": "Product {index} of {total}",
+      "previous": "Previous products",
+      "next": "Next products",
+      "keyboardHint": "Use the left and right arrow keys to browse products."
+    },
+    "newArrivals": {
+      "title": "New arrivals",
+      "subtitle": "The latest products added to the store.",
+      "viewAll": "View all products",
+      "carouselLabel": "New arrival products",
+      "slideLabel": "Product {index} of {total}",
+      "previous": "Previous products",
+      "next": "Next products",
+      "keyboardHint": "Use the left and right arrow keys to browse products."
     }
   },
   "footer": {
