@@ -7,8 +7,9 @@ import { DealsSection } from "@/components/home/deals-section";
 import { FeaturedProductsSection } from "@/components/home/featured-products-section";
 import { BestSellersSection } from "@/components/home/best-sellers-section";
 import { NewArrivalsSection } from "@/components/home/new-arrivals-section";
+import { PromoBanners } from "@/components/home/promo-banners";
 import { categoryName } from "@/lib/category-tree";
-import { getHeroBanners } from "@/server/dal/banners";
+import { getHeroBanners, getPromoBanners } from "@/server/dal/banners";
 import { getHomeCategories } from "@/server/dal/categories";
 import { listDealProducts } from "@/server/dal/products";
 
@@ -26,6 +27,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const t = await getTranslations("home");
 
   const { banners } = await getHeroBanners(locale);
+  const { banners: promoBanners } = await getPromoBanners(locale);
   const homeCategories = await getHomeCategories();
   const { products: dealProducts } = await listDealProducts({ limit: 8 });
 
@@ -128,6 +130,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <FeaturedProductsSection dir={locale === "fa" ? "rtl" : "ltr"} locale={locale} />
 
       {/* پرفروش‌ترین‌ها */}
+      {/* بنرهای تبلیغاتی — دوتا بنر غیرهیرو، کنارهم در دسکتاپ و زیرهم در موبایل */}
+      <PromoBanners banners={promoBanners} />
+
       <BestSellersSection dir={locale === "fa" ? "rtl" : "ltr"} locale={locale} />
 
       {/* جدیدترین‌ها */}

@@ -8,6 +8,10 @@
       "previous": "Previous slide",
       "next": "Next slide"
     },
+    "promoBanners": {
+      "label": "Promotional offers",
+      "open": "Open offer"
+    },
     "perks": {
       "authenticity": {
         "title": "Secure Payment",

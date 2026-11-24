@@ -24,6 +24,9 @@ const BANNERS_TABLE = "banners";
 /** سقف بنرهای هیرو — از خواندن بی‌نهایت جلوگیری می‌کند */
 const MAX_HERO_BANNERS = 8;
 
+/** سقف بنرهای تبلیغاتی غیرهیرو (دو بنر در طرح فعلی) */
+const MAX_PROMO_BANNERS = 4;
+
 const BANNER_COLUMNS = [
   "id",
   "image_desktop_path",
@@ -58,6 +61,25 @@ export interface HeroBanner {
 
 export interface HeroBannersResult {
   banners: HeroBanner[];
+  status: "ok" | "error";
+}
+
+/** بنر تبلیغاتی بالای سکشن محصولات: تصویر + متن و دکمهٔ روی آن */
+export interface PromoBanner {
+  id: string;
+  title: string | null;
+  subtitle: string | null;
+  /** برچسب دکمه؛ اگر خالی باشد دکمه ساخته نمیشود */
+  ctaLabel: string | null;
+  /** فقط مسیر داخلی امن؛ وگرنه null */
+  ctaHref: string | null;
+  imageDesktopUrl: string;
+  imageMobileUrl: string;
+  imageAlt: string;
+}
+
+export interface PromoBannersResult {
+  banners: PromoBanner[];
   status: "ok" | "error";
 }
 
@@ -117,18 +139,39 @@ function mapBanner(row: BannerRow, locale: string): HeroBanner | null {
   };
 }
 
+/** ردیف خام → قرارداد بنر تبلیغاتی؛ برخلاف هیرو، عنوان لازم نیست */
+function mapPromoBanner(row: BannerRow, locale: string): PromoBanner | null {
+  const translation = pickTranslation(row, locale);
+  const desktop = buildBannerImageUrl(env.NEXT_PUBLIC_SUPABASE_URL, row.image_desktop_path);
+  const mobile = buildBannerImageUrl(env.NEXT_PUBLIC_SUPABASE_URL, row.image_mobile_path);
+  const imageDesktopUrl = desktop ?? mobile;
+  if (!imageDesktopUrl) return null;
+
+  return {
+    id: row.id,
+    title: translation?.title?.trim() || null,
+    subtitle: translation?.subtitle?.trim() || null,
+    ctaLabel: translation?.button_label?.trim() || null,
+    ctaHref: toSafeInternalHref(row.link_url),
+    imageDesktopUrl,
+    imageMobileUrl: mobile ?? imageDesktopUrl,
+    imageAlt: translation?.alt_text?.trim() || translation?.title?.trim() || "",
+  };
+}
+
 /**
  * ردیف‌های بنر فعال را از PostgREST می‌خواند.
  * فیلترها فقط از همین فایل می‌آیند (هیچ ورودی خامی از کاربر به کوئری نمی‌رسد).
  * خطای شبکه/شکل داده → null تا فراخوان وضعیت error را تشخیص دهد.
  */
-async function fetchActiveBannerRows(): Promise<BannerRow[] | null> {
+async function fetchActiveBannerRows(isHero: boolean, limit: number): Promise<BannerRow[] | null> {
   const url = new URL(`/rest/v1/${BANNERS_TABLE}`, env.NEXT_PUBLIC_SUPABASE_URL);
   url.searchParams.set("select", BANNER_COLUMNS);
   url.searchParams.set("is_active", "eq.true");
+  url.searchParams.set("is_hero", isHero ? "eq.true" : "eq.false");
   url.searchParams.set("and", ACTIVE_WINDOW_FILTER);
   url.searchParams.set("order", "sort_order.asc,created_at.asc");
-  url.searchParams.set("limit", String(MAX_HERO_BANNERS));
+  url.searchParams.set("limit", String(limit));
 
   try {
     const res = await fetch(url, {
@@ -158,18 +201,50 @@ async function fetchActiveBannerRows(): Promise<BannerRow[] | null> {
  * دادهٔ بنر عمومی و کم‌تغییر است، پس مثل دسته‌بندی‌ها کش می‌شود؛ همین باعث می‌شود
  * صفحهٔ اصلی همچنان قابل prerender بماند. تگ `banners` برای invalidate آینده است.
  */
-export async function getHeroBanners(locale: string): Promise<HeroBannersResult> {
+async function loadHeroBanners(locale: string): Promise<HeroBanner[]> {
   "use cache";
   cacheTag("banners");
   cacheLife("hours");
 
-  const rows = await fetchActiveBannerRows();
-  if (!rows) return { banners: [], status: "error" };
+  const rows = await fetchActiveBannerRows(true, MAX_HERO_BANNERS);
+  // خطا را بهجای برگرداندن، پرتاب میکنیم تا ورودی کش ساخته نشود و درخواست
+  // بعدی دوباره دیتابیس را امتحان کند.
+  if (!rows) throw new Error("Failed to load hero banners");
 
-  const banners = rows.flatMap((row) => {
+  return rows.flatMap((row) => {
     const banner = mapBanner(row, locale);
     return banner ? [banner] : [];
   });
+}
 
-  return { banners, status: "ok" };
+/** وضعیت خطا بیرون از کش اضافه میشود؛ فقط آرایهٔ بنرها کش میشود. */
+export async function getHeroBanners(locale: string): Promise<HeroBannersResult> {
+  try {
+    return { banners: await loadHeroBanners(locale), status: "ok" };
+  } catch {
+    return { banners: [], status: "error" };
+  }
+}
+
+async function loadPromoBanners(locale: string): Promise<PromoBanner[]> {
+  "use cache";
+  cacheTag("banners");
+  cacheLife("hours");
+
+  const rows = await fetchActiveBannerRows(false, MAX_PROMO_BANNERS);
+  if (!rows) throw new Error("Failed to load promo banners");
+
+  return rows.flatMap((row) => {
+    const banner = mapPromoBanner(row, locale);
+    return banner ? [banner] : [];
+  });
+}
+
+/** همان الگوی هیرو: فقط دادهٔ موفق کش میشود، خطا کش نمیشود. */
+export async function getPromoBanners(locale: string): Promise<PromoBannersResult> {
+  try {
+    return { banners: await loadPromoBanners(locale), status: "ok" };
+  } catch {
+    return { banners: [], status: "error" };
+  }
 }

@@ -39,6 +39,18 @@ const PRODUCTS_TABLE = "products";
 const INVENTORY_TABLE = "inventory";
 const PUBLISHED_STATUS = "published";
 
+/** RPC فروش: فقط شناسه محصول و تعداد فروش برمیگرداند، بدون اطلاعات سفارش */
+const BESTSELLERS_RPC = "get_bestsellers";
+/**
+ * بازهٔ پیشفرض «تمام تاریخ فروش» است (~۱۰۰ سال)، نه ۳۰ روز اخیر.
+ * دلیل: این پروژه نمونهکاری است و ممکن است سالها سفارش جدیدی ثبت نشود؛
+ * با پنجرهٔ کوتاه، بخش پرفروشها خالی میشد. با پنجرهٔ big تمام فروشهای
+ * موجود در دیتابیس شمرده میشود و فهرست پایدار میماند.
+ */
+const DEFAULT_BESTSELLERS_DAYS = 36500;
+const MIN_BESTSELLERS_DAYS = 1;
+const MAX_BESTSELLERS_DAYS = 36500;
+
 /** باکت عمومی تصاویر محصول در Supabase Storage */
 const PRODUCT_IMAGE_BUCKET = "products";
 
@@ -82,6 +94,12 @@ const variantRowSchema = z.object({
   price_cents: z.number().int().nonnegative().nullish(),
   compare_at_cents: z.number().int().nonnegative().nullish(),
   sort_order: z.number().int().nullish(),
+});
+
+const bestsellerRowSchema = z.object({
+  product_id: z.string().min(1),
+  product_slug: z.string().nullish(),
+  units_sold: z.number().int().nonnegative(),
 });
 
 const productRowSchema = z.object({
@@ -932,41 +950,62 @@ export async function listProductsByCategory({
 }
 
 /**
- * محصولات پرفروش برای صفحه اصلی.
- * فعلاً معیار فروش واقعی در دیتابیس نداریم؛ محصولات منتشرشدهٔ فعال را
- * بر اساس جدیدترین انتشار برمی‌گرداند تا بعداً با متریک فروش جایگزین شود.
+ * محصولات پرفروش صفحه اصلی.
+ *
+ * مرحله 1: RPC get_bestsellers فقط شناسه محصول و تعداد فروش را در بازه p_days
+ *          برمیگرداند؛ پیشفرض تمام تاریخ است تا با دادهٔ راکد demo فهرست خالی
+ *          نشود. هیچ اطلاعات سفارش یا مشتری به UI نمیرسد.
+ * مرحله 2: جزئیات محصولات با getProductsByIds خوانده میشود تا همان ترتیب فروش
+ *          حفظ شود و فقط محصولات منتشرشدهٔ فعال نمایش داده شوند.
  */
-export async function listBestSellerProducts({
-  limit = 10,
-}: { limit?: number } = {}): Promise<{ products: ProductSummary[]; status: "ok" | "error" }> {
+async function loadBestSellerProducts(limit: number, days: number): Promise<ProductSummary[]> {
   "use cache";
   cacheTag("products");
   cacheLife("minutes");
 
-  const safeLimit = Math.min(Math.max(Math.trunc(limit), 1), 20);
-
-  const { data, error } = await getPublicSupabaseClient()
-    .from(PRODUCTS_TABLE)
-    .select(PRODUCT_COLUMNS)
-    .eq("status", PUBLISHED_STATUS)
-    .eq("product_variants.is_active", true)
-    .order("published_at", { ascending: false, nullsFirst: false })
-    .order("sort_order", { referencedTable: "product_images", ascending: true })
-    .order("sort_order", { referencedTable: "product_variants", ascending: true })
-    .limit(safeLimit);
+  const { data, error } = await getPublicSupabaseClient().rpc(BESTSELLERS_RPC, {
+    p_days: days,
+    p_limit: limit,
+  });
 
   if (error) {
-    console.error("[dal/products] Failed to query best seller products:", error.message);
-    return { products: [], status: "error" };
+    console.error("[dal/products] Failed to call get_bestsellers:", error.message);
+    throw new Error("Failed to load best seller ranks");
   }
 
-  const parsed = z.array(productRowSchema).safeParse(data ?? []);
+  const parsed = z.array(bestsellerRowSchema).safeParse(data ?? []);
   if (!parsed.success) {
-    console.error("[dal/products] Unexpected best seller product shape:", parsed.error.message);
-    return { products: [], status: "error" };
+    console.error("[dal/products] Unexpected best seller ranks:", parsed.error.message);
+    throw new Error("Unexpected best seller ranks");
   }
 
-  return { products: await mapRowsToSummaries(parsed.data), status: "ok" };
+  const ids = parsed.data.map((row) => row.product_id);
+  if (ids.length === 0) return [];
+
+  const { products, status } = await getProductsByIds(ids);
+  if (status === "error") throw new Error("Failed to load best seller products");
+  return products;
+}
+
+export async function listBestSellerProducts({
+  limit = 10,
+  days = DEFAULT_BESTSELLERS_DAYS,
+}: { limit?: number; days?: number } = {}): Promise<{
+  products: ProductSummary[];
+  status: "ok" | "error";
+}> {
+  const safeLimit = Number.isFinite(limit)
+    ? Math.min(Math.max(Math.trunc(limit), 1), 20)
+    : 10;
+  const safeDays = Number.isFinite(days)
+    ? Math.min(Math.max(Math.trunc(days), MIN_BESTSELLERS_DAYS), MAX_BESTSELLERS_DAYS)
+    : DEFAULT_BESTSELLERS_DAYS;
+
+  try {
+    return { products: await loadBestSellerProducts(safeLimit, safeDays), status: "ok" };
+  } catch {
+    return { products: [], status: "error" };
+  }
 }
 
 /**

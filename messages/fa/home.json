@@ -8,6 +8,10 @@
       "previous": "اسلاید قبلی",
       "next": "اسلاید بعدی"
     },
+    "promoBanners": {
+      "label": "پیشنهادهای تبلیغاتی",
+      "open": "مشاهده پیشنهاد"
+    },
     "perks": {
       "authenticity": {
         "title": "پرداخت امن",
