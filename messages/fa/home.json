@@ -93,6 +93,13 @@
       "carouselLabel": "برندهای منتخب",
       "slideLabel": "برند {index} از {total}",
       "keyboardHint": "برای جابه\u200cجایی میان برندها از کلیدهای جهت\u200cدار چپ و راست استفاده کنید."
+    },
+    "articles": {
+      "title": "مقاله‌ها",
+      "subtitle": "راهنماها و نکات از تیم نکسورا.",
+      "viewAll": "مشاهده همه مقاله‌ها",
+      "readMore": "بیشتر بخوانید",
+      "articleLabel": "مقاله {index} از {total}"
     }
   }
 }

@@ -8,6 +8,7 @@ import { FeaturedProductsSection } from "@/components/home/featured-products-sec
 import { BestSellersSection } from "@/components/home/best-sellers-section";
 import { NewArrivalsSection } from "@/components/home/new-arrivals-section";
 import { BrandsSection } from "@/components/home/brands-section";
+import { ArticlesSection } from "@/components/home/articles-section";
 import { PromoBanners } from "@/components/home/promo-banners";
 import { categoryName } from "@/lib/category-tree";
 import { getHeroBanners, getPromoBanners } from "@/server/dal/banners";
@@ -141,6 +142,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
       {/* برندها — اسلایدر بدون دکمههای عقب/جلو، همان سرعت اسلایدر محصولات */}
       <BrandsSection dir={locale === "fa" ? "rtl" : "ltr"} locale={locale} />
+
+      {/* مقالات — جدیدترین مقالات منتشرشده از DAL سرور */}
+      <ArticlesSection dir={locale === "fa" ? "rtl" : "ltr"} locale={locale} />
     </div>
   );
 }

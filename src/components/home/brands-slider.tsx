@@ -80,13 +80,13 @@ export function BrandsSlider({ brands, dir }: { brands: BrandSlide[]; dir: "rtl"
         {t("keyboardHint")}
       </p>
 
-      <div role="region" aria-roledescription="carousel" aria-label={t("carouselLabel")} aria-describedby={hintId} className="min-w-0 bg-linear-to-r from-transparent  via-surface-secondary/90 to-transparent border-y border-border/60  ">
+      <div role="region" aria-roledescription="carousel" aria-label={t("carouselLabel")} aria-describedby={hintId} className="min-w-0   ">
         <div ref={viewportRef} tabIndex={0} onKeyDown={handleKeyDown} className={`overflow-hidden select-none ${focusRing}`}>
           <div className="flex touch-pan-y items-center gap-3 sm:gap-4">
             {brands.map((brand, index) => (
               <div key={brand.id} role="group" aria-roledescription="slide" aria-label={t("slideLabel", { index: index + 1, total })} className={slideBasis}>
-                <Link href="/brands" className={`group block rounded-xl ${focusRing}`}>
-                  <div className="relative flex h-[70px] items-center justify-center">
+                <Link href="/brands" className={`group block rounded-xl bg-surface-secondary/90  border border-border/60 ${focusRing}`}>
+                  <div className="relative flex h-[65px] items-center justify-center">
                     <Image src={brand.logoUrl} alt={brand.name} fill sizes={imageSizes} className="object-contain transition-opacity duration-300 group-hover:opacity-80" draggable={false} />
                   </div>
                 </Link>

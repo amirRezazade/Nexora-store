@@ -1,0 +1,10 @@
+{
+  "article": {
+    "backToArticles": "Back to articles",
+    "excerptLabel": "Overview",
+    "bodyLabel": "Article content",
+    "errorTitle": "Article is unavailable",
+    "errorHint": "Something went wrong while loading this article. Please try again in a moment.",
+    "retry": "Try again"
+  }
+}

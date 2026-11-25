@@ -20,7 +20,7 @@ function deepMerge(target: Messages, source: Messages): Messages {
   return target;
 }
 
-const messageFiles = ["common", "notifications", "home", "category", "product", "cart", "wishlist"] as const;
+const messageFiles = ["common", "notifications", "home", "category", "product", "article", "cart", "wishlist"] as const;
 
 async function loadMessages(locale: string): Promise<Messages> {
   const messages: Messages = {};

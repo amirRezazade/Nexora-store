@@ -93,6 +93,13 @@
       "carouselLabel": "Featured brands",
       "slideLabel": "Brand {index} of {total}",
       "keyboardHint": "Use the left and right arrow keys to browse brands."
+    },
+    "articles": {
+      "title": "Articles",
+      "subtitle": "Guides and insights from the Nexora team.",
+      "viewAll": "View all articles",
+      "readMore": "Read more",
+      "articleLabel": "Article {index} of {total}"
     }
   }
 }
