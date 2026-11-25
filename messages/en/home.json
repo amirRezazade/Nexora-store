@@ -85,6 +85,14 @@
       "previous": "Previous products",
       "next": "Next products",
       "keyboardHint": "Use the left and right arrow keys to browse products."
+    },
+    "brands": {
+      "title": "Top brands",
+      "subtitle": "Discover products from the brands you trust.",
+      "viewAll": "View all brands",
+      "carouselLabel": "Featured brands",
+      "slideLabel": "Brand {index} of {total}",
+      "keyboardHint": "Use the left and right arrow keys to browse brands."
     }
   }
 }

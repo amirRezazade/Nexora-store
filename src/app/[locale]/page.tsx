@@ -7,6 +7,7 @@ import { DealsSection } from "@/components/home/deals-section";
 import { FeaturedProductsSection } from "@/components/home/featured-products-section";
 import { BestSellersSection } from "@/components/home/best-sellers-section";
 import { NewArrivalsSection } from "@/components/home/new-arrivals-section";
+import { BrandsSection } from "@/components/home/brands-section";
 import { PromoBanners } from "@/components/home/promo-banners";
 import { categoryName } from "@/lib/category-tree";
 import { getHeroBanners, getPromoBanners } from "@/server/dal/banners";
@@ -137,6 +138,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
       {/* جدیدترین‌ها */}
       <NewArrivalsSection dir={locale === "fa" ? "rtl" : "ltr"} locale={locale} />
+
+      {/* برندها — اسلایدر بدون دکمههای عقب/جلو، همان سرعت اسلایدر محصولات */}
+      <BrandsSection dir={locale === "fa" ? "rtl" : "ltr"} locale={locale} />
     </div>
   );
 }

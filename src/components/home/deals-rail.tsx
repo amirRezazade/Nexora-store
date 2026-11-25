@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import type { ProductSummary } from "@/server/dal/products";
 import { ProductCard } from "@/components/products/product-card";
+import { useDampedDrag } from "@/hooks/use-damped-drag";
 
 /**
  * ریل پیشنهادها.
@@ -47,12 +48,17 @@ export function DealsRail({ dir, products, locale }: { dir: "rtl" | "ltr"; produ
     align: "start",
     direction: dir,
     containScroll: "trimSnaps",
-    duration: 35,
+    duration: 25,
+    // کشش آزاد: موقع رها کردن موس به نزدیکترین اسلاید اسنپ نمیشود؛
+    // هر جا که رها شود همانجا میماند (حتی اگر اسلاید اول نصفه باشد).
+    dragFree: true,
     breakpoints: {
       "(max-width: 639px)": { align: "center", containScroll: false },
     },
   });
   const [canScroll, setCanScroll] = useState({ prev: false, next: false });
+  // همان میرایی اسلایدرهای محصولات تا با یک حرکت کوچک، چند اسلاید رد نشود.
+  useDampedDrag(emblaApi);
 
   useEffect(() => {
     if (!emblaApi) return;

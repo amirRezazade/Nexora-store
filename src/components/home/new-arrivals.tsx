@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import type { ProductSummary } from "@/server/dal/products";
 import { ProductCard } from "@/components/products/product-card";
 import { SectionHeader } from "./section-header";
+import { useDampedDrag } from "@/hooks/use-damped-drag";
 
 const focusRing = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
 
@@ -25,11 +26,15 @@ export function NewArrivals({ products, dir, locale }: { products: ProductSummar
     direction: dir,
     containScroll: "trimSnaps",
     duration: 25,
+    // کشش آزاد: موقع رها کردن موس به نزدیکترین اسلاید اسنپ نمیشود؛
+    // هر جا که رها شود همانجا میماند (حتی اگر اسلاید اول نصفه باشد).
+    dragFree: true,
     breakpoints: {
       "(max-width: 639px)": { align: "center", containScroll: false },
     },
   });
   const [canScroll, setCanScroll] = useState({ prev: false, next: false });
+  useDampedDrag(emblaApi);
 
   useEffect(() => {
     if (!emblaApi) return;
