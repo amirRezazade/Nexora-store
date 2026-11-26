@@ -100,6 +100,16 @@
       "viewAll": "View all articles",
       "readMore": "Read more",
       "articleLabel": "Article {index} of {total}"
+    },
+    "newsletter": {
+      "title": "Join our newsletter",
+      "subtitle": "Get the latest updates, exclusive deals and more.",
+      "emailLabel": "Email address",
+      "placeholder": "Enter your email address",
+      "submit": "Subscribe",
+      "success": "You're subscribed. Thanks for joining!",
+      "invalid": "Email is not valid",
+      "error": "Newsletter signup is unavailable right now. Please try again later."
     }
   }
 }

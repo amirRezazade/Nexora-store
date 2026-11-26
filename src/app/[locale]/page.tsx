@@ -9,6 +9,7 @@ import { BestSellersSection } from "@/components/home/best-sellers-section";
 import { NewArrivalsSection } from "@/components/home/new-arrivals-section";
 import { BrandsSection } from "@/components/home/brands-section";
 import { ArticlesSection } from "@/components/home/articles-section";
+import { NewsletterSection } from "@/components/home/newsletter-section";
 import { PromoBanners } from "@/components/home/promo-banners";
 import { categoryName } from "@/lib/category-tree";
 import { getHeroBanners, getPromoBanners } from "@/server/dal/banners";
@@ -145,6 +146,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
       {/* مقالات — جدیدترین مقالات منتشرشده از DAL سرور */}
       <ArticlesSection dir={locale === "fa" ? "rtl" : "ltr"} locale={locale} />
+
+      {/* خبرنامه — زیر مقاله‌ها؛ پس‌زمینهٔ تصویری بعداً اضافه می‌شود */}
+      <NewsletterSection dir={locale === "fa" ? "rtl" : "ltr"} locale={locale} />
     </div>
   );
 }

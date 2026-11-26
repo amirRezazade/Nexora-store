@@ -100,10 +100,12 @@
    Primary #fa5700 · Base #FBFBFD · Soft #F0F0F7 · Muted #E6E2EC
    ───────────────────────────────────────────── */
 /* #f0eff6 */
+/* #f6f6f6 */
 :root {
   --background: #fbfbfd;
   --surface: #ffffff;
-  --surface-secondary: #f0f0f7;
+  /* --surface-secondary: #f0f0f7; */
+  --surface-secondary: #f6f6f6;
   --surface-tertiary: #e6e2ec;
   --icon-surface: #f8f8fb; /* سطح مخصوص آیکون‌ها: خیلی نزدیک به پسزمینهٔ صفحه */
   --foreground: #0d0f17;
