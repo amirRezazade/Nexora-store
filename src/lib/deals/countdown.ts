@@ -7,7 +7,8 @@
  *  - مهلت بر اساس ساعت دستگاه محاسبه می‌شود و با گذشت زمان خودش پنجرهٔ بعدی را
  *    می‌گیرد؛ پس هیچ داده‌ای از سرور لازم نیست.
  *
- * پنجره: پایان یکشنبه (۲۳:۵۹:۵۹.۹۹۹ به وقت UTC) — هر هفته تکرار می‌شود.
+ * پنجره: پایان «یکشنبهٔ بعدی» (23:59:59.999 UTC). حتی اگر امروز یکشنبه باشد،
+ * مهلت یکشنبهٔ هفتهٔ بعد است تا شمارش معکوس هیچوقت صفر خالص نشان ندهد.
  */
 
 export interface CountdownParts {
@@ -18,12 +19,12 @@ export interface CountdownParts {
 }
 
 /**
- * پایان پنجرهٔ جاری (یکشنبه ۲۳:۵۹:۵۹.۹۹۹ UTC).
- * اگر همین حالا یکشنبه باشد، همان روز پایان پنجره است.
+ * پایان یکشنبهٔ آینده (23:59:59.999 UTC) — همیشه بعد از `now`.
+ * در روز یکشنبه، همان روز مناسب نیست؛ هفتهٔ بعد انتخاب میشود.
  */
 export function getNextWeeklyDeadline(now: Date): Date {
   const deadline = new Date(now.getTime());
-  const daysUntilSunday = (7 - now.getUTCDay()) % 7; // 0 = یکشنبه
+  const daysUntilSunday = (7 - now.getUTCDay()) % 7 || 7; // 0 = یکشنبه → ۷ روز بعد
   deadline.setUTCDate(deadline.getUTCDate() + daysUntilSunday);
   deadline.setUTCHours(23, 59, 59, 999);
   return deadline;
@@ -44,4 +45,14 @@ export function splitCountdown(remainingMs: number): CountdownParts {
 /** فاصلهٔ مهلت از «اکنون» به‌صورت اجزای شمارش معکوس */
 export function countdownUntil(now: Date, deadline: Date): CountdownParts {
   return splitCountdown(deadline.getTime() - now.getTime());
+}
+
+/**
+ * شمارش معکوس هفتگی بر اساس ساعت فعلی دستگاه.
+ * حداقل یک ثانیه نگه میدارد تا حتی در آخرین میلیثانیهها صفر خالص دیده نشود.
+ */
+export function getCountdownParts(now: Date): CountdownParts {
+  const deadline = getNextWeeklyDeadline(now);
+  const remainingMs = Math.max(1000, deadline.getTime() - now.getTime());
+  return splitCountdown(remainingMs);
 }

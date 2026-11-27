@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { categoryName } from "@/lib/category-tree";
-import { getCategoryTree } from "@/server/dal/categories";
+import { getCategoryTreeResult } from "@/server/dal/categories";
 import { listProductsByCategory } from "@/server/dal/products";
 import { FeaturedProducts, type FeaturedCategoryTab } from "./featured-products";
 
@@ -22,7 +22,8 @@ export async function FeaturedProductsSection({
   locale: string;
 }) {
   const t = await getTranslations("home.featured");
-  const tree = await getCategoryTree();
+  const { tree, status: treeStatus } = await getCategoryTreeResult();
+  if (treeStatus === "error") throw new Error("Failed to load categories");
   const allSubcategories = tree.flatMap((root) => root.children);
 
   // پنج دسته مهم به ترتیب اسلاگها، سپس بقیه به عنوان جایگزین
@@ -42,7 +43,8 @@ export async function FeaturedProductsSection({
     const batch = ordered.slice(cursor, cursor + needed);
     const fetched = await Promise.all(
       batch.map(async (category) => {
-        const { products } = await listProductsByCategory({ categoryId: category.id, limit: 10 });
+        const { products, status } = await listProductsByCategory({ categoryId: category.id, limit: 10 });
+        if (status === "error") throw new Error("Failed to load featured products");
         return {
           id: category.id,
           name: categoryName(category, locale),

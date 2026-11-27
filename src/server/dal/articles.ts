@@ -17,8 +17,8 @@ import { buildArticleCoverUrl } from "@/lib/articles/paths";
  * دیتابیس بیرون از کش به status=error تبدیل میشود تا کش نشود.
  */
 
-/** سقف مقالات اسلایدر/گرید صفحهٔ اصلی */
-const MAX_HOME_ARTICLES = 3;
+/** سقف مقالات اسلایدر صفحهٔ اصلی */
+const MAX_HOME_ARTICLES = 8;
 
 /** ترتیب fallback ترجمه وقتی زبان درخواستی موجود نیست */
 const FALLBACK_LOCALES = ["en", "fa"] as const;
@@ -108,6 +108,8 @@ async function fetchPublishedArticleRows(): Promise<ArticleRow[] | null> {
   const url = new URL("/rest/v1/articles", env.NEXT_PUBLIC_SUPABASE_URL);
   url.searchParams.set("select", ARTICLE_COLUMNS);
   url.searchParams.set("status", "eq.published");
+  // فقط مقالاتی که پوستر دارند وارد اسلایدر شوند تا تصویر شکسته رندر نشود.
+  url.searchParams.set("cover_image_path", "not.is.null");
   url.searchParams.set("order", "published_at.desc");
   url.searchParams.set("limit", String(MAX_HOME_ARTICLES));
 

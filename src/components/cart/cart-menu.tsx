@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import Image from "next/image";
-import { Minus, Plus, ShoppingCartSimple, Trash, Warning } from "@phosphor-icons/react/dist/ssr";
+import { Minus, Plus, Trash, Warning } from "@phosphor-icons/react/dist/ssr";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatPrice } from "@/lib/money";
@@ -62,15 +62,18 @@ export function CartMenu({ close }: { close: () => void }) {
   return (
     <div className="flex flex-col">
       <header className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4  ">
           {/* آیکون تزئینی است؛ فقط دکمه‌های قابل کلیک هاور پسزمینه میگیرند */}
-          <ShoppingCartSimple className="h-6 w-6 shrink-0 text-primary-text" aria-hidden />
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-7 shrink-0 text-primary " aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+          </svg>
+          <span className="border-l border-border-strong h-7.5 min-w-0.5"></span>
           <div>
             <p className="text-sm font-bold text-foreground">{t("panelTitle")}</p>
             <p className="text-xs text-text-muted">{cart.items.length > 0 ? t("itemsCount", { count: cart.items.length }) : t("empty")}</p>
           </div>
         </div>
-        <button type="button" onClick={close} aria-label={common("close")} title={common("close")} className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-icon-surface hover:text-foreground">
+        <button type="button" onClick={close} aria-label={common("close")} title={common("close")} className="inline-flex h-8 w-8 items-center justify-center rounded-full text-foreground/70 transition-colors bg-icon-surface hover:text-foreground">
           <span aria-hidden className="text-lg leading-none">
             ×
           </span>
@@ -79,10 +82,12 @@ export function CartMenu({ close }: { close: () => void }) {
 
       {cart.items.length === 0 ? (
         <div className="flex flex-col items-center gap-2 px-6 py-8 text-center">
-          <ShoppingCartSimple className="h-8 w-8 text-text-muted" aria-hidden />
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-8 shrink-0 text-primary" aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+          </svg>
           <p className="text-sm font-semibold text-foreground">{t("empty")}</p>
           <p className="text-xs leading-6 text-text-muted">{t("emptyHint")}</p>
-          <Link href="/shop" onClick={close} className="mt-1 inline-flex h-9 items-center justify-center rounded-full border border-border px-4 text-xs font-semibold text-foreground transition-colors hover:border-border-strong hover:text-primary-text">
+          <Link href="/shop" onClick={close} className="mt-1 inline-flex h-9 items-center justify-center rounded-full border border-border px-4 text-xs font-semibold text-foreground transition-colors hover:border-primary hover:text-primary-text">
             {t("browse")}
           </Link>
         </div>
@@ -147,13 +152,13 @@ export function CartMenu({ close }: { close: () => void }) {
                   return (
                     <li key={item.productId} className={cn("flex items-center gap-2.5 px-4 py-3", exiting && "menu-item-exit")}>
                       {/* ۱) تصویر — لینک به صفحهٔ محصول */}
-                      <Link href={`/product/${encodeURIComponent(product.slug ?? "")}`} onClick={close} className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-surface-secondary">
-                        {product.image && <Image src={product.image.url} alt={product.image.alt ?? name} fill sizes="56px" quality={95} className="object-cover" />}
+                      <Link href={`/product/${encodeURIComponent(product.slug ?? "")}`} onClick={close} className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-surface-secondary">
+                        {product.image && <Image src={product.image.url} alt={product.image.alt ?? name} fill sizes="64px" quality={95} className="object-cover" />}
                       </Link>
 
                       {/* ۲) نام محصول (لینک) و قیمت */}
                       <div className="min-w-0 flex-1">
-                        <Link href={`/product/${encodeURIComponent(product.slug ?? "")}`} onClick={close} className="block truncate text-xs font-semibold leading-5 text-foreground transition-colors hover:text-primary-text">
+                        <Link href={`/product/${encodeURIComponent(product.slug ?? "")}`} onClick={close} className="block text-xs font-semibold leading-5 text-foreground transition-colors hover:text-primary-text">
                           {name}
                         </Link>
                         <p className="mt-0.5 text-xs font-bold text-primary-text">
@@ -164,19 +169,38 @@ export function CartMenu({ close }: { close: () => void }) {
 
                       {/* ۳) کنترل تعداد */}
                       <div className="flex shrink-0 items-center gap-0.5">
-                        <button type="button" onClick={() => { cartActions.setQuantity(item.productId, item.quantity - 1); notify.cartQuantityChanged(); }} disabled={item.quantity <= 1} aria-label={t("decrease")} className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:bg-icon-surface hover:text-primary-text disabled:cursor-not-allowed disabled:opacity-40">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            cartActions.setQuantity(item.productId, item.quantity - 1);
+                            notify.cartQuantityChanged();
+                          }}
+                          disabled={item.quantity <= 1}
+                          aria-label={t("decrease")}
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:bg-icon-surface hover:text-primary-text hover:border-primary-text/40 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
                           <Minus className="h-3.5 w-3.5" aria-hidden />
                         </button>
                         <span className="min-w-5 text-center text-xs font-bold text-foreground" aria-live="polite">
                           {item.quantity}
                         </span>
-                        <button type="button" onClick={() => { cartActions.setQuantity(item.productId, item.quantity + 1); notify.cartQuantityChanged(); }} disabled={atMax} aria-label={atMax ? t("maxReached") : t("increase")} title={atMax ? t("maxReached") : t("increase")} className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:bg-icon-surface hover:text-primary-text disabled:cursor-not-allowed disabled:opacity-40">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            cartActions.setQuantity(item.productId, item.quantity + 1);
+                            notify.cartQuantityChanged();
+                          }}
+                          disabled={atMax}
+                          aria-label={atMax ? t("maxReached") : t("increase")}
+                          title={atMax ? t("maxReached") : t("increase")}
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:bg-icon-surface hover:text-primary-text hover:border-primary-text/40 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
                           <Plus className="h-3.5 w-3.5" aria-hidden />
                         </button>
                       </div>
 
                       {/* ۴) حذف */}
-                      <button type="button" onClick={() => handleRemove(item.productId, name)} aria-label={t("remove", { name })} title={t("remove", { name })} className="ms-1.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-error-text transition-colors hover:bg-error-bg">
+                      <button type="button" onClick={() => handleRemove(item.productId, name)} aria-label={t("remove", { name })} title={t("remove", { name })} className="ms-1.5 inline-flex h-8 w-8 border border-border shrink-0 items-center justify-center rounded-lg text-error-text transition-colors hover:bg-error-bg hover:border-error-text/15">
                         <Trash className="h-[18px] w-[18px]" aria-hidden />
                       </button>
                     </li>

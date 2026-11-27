@@ -6,6 +6,7 @@
     "new": "New",
     "discountLabel": "{percent}% off",
     "ratingLabel": "Rated {rating} out of 5",
+    "reviews": "reviews",
     "priceLabel": "Price",
     "descriptionTitle": "Product description",
     "galleryLabel": "Product images",

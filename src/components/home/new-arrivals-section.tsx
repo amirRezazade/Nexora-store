@@ -10,8 +10,10 @@ export async function NewArrivalsSection({
   locale: string;
 }) {
   const t = await getTranslations("home.newArrivals");
-  const { products } = await listNewArrivalProducts({ limit: 10 });
+  const { products, status } = await listNewArrivalProducts({ limit: 10 });
 
+  // دادهی جدیدترینها جزو محتوای اصلی هوم است؛ خطای DAL نباید پنهان شود.
+  if (status === "error") throw new Error("Failed to load new arrival products");
   if (products.length === 0) return null;
 
   return (

@@ -85,7 +85,7 @@ export function BrandsSlider({ brands, dir }: { brands: BrandSlide[]; dir: "rtl"
           <div className="flex touch-pan-y items-center gap-3 sm:gap-4">
             {brands.map((brand, index) => (
               <div key={brand.id} role="group" aria-roledescription="slide" aria-label={t("slideLabel", { index: index + 1, total })} className={slideBasis}>
-                <Link href="/brands" className={`group block rounded-xl bg-surface-secondary/90  border border-border/60 ${focusRing}`}>
+                <Link href={`/brands/${encodeURIComponent(brand.slug)}`} className={`group block rounded-xl bg-surface-secondary/90  border border-border/60 ${focusRing}`}>
                   <div className="relative flex h-[65px] items-center justify-center">
                     <Image src={brand.logoUrl} alt={brand.name} fill sizes={imageSizes} className="object-contain transition-opacity duration-300 group-hover:opacity-80" draggable={false} />
                   </div>

@@ -12,7 +12,9 @@ export async function BrandsSection({
   const t = await getTranslations("home.brands");
   const { brands, status } = await getHomeBrands(locale);
 
-  if (status === "error" || brands.length === 0) return null;
+  // خطای خواندن برندها نباید به «برندهای خالی» ترجمه شود.
+  if (status === "error") throw new Error("Failed to load homepage brands");
+  if (brands.length === 0) return null;
 
   return (
     <section dir={dir} aria-label={t("title")}>

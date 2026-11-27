@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import type { Icon } from "@phosphor-icons/react/lib";
+import { useEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -17,7 +16,7 @@ import { cn } from "@/lib/utils";
  *  - بستن با Escape (بازگشت فوکوس به trigger)، کلیک بیرون و خروج فوکوس با Tab
  *  - پنل با role="dialog" و label محلی‌شده
  */
-export function HeaderMenu({ icon: Icon, label, panelLabel, count = 0, children, triggerClassName }: { icon: Icon; label: string; panelLabel?: string; count?: number; children: (close: () => void) => ReactNode; triggerClassName?: string }) {
+export function HeaderMenu({ icon: Icon, label, panelLabel, count = 0, children, triggerClassName, panelClassName }: { icon: ComponentType<{ className?: string; "aria-hidden"?: boolean }>; label: string; panelLabel?: string; count?: number; children: (close: () => void) => ReactNode; triggerClassName?: string; panelClassName?: string }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -30,9 +29,35 @@ export function HeaderMenu({ icon: Icon, label, panelLabel, count = 0, children,
       if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
     };
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      setOpen(false);
-      triggerRef.current?.focus();
+      if (event.key === "Escape") {
+        setOpen(false);
+        triggerRef.current?.focus();
+        return;
+      }
+
+      if (event.key !== "Tab" || !panelRef.current) return;
+
+      // پنل dialog است؛ فوکوس نباید از آن خارج شود مگر اینکه بسته شود.
+      const focusable = Array.from(panelRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'));
+      if (focusable.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+
+      if (event.shiftKey && active === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      } else if (!panelRef.current.contains(active as Node | null)) {
+        event.preventDefault();
+        first.focus();
+      }
     };
 
     window.addEventListener("mousedown", onPointerDown);
@@ -62,7 +87,7 @@ export function HeaderMenu({ icon: Icon, label, panelLabel, count = 0, children,
       </button>
 
       {open && (
-        <div ref={panelRef} role="dialog" aria-label={panelLabel ?? label} className="menu-pop absolute end-0 top-full z-50 mt-2 w-[min(22rem,calc(100vw-1rem))] overflow-hidden rounded-2xl border border-border bg-surface shadow-xl">
+        <div ref={panelRef} role="dialog" aria-modal="true" aria-label={panelLabel ?? label} tabIndex={-1} className={cn("menu-pop absolute end-0 top-full z-50 mt-2 w-[min(24rem,calc(100vw-1rem))] overflow-hidden rounded-2xl border border-border bg-surface shadow-xl", panelClassName)}>
           {children(() => setOpen(false))}
         </div>
       )}

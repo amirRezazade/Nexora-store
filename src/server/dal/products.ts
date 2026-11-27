@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { cacheLife, cacheTag } from "next/cache";
+import { MAX_ITEM_QUANTITY } from "@/lib/cart/model";
 import { env } from "@/lib/env";
 import { getPublicSupabaseClient } from "@/lib/supabase/public";
 import { normalizeProductIds } from "@/lib/catalog/ids";
@@ -21,13 +22,14 @@ import { SUGGESTION_LIMIT } from "@/lib/search/suggestions";
  *   product_images      → product_id, image_path, sort_order, is_primary
  *   product_variants    → product_id, sku, price_cents, compare_at_cents, is_active, sort_order
  *   brands              → id, slug + brand_translations(locale, name)
- *   inventory           → موجودی هر واریانت (variant_id + quantity)
+ *   product_listing     → نمای عمومی: product_id، product_slug، in_stock
  *
  * قواعد نگاشت به قرارداد UI (که عوض نشده):
  *   - name / description → ترجمه‌ی انگلیسی، با fallback به فارسی
  *   - nameFa / descriptionFa / brandFa → ترجمه‌ی فارسی
  *   - price → قیمت «واریانت اول» فعال (کمترین sort_order) به دلار (price_cents / 100)
- *   - stock → جمع موجودی همه‌ی واریانت‌های فعال محصول
+ *   - inStock → فقط از نمای product_listing (هیچ موجودی عددی خوانده/نمایش نمیشود)
+ *   - stock → سقف داخلی سبد، نه موجودی واقعی و نه چیزی که در UI دیده شود
  *
  * نکات امنیتی:
  *  - عبارت جستجو ابتدا نرمال می‌شود (normalizeSearchTerm)
@@ -36,7 +38,7 @@ import { SUGGESTION_LIMIT } from "@/lib/search/suggestions";
  *  - هیچ‌چیز از سمت کلاینت جز خود عبارت جستجو پذیرفته نمی‌شود
  */
 const PRODUCTS_TABLE = "products";
-const INVENTORY_TABLE = "inventory";
+const PRODUCT_LISTING_VIEW = "product_listing";
 const PUBLISHED_STATUS = "published";
 
 /** RPC فروش: فقط شناسه محصول و تعداد فروش برمیگرداند، بدون اطلاعات سفارش */
@@ -63,14 +65,6 @@ const PRODUCT_IMAGE_BUCKET = "products";
  */
 const PRICE_SORT_MAX_ROWS = 500;
 
-/**
- * موجودی‌ای که وقتی جدول inventory برای نقش anon قابل خواندن نیست فرض می‌شود.
- *
- * ⚠️ موقتی: تا وقتی دسترسی خواندن inventory داده نشود (GRANT SELECT)، عدد واقعی
- * موجودی در دسترس نیست و بدون این fallback همه‌ی محصولات «ناموجود» نمایش داده
- * می‌شوند. بعد از اعمال دسترسی، این مقدار دیگر استفاده نمی‌شود.
- */
-const ASSUMED_STOCK_WHEN_INVENTORY_UNREADABLE = 10;
 
 const translationRowSchema = z.object({
   locale: z.string().min(1),
@@ -280,80 +274,54 @@ function isRecentlyPublished(publishedAt: string | null | undefined): boolean {
   return Date.now() - time <= NEW_BADGE_DAYS * 24 * 60 * 60 * 1000;
 }
 
-/** موجودی هر واریانت؛ status=unknown یعنی جدول inventory خوانده نشد */
-interface StockLookup {
-  status: "ok" | "unknown";
-  quantities: Map<string, number>;
+/**
+ * هیچ عدد موجودیای از دیتابیس خوانده نمیشود؛ فقط پرچم in_stock از نمای عمومی.
+ */
+interface AvailabilityLookup {
+  status: "ok" | "error";
+  inStockIds: Set<string>;
 }
 
-const inventoryRowSchema = z
-  .object({
-    variant_id: z.string().min(1),
-    // نام ستون موجودی در اسکیمای فعلی قطعی نیست؛ چند نام رایج پشتیبانی می‌شود.
-    quantity: z.number().int().nullish(),
-    stock_quantity: z.number().int().nullish(),
-    available_quantity: z.number().int().nullish(),
-  })
-  .passthrough();
-
-let inventoryWarningLogged = false;
+const listingRowSchema = z.object({
+  product_id: z.string().min(1),
+  in_stock: z.boolean(),
+});
 
 /**
- * موجودی واریانت‌ها را در یک کوئری می‌خواند.
- *
- * - فقط برای شناسه‌های همان صفحه (بدون خواندن کل جدول)
- * - خطای دسترسی/ساختار → status=unknown تا فراخواننده fallback را اعمال کند
- * - ردیف‌های با quantity منفی صفر حساب می‌شوند
+ * پرچم موجودی محصولات همان صفحه را از نمای product_listing میخواند.
+ * خطای خواندن → status=error تا فراخواننده محصول را ناموجود بداند (نه موجود فرض کند).
  */
-async function fetchStock(variantIds: string[]): Promise<StockLookup> {
-  if (variantIds.length === 0) {
-    return { status: "ok", quantities: new Map() };
-  }
+async function fetchAvailability(productIds: string[]): Promise<AvailabilityLookup> {
+  const ids = [...new Set(productIds.filter((id) => z.string().uuid().safeParse(id).success))];
+  if (ids.length === 0) return { status: "ok", inStockIds: new Set() };
 
   const { data, error } = await getPublicSupabaseClient()
-    .from(INVENTORY_TABLE)
-    .select("*")
-    .in("variant_id", [...new Set(variantIds)]);
+    .from(PRODUCT_LISTING_VIEW)
+    .select("product_id,in_stock")
+    .in("product_id", ids);
 
   if (error) {
-    if (!inventoryWarningLogged) {
-      inventoryWarningLogged = true;
-      console.warn(
-        "[dal/products] Inventory is not readable, assuming stock is available:",
-        error.message,
-      );
-    }
-    return { status: "unknown", quantities: new Map() };
+    console.error("[dal/products] Failed to read product_listing:", error.message);
+    return { status: "error", inStockIds: new Set() };
   }
 
-  const parsed = z.array(inventoryRowSchema).safeParse(data ?? []);
+  const parsed = z.array(listingRowSchema).safeParse(data ?? []);
   if (!parsed.success) {
-    console.warn("[dal/products] Unexpected inventory shape:", parsed.error.message);
-    return { status: "unknown", quantities: new Map() };
+    console.error("[dal/products] Unexpected product_listing shape:", parsed.error.message);
+    return { status: "error", inStockIds: new Set() };
   }
 
-  const quantities = new Map<string, number>();
-  for (const row of parsed.data) {
-    const raw = row.quantity ?? row.stock_quantity ?? row.available_quantity;
-    if (raw == null) {
-      // هیچ‌کدام از نام‌های شناخته‌شده موجود نبود؛ عدد موجودی نامعلوم است.
-      return { status: "unknown", quantities: new Map() };
-    }
-    const quantity = Math.max(0, raw);
-    quantities.set(row.variant_id, (quantities.get(row.variant_id) ?? 0) + quantity);
-  }
-
-  return { status: "ok", quantities };
+  return {
+    status: "ok",
+    inStockIds: new Set(parsed.data.filter((row) => row.in_stock).map((row) => row.product_id)),
+  };
 }
 
-/** جمع موجودی واریانت‌های همان محصول (یا fallback وقتی inventory خوانده نشد) */
-function stockForProduct(variants: ProductRow["product_variants"], stock: StockLookup): number {
-  if (stock.status === "unknown") return ASSUMED_STOCK_WHEN_INVENTORY_UNREADABLE;
-
-  return (variants ?? []).reduce(
-    (sum, variant) => sum + (stock.quantities.get(variant.id) ?? 0),
-    0,
-  );
+/**
+ * سقف داخلی سبد — نمایش داده نمیشود و موجودی واقعی هم نیست.
+ */
+function cartCapFor(inStock: boolean): number {
+  return inStock ? MAX_ITEM_QUANTITY : 0;
 }
 
 /** قیمت دلاری از سنت؛ نمایش با formatPrice انجام می‌شود */
@@ -365,13 +333,13 @@ function toDisplayPrice(priceCents: number | null): number {
  * ردیف خام → قرارداد ProductSummary.
  * محصولی که هیچ ترجمه‌ای با نام ندارد قابل نمایش نیست و null برمی‌گردد.
  */
-function mapSummary(row: ProductRow, stock: StockLookup): ProductSummary | null {
+function mapSummary(row: ProductRow, availability: AvailabilityLookup): ProductSummary | null {
   const en = findTranslation(row, "en");
   const fa = findTranslation(row, "fa");
   const name = en?.name ?? fa?.name;
   if (!name) return null;
 
-  const stockCount = stockForProduct(row.product_variants, stock);
+  const inStock = availability.status === "ok" && availability.inStockIds.has(row.id);
   const variant = pickVariant(row.product_variants);
   const priceCents = variant?.price_cents ?? null;
   const compareCents = variant?.compare_at_cents ?? null;
@@ -389,8 +357,8 @@ function mapSummary(row: ProductRow, stock: StockLookup): ProductSummary | null 
         : null,
     isNew: isRecentlyPublished(row.published_at),
     image: pickPrimaryImage(row.product_images),
-    stock: stockCount,
-    inStock: stockCount > 0,
+    stock: cartCapFor(inStock),
+    inStock,
   };
 }
 
@@ -403,14 +371,13 @@ function brandNames(row: ProductRow): { brand: string | null; brandFa: string | 
 
 /**
  * صفحه‌ای از محصولات را با واریانت‌ها/تصاویر/ترجمه‌ها می‌خواند و به قرارداد UI
- * نگاشت می‌کند. موجودی همه‌ی واریانت‌های همین صفحه با یک کوئری اضافه می‌آید.
+ * نگاشت میکند. پرچم موجودی محصولات همان صفحه با یک کوئری از product_listing میآید.
  */
 async function mapRowsToSummaries(rows: ProductRow[]): Promise<ProductSummary[]> {
-  const variantIds = rows.flatMap((row) => row.product_variants?.map((variant) => variant.id) ?? []);
-  const stock = await fetchStock(variantIds);
+  const availability = await fetchAvailability(rows.map((row) => row.id));
 
   return rows.flatMap((row) => {
-    const summary = mapSummary(row, stock);
+    const summary = mapSummary(row, availability);
     return summary ? [summary] : [];
   });
 }
@@ -543,8 +510,8 @@ export async function getProductBySlug(slugInput: string): Promise<{
   const name = en?.name ?? fa?.name;
   if (!name) return { product: null, status: "ok" };
 
-  const stock = await fetchStock(row.product_variants?.map((variant) => variant.id) ?? []);
-  const stockCount = stockForProduct(row.product_variants, stock);
+  const availability = await fetchAvailability([row.id]);
+  const inStock = availability.status === "ok" && availability.inStockIds.has(row.id);
   const { brand, brandFa } = brandNames(row);
 
   return {
@@ -559,8 +526,8 @@ export async function getProductBySlug(slugInput: string): Promise<{
       descriptionFa: fa?.description ?? null,
       price: toDisplayPrice(pickPriceCents(row.product_variants)),
       images: mapImages(row.product_images),
-      stock: stockCount,
-      inStock: stockCount > 0,
+      stock: cartCapFor(inStock),
+      inStock,
     },
     status: "ok",
   };

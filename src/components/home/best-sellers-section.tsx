@@ -10,8 +10,10 @@ export async function BestSellersSection({
   locale: string;
 }) {
   const t = await getTranslations("home.bestSellers");
-  const { products } = await listBestSellerProducts({ limit: 10 });
+  const { products, status } = await listBestSellerProducts({ limit: 10 });
 
+  // دادهی پرفروشها جزو محتوای اصلی هوم است؛ خطای DAL نباید پنهان شود.
+  if (status === "error") throw new Error("Failed to load best seller products");
   if (products.length === 0) return null;
 
   return (

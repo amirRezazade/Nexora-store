@@ -17,7 +17,7 @@ const focusRing = "focus-visible:outline-none focus-visible:ring-2 focus-visible
 const control = "size-9 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-text-muted shadow-sm transition-colors hover:bg-surface-secondary hover:text-foreground disabled:cursor-default disabled:opacity-40 disabled:hover:bg-surface disabled:hover:text-text-muted";
 
 const slideBasis = "shrink-0 grow-0 min-w-[190px] xs:min-w-[220px] basis-[62%] xs:basis-[38%] sm:basis-[34%] md:basis-[25%] lg:basis-[20%] xl:basis-[17%] p-1";
-const imageSizes = "(max-width: 480px) 46vw, (max-width: 640px) 34vw, (max-width: 768px) 28vw, (max-width: 1024px) 20vw, 14vw";
+const imageSizes = "(max-width: 480px) 62vw, (max-width: 640px) 38vw, (max-width: 768px) 34vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 17vw";
 
 export function NewArrivals({ products, dir, locale }: { products: ProductSummary[]; dir: "rtl" | "ltr"; locale: string }) {
   const t = useTranslations("home.newArrivals");

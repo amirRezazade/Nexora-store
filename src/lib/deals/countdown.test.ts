@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   countdownUntil,
+  getCountdownParts,
   getNextWeeklyDeadline,
   splitCountdown,
 } from "./countdown";
@@ -12,9 +13,9 @@ describe("getNextWeeklyDeadline", () => {
     expect(deadline.toISOString()).toBe("2026-11-22T23:59:59.999Z");
   });
 
-  it("وقتی امروز یکشنبه است، همان روز پایان پنجره است", () => {
+  it("وقتی امروز یکشنبه است، یکشنبهی هفتهی بعد را برمیگرداند", () => {
     const deadline = getNextWeeklyDeadline(new Date("2026-11-22T08:00:00.000Z"));
-    expect(deadline.toISOString()).toBe("2026-11-22T23:59:59.999Z");
+    expect(deadline.toISOString()).toBe("2026-11-29T23:59:59.999Z");
   });
 });
 
@@ -44,6 +45,27 @@ describe("countdownUntil", () => {
       days: 0,
       hours: 0,
       minutes: 59,
+      seconds: 59,
+    });
+  });
+});
+
+describe("getCountdownParts", () => {
+  it("هرگز صفر خالص برنمیگرداند", () => {
+    const nearDeadline = new Date("2026-11-22T23:59:59.500Z");
+    expect(getCountdownParts(nearDeadline)).toEqual({
+      days: 7,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    });
+  });
+
+  it("از وسط هفته تا یکشنبهی بعد را میشمارد", () => {
+    expect(getCountdownParts(new Date("2026-11-18T10:30:00.000Z"))).toEqual({
+      days: 4,
+      hours: 13,
+      minutes: 29,
       seconds: 59,
     });
   });

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Headset, ArrowUUpLeftIcon, ShieldCheck, Truck } from "@phosphor-icons/react/dist/ssr";
 import { getImageProps } from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -13,26 +14,69 @@ import { NewsletterSection } from "@/components/home/newsletter-section";
 import { PromoBanners } from "@/components/home/promo-banners";
 import { categoryName } from "@/lib/category-tree";
 import { getHeroBanners, getPromoBanners } from "@/server/dal/banners";
-import { getHomeCategories } from "@/server/dal/categories";
+import { getCategoryTreeResult, getHomeCategoriesResult } from "@/server/dal/categories";
 import { listDealProducts } from "@/server/dal/products";
 
+/** کمترین تعداد پیشنهاد واقعی که پر کردن ریل را توجیه میکند */
+const MIN_DEALS_FOR_SECTION = 4;
+
 /**
- * صفحهٔ اصلی.
- *
- * اسلایدهای هیرو از جدول بنرها می‌آیند (عنوان/زیرعنوان/دکمه از ترجمهٔ همان زبان
- * و تصویر موبایل/دسکتاپ از خود بنر). اگر بنر فعالی نباشد یا خواندن دیتابیس
- * شکست بخورد، هیرو اصلاً رندر نمی‌شود و صفحه با یک هدر خالی تحریف نمی‌شود.
- * h1 صفحه پنهان است تا عنوان هر اسلاید h2 بماند و ساختار heading معتبر بماند.
+ * عنوان و توضیح هوم به زبان همان مسیر (نه متن فارسی ثابت لایوت).
  */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "home.metadata" });
+
+  return {
+    title: { absolute: t("title") },
+    description: t("description"),
+    openGraph: {
+      title: t("title"),
+      description: t("description"),
+      siteName: t("siteName"),
+      locale: locale === "fa" ? "fa_IR" : "en_US",
+    },
+  };
+}
+
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("home");
 
-  const { banners } = await getHeroBanners(locale);
-  const { banners: promoBanners } = await getPromoBanners(locale);
-  const homeCategories = await getHomeCategories();
-  const { products: dealProducts } = await listDealProducts({ limit: 8 });
+  const [
+    heroBanners,
+    promoBannersResult,
+    homeCategoriesResult,
+    dealsResult,
+    navigationResult,
+  ] = await Promise.all([
+    getHeroBanners(locale),
+    getPromoBanners(locale),
+    getHomeCategoriesResult(),
+    listDealProducts({ limit: 8 }),
+    getCategoryTreeResult(),
+  ]);
+
+  // دادههای حیاتی صفحه: خطا یعنی هوم اصلاً نشان داده نشود (error.tsx).
+  if (
+    heroBanners.status === "error" ||
+    promoBannersResult.status === "error" ||
+    homeCategoriesResult.status === "error" ||
+    dealsResult.status === "error" ||
+    navigationResult.status === "error"
+  ) {
+    throw new Error("Failed to load homepage data");
+  }
+
+  const { banners } = heroBanners;
+  const { banners: promoBanners } = promoBannersResult;
+  const homeCategories = homeCategoriesResult.categories;
+  const dealProducts = dealsResult.products;
 
   /**
    * دو تصویر هر بنر (عمودی موبایل / افقی دسکتاپ) با getImageProps به srcSet
@@ -122,12 +166,15 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <CategorySlider categories={categorySlides} dir={locale === "fa" ? "rtl" : "ltr"} />
       )}
 
-      {/* پیشنهادهای امروز — محصولات دارای تخفیف از DAL سرور */}
-      <DealsSection
-        dir={locale === "fa" ? "rtl" : "ltr"}
-        locale={locale}
-        products={dealProducts}
-      />
+      {/* پیشنهادهای امروز — فقط وقتی دستکم ۴ محصول واقعی وجود دارد؛ اسکلت جایگزین
+          نداریم تا پنل خالی یا ناکامل به کاربر نشان داده نشود. */}
+      {dealProducts.length >= MIN_DEALS_FOR_SECTION && (
+        <DealsSection
+          dir={locale === "fa" ? "rtl" : "ltr"}
+          locale={locale}
+          products={dealProducts}
+        />
+      )}
 
       {/* محصولات منتخب — دسته‌بندی‌های مهم */}
       <FeaturedProductsSection dir={locale === "fa" ? "rtl" : "ltr"} locale={locale} />

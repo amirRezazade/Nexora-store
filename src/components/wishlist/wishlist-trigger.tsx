@@ -16,12 +16,7 @@ export function WishlistTrigger() {
   const count = useWishlistCount();
 
   return (
-    <HeaderMenu
-      icon={Heart}
-      label={t("wishlist")}
-      panelLabel={wishlistT("panelLabel")}
-      count={count}
-    >
+    <HeaderMenu icon={Heart} label={t("wishlist")} panelLabel={wishlistT("panelLabel")} panelClassName="w-[min(24rem,calc(100vw-1rem))]" count={count}>
       {(close) => <WishlistMenu close={close} />}
     </HeaderMenu>
   );

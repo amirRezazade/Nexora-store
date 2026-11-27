@@ -2,8 +2,9 @@
 
 import { useMemo } from "react";
 import Image from "next/image";
-import { Heart, ShoppingCartSimple, Trash, Warning } from "@phosphor-icons/react/dist/ssr";
+import { Heart, Trash, Warning } from "@phosphor-icons/react/dist/ssr";
 import { useLocale, useTranslations } from "next-intl";
+import { CartIcon } from "@/components/cart/cart-icon";
 import { Link } from "@/i18n/navigation";
 import { formatPrice } from "@/lib/money";
 import { cartActions, useCart } from "@/lib/cart/store";
@@ -47,15 +48,17 @@ export function WishlistMenu({ close }: { close: () => void }) {
   return (
     <div className="flex flex-col">
       <header className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           {/* آیکون تزئینی است؛ فقط دکمه‌های قابل کلیک هاور پسزمینه میگیرند */}
-          <Heart className="h-6 w-6 shrink-0 text-primary-text" aria-hidden />
+          <Heart className="size-7 shrink-0 text-error" weight="fill" aria-hidden />
+          <span className="border-l border-border-strong h-7.5 min-w-0.5"></span>
+
           <div>
             <p className="text-sm font-bold text-foreground">{t("panelTitle")}</p>
             <p className="text-xs text-text-muted">{wishlist.ids.length > 0 ? t("itemsCount", { count: wishlist.ids.length }) : t("empty")}</p>
           </div>
         </div>
-        <button type="button" onClick={close} aria-label={common("close")} title={common("close")} className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-icon-surface hover:text-foreground">
+        <button type="button" onClick={close} aria-label={common("close")} title={common("close")} className="inline-flex h-8 w-8 items-center justify-center rounded-full text-foreground/70 transition-colors bg-icon-surface hover:text-foreground">
           <span aria-hidden className="text-lg leading-none">
             ×
           </span>
@@ -64,10 +67,10 @@ export function WishlistMenu({ close }: { close: () => void }) {
 
       {wishlist.ids.length === 0 ? (
         <div className="flex flex-col items-center gap-2 px-6 py-8 text-center">
-          <Heart className="h-8 w-8 text-text-muted" aria-hidden />
+          <Heart className="h-8 w-8 text-error" aria-hidden />
           <p className="text-sm font-semibold text-foreground">{t("empty")}</p>
           <p className="text-xs leading-6 text-text-muted">{t("emptyHint")}</p>
-          <Link href="/shop" onClick={close} className="mt-1 inline-flex h-9 items-center justify-center rounded-full border border-border px-4 text-xs font-semibold text-foreground transition-colors hover:border-border-strong hover:text-primary-text">
+          <Link href="/shop" onClick={close} className="mt-1 inline-flex h-9 items-center justify-center rounded-full border border-border px-4 text-xs font-semibold text-foreground transition-colors hover:border-primary hover:text-primary-text">
             {t("browse")}
           </Link>
         </div>
@@ -118,36 +121,50 @@ export function WishlistMenu({ close }: { close: () => void }) {
                   }
 
                   const name = locale === "fa" ? product.nameFa ?? product.name : product.name;
-                  const inStock = product.stock > 0;
+                  const inStock = product.inStock;
                   const inCartQuantity = cartQuantities.get(id) ?? 0;
                   const inCart = inCartQuantity > 0;
                   const addLabel = inCart ? cartT("inCartShort", { count: inCartQuantity }) : inStock ? t("addToCart") : t("outOfStock");
 
                   return (
-                    <li key={id} className={cn("flex items-center gap-2.5 px-4 py-3", exiting && "menu-item-exit")}>
+                    <li key={id} className={cn("flex items-center gap-2 p-3", exiting && "menu-item-exit")}>
                       {/* ۱) تصویر — لینک به صفحهٔ محصول */}
-                      <Link href={`/product/${encodeURIComponent(product.slug ?? "")}`} onClick={close} className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-surface-secondary">
-                        {product.image && <Image src={product.image.url} alt={product.image.alt ?? name} fill sizes="56px" quality={95} className="object-cover" />}
+                      <Link href={`/product/${encodeURIComponent(product.slug ?? "")}`} onClick={close} className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-surface-secondary">
+                        {product.image && <Image src={product.image.url} alt={product.image.alt ?? name} fill sizes="64px" quality={95} className="object-cover" />}
                       </Link>
 
                       {/* ۲) نام محصول (لینک) و قیمت */}
-                      <div className="min-w-0 flex-1">
-                        <Link href={`/product/${encodeURIComponent(product.slug ?? "")}`} onClick={close} className="block truncate text-xs font-semibold leading-5 text-foreground transition-colors hover:text-primary-text">
+                      <div className="min-w-0 flex-1 grow">
+                        <Link href={`/product/${encodeURIComponent(product.slug ?? "")}`} onClick={close} className="block  text-xs font-semibold leading-3 text-foreground transition-colors hover:text-primary-text">
                           {name}
                         </Link>
                         <p className="mt-0.5 text-xs font-bold text-primary-text">
                           <bdi dir="ltr">{formatPrice(product.price)}</bdi>
                         </p>
+                        <p className={cn("mt-0.5 flex items-center gap-1 text-[11px] font-medium", inStock ? "text-success-text" : "text-error-text")}>
+                          <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-current" />
+                          {inStock ? t("inStock") : t("outOfStock")}
+                        </p>
                       </div>
 
                       {/* ۳) افزودن به سبد — وقتی محصول در سبد است غیرفعال میشود */}
-                      <button type="button" onClick={() => { cartActions.add(product.id); notify.cartAdded(name); }} disabled={!inStock || inCart} aria-label={addLabel} title={addLabel} className="inline-flex h-7 shrink-0 items-center gap-1 rounded-lg border border-border px-5 text-[11px] font-semibold text-primary-text transition-colors enabled:hover:bg-icon-surface disabled:cursor-auto disabled:opacity-70">
-                        <ShoppingCartSimple className="h-3.5 w-3.5" aria-hidden />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          cartActions.add(product.id);
+                          notify.cartAdded(name);
+                        }}
+                        disabled={!inStock || inCart}
+                        aria-label={addLabel}
+                        title={addLabel}
+                        className="inline-flex h-7 shrink-0 items-center justify-center gap-1 rounded-lg border border-border w-20 text-[11px] font-semibold text-primary transition-colors enabled:hover:bg-icon-surface disabled:cursor-auto disabled:opacity-70"
+                      >
+                        <CartIcon className="size-4 shrink-0" aria-hidden />
                         {inCart ? addLabel : inStock ? t("addToCartShort") : t("outOfStock")}
                       </button>
 
                       {/* ۴) حذف */}
-                      <button type="button" onClick={() => handleRemove(id, name)} aria-label={t("remove", { name })} title={t("remove", { name })} className="ms-1.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-error-text transition-colors hover:bg-error-bg">
+                      <button type="button" onClick={() => handleRemove(id, name)} aria-label={t("remove", { name })} title={t("remove", { name })} className="ms-1.5 inline-flex h-8 w-8 border border-border shrink-0 items-center justify-center rounded-lg text-error-text transition-colors hover:bg-error-bg hover:border-error-text/15">
                         <Trash className="h-[18px] w-[18px]" aria-hidden />
                       </button>
                     </li>

@@ -1,5 +1,10 @@
 {
   "home": {
+    "metadata": {
+      "title": "Nexora — Tech and lifestyle, all in one place",
+      "description": "Shop tech and lifestyle products online with authenticity guaranteed, great prices and fast delivery.",
+      "siteName": "Nexora"
+    },
     "hero": {
       "hiddenTitle": "Nexora — tech and lifestyle, all in one place",
       "carouselLabel": "Featured at Nexora",
@@ -45,6 +50,7 @@
       "primaryCta": "Shop all deals",
       "endsIn": "Ends in",
       "countdownLabel": "{days} days, {hours} hours, {minutes} minutes and {seconds} seconds left",
+      "countdownPending": "Calculating the time left",
       "days": "days",
       "hours": "hours",
       "minutes": "min",
@@ -64,6 +70,7 @@
       "next": "Next products",
       "keyboardHint": "Use the left and right arrow keys to browse products.",
       "tablistLabel": "Featured categories",
+      "tabsKeyboardHint": "Use the left and right arrow keys, Home and End to switch between tabs.",
       "viewAll": "View all products"
     },
     "bestSellers": {
@@ -99,7 +106,12 @@
       "subtitle": "Guides and insights from the Nexora team.",
       "viewAll": "View all articles",
       "readMore": "Read more",
-      "articleLabel": "Article {index} of {total}"
+      "articleLabel": "Article {index} of {total}",
+      "carouselLabel": "Articles slider",
+      "slideLabel": "Article {index} of {total}",
+      "previous": "Previous article",
+      "next": "Next article",
+      "keyboardHint": "Use the left and right arrow keys to browse articles."
     },
     "newsletter": {
       "title": "Join our newsletter",

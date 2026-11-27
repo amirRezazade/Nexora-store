@@ -110,13 +110,36 @@ async function fetchActiveCategoryRows(
   }
 }
 
-export async function getCategoryTree(): Promise<CategoryNode[]> {
+async function loadCategoryTree(): Promise<CategoryNode[] | null> {
   "use cache";
   cacheTag("categories");
   cacheLife("hours");
 
   const rows = await fetchActiveCategoryRows();
-  return rows ? buildCategoryTree(rows) : [];
+  return rows ? buildCategoryTree(rows) : null;
+}
+
+/** منو/header حتی در خطا هم قابل رندر میماند (دسته خالی) */
+export async function getCategoryTree(): Promise<CategoryNode[]> {
+  return (await loadCategoryTree()) ?? [];
+}
+
+/** صفحههایی که ناوبری برایشان حیاتی است، خطا را تشخیص میدهند */
+export async function getCategoryTreeResult(): Promise<{
+  tree: CategoryNode[];
+  status: "ok" | "error";
+}> {
+  const tree = await loadCategoryTree();
+  return tree ? { tree, status: "ok" } : { tree: [], status: "error" };
+}
+
+/** اسلایدر صفحهٔ اصلی؛ برخلاف منو، خطای آن نباید پنهان شود */
+export async function getHomeCategoriesResult(): Promise<{
+  categories: HomeCategory[];
+  status: "ok" | "error";
+}> {
+  const categories = await loadHomeCategories();
+  return categories ? { categories, status: "ok" } : { categories: [], status: "error" };
 }
 
 /** آیتم اسلایدر صفحهٔ اصلی — فقط دستههایی که عکس دارند */
@@ -132,15 +155,15 @@ export interface HomeCategory {
  * دستههای دارای تصویر را برای اسلایدر صفحهٔ اصلی میخواند.
  * - دستههای بدون `image_path` حذف میشوند (پس فقط دستههای اصلی عکسدار میمانند)
  * - عمر کش کوتاهتر از منو است تا عکسهای تازهآپلودشده زودتر دیده شوند
- * - خواندن دیتابیس شکست بخورد → آرایهٔ خالی (اسلایدر رندر نمیشود)
+ * - خواندن دیتابیس شکست بخورد → null تا getHomeCategoriesResult آن را به خطا تبدیل کند
  */
-export async function getHomeCategories(): Promise<HomeCategory[]> {
+async function loadHomeCategories(): Promise<HomeCategory[] | null> {
   "use cache";
   cacheTag("categories");
   cacheLife("minutes");
 
   const rows = await fetchActiveCategoryRows();
-  if (!rows) return [];
+  if (!rows) return null;
 
   return rows.flatMap((row) => {
     // فقط سر‌دسته‌ها (بدون والد) در اسلایدر صفحهٔ اصلی نمایش داده میشوند

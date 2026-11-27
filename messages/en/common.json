@@ -14,7 +14,12 @@
     "wishlist": "Wishlist",
     "menu": "Menu",
     "close": "Close",
-    "selectLanguage": "Select language"
+    "selectLanguage": "Select language",
+    "errorTitle": "Page unavailable",
+    "errorHint": "We couldn't load this page. Please try again in a moment.",
+    "retry": "Try again",
+    "backHome": "Back to home",
+    "brandPageComingSoon": "This brand's dedicated page is coming soon."
   },
   "nav": {
     "home": "Home",

@@ -20,6 +20,7 @@
     "addToWishlist": "Add to wishlist",
     "removeFromWishlist": "Remove from wishlist",
     "inWishlist": "In wishlist",
+    "inStock": "In stock",
     "outOfStock": "Out of stock"
   }
 }

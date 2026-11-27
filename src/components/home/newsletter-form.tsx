@@ -59,7 +59,7 @@ export function NewsletterForm({ locale }: { locale: string }) {
 
   if (status === "success") {
     return (
-      <div role="status" className="flex w-full items-center gap-2 rounded-xl bg-white/10 px-4 py-3 text-sm font-medium text-emerald-400 ring-1 ring-white/10 lg:max-w-md me-auto">
+      <div role="status" className="flex w-full items-center gap-2 rounded-xl bg-success-bg px-4 py-3 text-sm font-medium text-success-text ring-1 ring-border lg:max-w-md me-auto">
         <CheckCircle className="h-5 w-5 shrink-0" weight="fill" aria-hidden />
         <span>{t("success")}</span>
       </div>
@@ -70,19 +70,19 @@ export function NewsletterForm({ locale }: { locale: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="w-full lg:max-w-md me-auto" noValidate>
-      <div className="flex items-center  rounded-2xl bg-primary">
+      <div className="flex items-center rounded-2xl bg-surface/70 ring-1 ring-primary/30">
         <label htmlFor="newsletter-email" className="sr-only">
           {t("emailLabel")}
         </label>
-        <input id="newsletter-email" name="email" type="email" inputMode="email" autoComplete="email" required placeholder={t("placeholder")} aria-invalid={status === "invalid" || undefined} aria-describedby={error ? "newsletter-error" : undefined} disabled={status === "sending"} className="min-w-0 flex-1 rounded-2xl bg-neutral-100 px-2 py-2.5 text-sm text-neutral-900  focus-visible:outline-none! disabled:opacity-70" />
-        <button type="submit" disabled={status === "sending"} className="inline-flex shrink-0 items-center gap-1.5 rounded-2xl px-2 xs:px-4 py-2.5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-70">
+        <input id="newsletter-email" name="email" type="email" inputMode="email" autoComplete="email" required placeholder={t("placeholder")} aria-invalid={status === "invalid" || undefined} aria-describedby={error ? "newsletter-error" : undefined} disabled={status === "sending"} className="min-w-0 flex-1 rounded-2xl bg-transparent px-2 py-2.5 text-sm text-foreground placeholder:text-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-70" />
+        <button type="submit" disabled={status === "sending"} className="inline-flex shrink-0 items-center gap-1.5 rounded-2xl bg-primary px-2 xs:px-4 py-2.5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-70">
           {t("submit")}
           {status === "sending" ? <CircleNotch className="h-4 w-4 animate-spin" aria-hidden /> : <ArrowRight className="h-4 w-4 shrink-0 rtl:rotate-180" weight="bold" aria-hidden />}
         </button>
       </div>
 
       {error && (
-        <p id="newsletter-error" role="alert" className="mt-2 px-4 text-xs font-medium text-red-400">
+        <p id="newsletter-error" role="alert" className="mt-2 px-4 text-xs font-medium text-error-text">
           {error}
         </p>
       )}

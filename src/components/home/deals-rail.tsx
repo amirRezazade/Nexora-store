@@ -12,34 +12,31 @@ import { useDampedDrag } from "@/hooks/use-damped-drag";
 /**
  * ریل پیشنهادها.
  *
- * محصولاتِ دارای تخفیف از DAL سرور می‌آیند و با کارت مشترک ProductCard نمایش
- * داده می‌شوند. اگر داده‌ای نرسد (خطای دیتابیس یا کاتالوگ خالی)، همان کارت‌های
- * جای‌گزین خنثی (aria-hidden) رندر می‌شوند تا چیدمان پنل نشکند.
+ * محصولاتِ دارای تخفیف از DAL سرور میآیند و با کارت مشترک ProductCard نمایش
+ * داده میشوند. بخش پیشنهادها تنها زمانی رندر میشود که دستکم ۴ محصول واقعی وجود
+ * داشته باشد، پس اسکلت جایگزین و کارت خنثایی وجود ندارد.
  *
- * چرا Embla: همان اسلایدری که در هیرو/دسته‌بندی‌ها استفاده شده؛ headless است،
- * کشیدن با موس و لمس و RTL را خودش می‌فهمد و چیزی به ظاهر تحمیل نمی‌کند.
+ * چرا Embla: همان اسلایدری که در هیرو/دستهبندیها استفاده شده؛ headless است،
+ * کشیدن با موس و لمس و RTL را خودش میفهمد و چیزی به ظاهر تحمیل نمیکند.
  *
- * سربرگ ریل (شمارش معکوس + فلش‌ها) در «انتها»ی ریل می‌نشیند: در انگلیسی یعنی
- * گوشهٔ بالا-راست و در فارسی بالا-چپ. در ترتیب DOM شمارش معکوس اول است و فلش‌ها
- * آخر، بنابراین فلش‌ها همیشه در گوشهٔ بیرونی می‌افتند و ساعت دقیقاً کنارشان
- * (سمت داخل) قرار می‌گیرد.
+ * سربرگ ریل (شمارش معکوس + فلشها) در «انتها»ی ریل مینشیند: در انگلیسی یعنی
+ * گوشهٔ بالا-راست و در فارسی بالا-چپ. در ترتیب DOM شمارش معکوس اول است و فلشها
+ * آخر، بنابراین فلشها همیشه در گوشهٔ بیرونی میافتند و ساعت دقیقاً کنارشان
+ * (سمت داخل) قرار میگیرد.
  */
 
-/** تعداد اسکلت‌های جای‌گزین وقتی محصولی برای نمایش نیست */
-const placeholderCount = 4;
-
 /**
- * عرض هر اسلاید: کارت‌های پیشنهاد کمی عریض‌تر از حالت جمع‌وجور عمومی هستند.
- * فاصله‌ی بین کارت‌ها هم داخل basis لحاظ شده است.
+ * عرض هر اسلاید: کارتهای پیشنهاد کمی عریضتر از حالت جمعوجور عمومی هستند.
+ * فاصلهی بین کارتها هم داخل basis لحاظ شده است.
  */
 const slideBasis = "shrink-0 grow-0 min-w-[190px] xs:min-w-[220px] basis-[62%] xs:basis-[46%] sm:basis-[38%] md:basis-[28%] lg:basis-[24%] xl:basis-[21%]";
 
-const imageSizes = "(max-width: 480px) 62vw, (max-width: 640px) 46vw, (max-width: 768px) 38vw, (max-width: 1024px) 28vw, 16vw";
+const imageSizes = "(max-width: 480px) 62vw, (max-width: 640px) 46vw, (max-width: 768px) 38vw, (max-width: 1024px) 28vw, (max-width: 1280px) 24vw, 21vw";
 
-const focusRing = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9a3412] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f8d5bf]";
+const focusRing = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
-/** دکمه‌های شیشه‌ای هم‌خانوادهٔ خانه‌های شمارش معکوس */
-const control = "inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-white/35 text-[#7c2d12] shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_2px_10px_-6px_rgba(120,53,15,0.5)] ring-1 ring-white/55 backdrop-blur-md transition-colors hover:bg-white/55 disabled:cursor-default disabled:opacity-40 disabled:hover:bg-white/35";
+/** دکمههای شیشهای همخانوادهٔ خانههای شمارش معکوس */
+const control = "inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-surface/35 text-primary-text shadow-sm ring-1 ring-border/70 backdrop-blur-md transition-colors hover:bg-surface/60 disabled:cursor-default disabled:opacity-40 disabled:hover:bg-surface/35";
 
 export function DealsRail({ dir, products, locale }: { dir: "rtl" | "ltr"; products: ProductSummary[]; locale: string }) {
   const t = useTranslations("home.deals");
@@ -111,30 +108,11 @@ export function DealsRail({ dir, products, locale }: { dir: "rtl" | "ltr"; produ
 
       <div ref={viewportRef} tabIndex={0} onKeyDown={handleKeyDown} className={cn("overflow-hidden", focusRing)}>
         <div className="flex touch-pan-y gap-3 sm:gap-4">
-          {products.length > 0
-            ? products.map((product, index) => (
-                <div key={product.id} role="group" aria-label={t("slideLabel", { index: index + 1, total: products.length })} className={slideBasis}>
-                  <ProductCard product={product} locale={locale} sizes={imageSizes} />
-                </div>
-              ))
-            : Array.from({ length: placeholderCount }, (_, index) => (
-                <div key={index} className={slideBasis} aria-hidden>
-                  {/* اسکلت جای‌گزین: همان تناسبات کارت واقعی، بدون داده و بدون متن */}
-                  <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-[0_10px_22px_-20px_rgba(124,45,18,0.55)] ring-1 ring-black/[0.06]">
-                    <div className="aspect-square shrink-0 bg-[#f7f1ed]" />
-                    <div className="flex flex-1 flex-col px-2.5 pb-2.5 pt-2 sm:px-3 sm:pb-3">
-                      <div className="h-2 w-4/5 rounded-full bg-[#ece4df]" />
-                      <div className="mt-1.5 h-2 w-3/5 rounded-full bg-[#ece4df]" />
-                      <div className="mt-2 h-1.5 w-2/5 rounded-full bg-[#ece4df]" />
-                      <div className="mt-3 h-2 w-16 rounded-full bg-[#e3d8d2]" />
-                      <div className="mt-auto flex items-end justify-between gap-2 pt-2">
-                        <div className="h-2 w-14 rounded-full bg-[#ece4df]" />
-                        <div className="size-8 rounded-[11px] bg-[#f7ece6]" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+          {products.map((product, index) => (
+            <div key={product.id} role="group" aria-label={t("slideLabel", { index: index + 1, total: products.length })} className={slideBasis}>
+              <ProductCard product={product} locale={locale} sizes={imageSizes} />
+            </div>
+          ))}
         </div>
       </div>
     </div>
