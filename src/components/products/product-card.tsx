@@ -53,7 +53,7 @@ export function ProductCard({ product, locale, sizes, forceNewBadge = false }: P
   const reviewCount = 128;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-xl bg-surface/90 select-none  shadow-[0_2px_8px_-2px_rgba(15,23,42,0.08),0_8px_20px_-12px_rgba(15,23,42,0.12)] ring-1 ring-border transition-shadow duration-200 hover:shadow-[0_8px_24px_-10px_rgba(15,23,42,0.18)] dark:shadow-[0_2px_10px_-2px_rgba(0,0,0,0.45)]">
+    <article className="group flex h-full flex-col overflow-hidden rounded-xl bg-surface-secondary select-none  shadow-[0_2px_8px_-2px_rgba(15,23,42,0.08),0_8px_20px_-12px_rgba(15,23,42,0.12)] ring-1 ring-border transition-shadow duration-200 hover:shadow-[0_8px_24px_-10px_rgba(15,23,42,0.18)] dark:shadow-[0_2px_10px_-2px_rgba(0,0,0,0.45)]">
       <div className="relative shrink-0 overflow-hidden bg-transparent aspect-[4/3]">
         {!forceNewBadge && discount > 0 && (
           <span title={t("discountLabel", { percent: discount })} className="absolute start-2 top-2 z-20 rounded-md bg-primary px-1.5 py-0.5 text-[10px] font-extrabold leading-4 text-white shadow-sm">
@@ -193,15 +193,7 @@ function CardCartButton({ productId, productName, inStock }: { productId: string
   };
 
   return (
-    <button
-      type="button"
-      onClick={handleToggle}
-      disabled={!inStock}
-      aria-pressed={inCart}
-      aria-label={label}
-      title={label}
-      className={cn("inline-flex size-8 shrink-0 items-center justify-center rounded-[11px] transition-colors duration-150 active:scale-95 disabled:cursor-not-allowed", inCart ? "bg-primary text-white hover:bg-primary-hover" : "border border-primary bg-transparent text-primary hover:bg-primary-soft", !inStock && "border-border bg-surface-secondary text-text-muted")}
-    >
+    <button type="button" onClick={handleToggle} disabled={!inStock} aria-pressed={inCart} aria-label={label} title={label} className={cn("inline-flex size-8 shrink-0 items-center justify-center rounded-[11px] transition-colors duration-150 active:scale-95 disabled:cursor-not-allowed", inCart ? "bg-primary text-white hover:bg-primary-hover" : "border border-primary bg-transparent text-primary hover:bg-primary-soft", !inStock && "border-border bg-surface-secondary text-text-muted")}>
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5 shrink-0">
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
       </svg>

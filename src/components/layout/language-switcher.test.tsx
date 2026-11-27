@@ -39,7 +39,7 @@ describe("LanguageSwitcher", () => {
         pathname: "/search",
         query: { q: "کیف", sort: "price_asc", page: "2" },
       },
-      { locale: "en" },
+      { locale: "en", scroll: false },
     );
   });
 

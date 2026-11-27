@@ -76,7 +76,8 @@ export function LanguageSwitcher({
       query[key] = values.length > 1 ? values : values[0];
     }
 
-    router.replace({ pathname, query }, { locale });
+    // جلوی پرش به بالای صفحه هنگام تغییر locale گرفته میشود.
+    router.replace({ pathname, query }, { locale, scroll: false });
   };
 
   return (
